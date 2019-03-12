@@ -26,9 +26,7 @@
 
 ## Підключаємо базу даних
 Створюэмо нову базу даннх через консоль, веб додаток phpMyAdmin або іншим зручним способом.
-
 В мене база даних створена на локальному сервері, ім'я бази даних *portal.yii*, ім'я користувача *root* і немає пароля.
-
 Редагуємо конфігураційний файл (config\db.php), змінюємо пртрібні рядки під новостворену базу даних:
 
 	return [
@@ -38,3 +36,16 @@
 		'password' => '',
 		'charset' => 'utf8',
 	];
+
+## Налаштовуємо адресацію в контроллерах і модудях
+
+Редагуємо конфігураційний файл (config\console.php), додаємо наступні рядки для *urlManager*:
+
+    'urlManager' => [
+        'rules' => [
+            '<controller:\w+>/<id:\d+>' => '<controller>/view',
+            '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+            '<module:\w+>/<controller:\w+>/<action:(\w|-)+>' => '<module>/<controller>/<action>',
+            '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+        ],
+    ],

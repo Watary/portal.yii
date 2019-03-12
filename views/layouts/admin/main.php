@@ -9,7 +9,6 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
-use mdm\admin\components\Helper;
 
 AppAsset::register($this);
 ?>
@@ -40,7 +39,6 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'RBAC', 'url' => ['/rbac']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (
@@ -54,8 +52,7 @@ AppAsset::register($this);
                 )
                 . Html::endForm()
                 . '</li>'
-            ),
-            Yii::$app->user->isGuest ? (['label' => 'Signup', 'url' => ['/site/signup']]) : (''),
+            )
         ],
     ]);
     NavBar::end();

@@ -1,104 +1,37 @@
 <?php
-
 namespace app\models;
+use Yii;
+use yii\db\ActiveRecord;
+use mdm\admin\models\User as UserModel;
+use yii\helpers\Url;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+class User extends UserModel
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentity($id)
-    {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+    public function getCount(){
+        return User::find()->count();
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public static function getUserBuId($id){
+        return User::find()
+            ->where(['id' => $id])
+            ->one();
+    }
+    public function uploadFiles($folder = 'main')
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
+        $url = 'uploads/' . $folder . '/' . $this->imageFile->baseName . '.' . $this->imageFile->extension;
+        if($this->imageFile->saveAs($url)){
+            return $url;
+        }else{
+            return NULL;
         }
-
-        return null;
     }
-
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
+    public function getFriends(){
+        return $this->hasMany(Friend::className(), ['id_user' => 'id']);
+    }
+    public function getAvatar(){
+        if ($this->avatar) {
+            return Url::home(true) . $this->avatar;
+        }else{
+            return Url::home(true) . 'uploads/avatar/avatar.png';
         }
-
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        return $this->password === $password;
     }
 }
