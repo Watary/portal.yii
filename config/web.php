@@ -57,9 +57,9 @@ $config = [
         ],
     ],
     'modules' => [
-        /*'admin' => [
-            'class' => 'app\modules\admin\module',
-        ],*/
+        'admin' => [
+            'class' => 'app\modules\admin\Module',
+        ],
         'rbac' => [
             'class' => 'mdm\admin\Module',
             'controllerMap' => [

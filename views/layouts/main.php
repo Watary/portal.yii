@@ -11,6 +11,10 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use mdm\admin\components\Helper;
 
+if(!Yii::$app->user->isGuest) {
+    Yii::$app->user->identity->updateOnline();
+}
+
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -40,7 +44,7 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'RBAC', 'url' => ['/rbac']],
+            ['label' => 'Admin', 'url' => ['/admin']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (
