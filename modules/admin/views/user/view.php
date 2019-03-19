@@ -28,20 +28,45 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= DetailView::widget([
         'model' => $model,
+        'formatter' => [
+            'class' => '\yii\i18n\Formatter',
+            'dateFormat' => 'MM/dd/yyyy',
+            'datetimeFormat' => 'dd/MM/yyyy HH:mm:ss',
+        ],
         'attributes' => [
             'id',
             'username',
+            'first_name',
+            'last_name',
+            [
+                'attribute' => 'Rules',
+                'format' => 'raw',
+                'value' => function($model){
+                    $userRules = '';
+                    $userAssigned = Yii::$app->authManager->getAssignments($model->id);
+
+                    foreach($userAssigned as $userAssign){
+                        $userRules .= $userAssign->roleName . ', ';
+                    }
+
+                    return substr($userRules,0,-2);
+                }
+            ],
+            'email:email',
+            [
+                'attribute' => 'status',
+                'format' => 'raw',
+                'value' => function($data){
+                    return $data->status ? '<span class="text-success">Активний</span>' : '<span class="text-danger">Не активний</span>';
+                }
+            ],
+            'created_at:datetime',
+            'updated_at:datetime',
+            'online:datetime',
             'auth_key',
             'password_hash',
             'password_reset_token',
-            'email:email',
-            'status',
-            'created_at',
-            'updated_at',
-            'first_name',
-            'last_name',
             'avatar',
-            'online',
         ],
     ]) ?>
 

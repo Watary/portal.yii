@@ -41,8 +41,7 @@ class User extends UserModel
             ['email', 'required'],
             ['password_hash', 'required'],
             [['first_name', 'last_name'], 'string'],
-            [['created_at', 'updated_at', 'online'], 'string'],
-            [['id'], 'integer'],
+            [['created_at', 'updated_at', 'id', 'online'], 'integer'],
         ];
     }
 

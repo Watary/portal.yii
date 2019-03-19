@@ -85,10 +85,25 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+/*
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
+*/
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->online = mktime($model->online);
+            $model->created_at = mktime($model->created_at);
+            $model->updated_at = mktime($model->updated_at);
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
+
+        $model->online = date("d.m.Y h:i",(integer) $model->online);
+        $model->created_at = date("d.m.Y h:i",(integer) $model->created_at);
+        $model->updated_at = date("d.m.Y h:i",(integer) $model->updated_at);
 
         return $this->render('update', [
             'model' => $model,

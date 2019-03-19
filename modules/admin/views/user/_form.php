@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
@@ -10,7 +11,7 @@ use yii\widgets\ActiveForm;
 
 <div class="user-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['enableClientValidation' => false,]); ?>
 
     <?= $form->field($model, 'id')->textInput() ?>
 
@@ -18,9 +19,35 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'email') ?>
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?= $form->field($model, 'created_at')->widget(DateTimePicker::className(),[
+        'name' => 'created_at',
+        'type' => DateTimePicker::TYPE_INPUT,
+        'options' => ['placeholder' => 'Ввод даты/времени...'],
+        'convertFormat' => true,
+        'value'=> date("d.m.Y h:i",(integer) $model->online),
+        'pluginOptions' => [
+            'format' => 'dd.MM.yyyy hh:i',
+            'autoclose'=>true,
+            'weekStart'=>1, //неделя начинается с понедельника
+            'startDate' => '01.05.2015 00:00', //самая ранняя возможная дата
+            'todayBtn'=>true, //снизу кнопка "сегодня"
+        ]
+    ]); ?>
 
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?= $form->field($model, 'updated_at')->widget(DateTimePicker::className(),[
+        'name' => 'updated_at',
+        'type' => DateTimePicker::TYPE_INPUT,
+        'options' => ['placeholder' => 'Ввод даты/времени...'],
+        'convertFormat' => true,
+        'value'=> date("d.m.Y h:i",(integer) $model->online),
+        'pluginOptions' => [
+            'format' => 'dd.MM.yyyy hh:i',
+            'autoclose'=>true,
+            'weekStart'=>1, //неделя начинается с понедельника
+            'startDate' => '01.05.2015 00:00', //самая ранняя возможная дата
+            'todayBtn'=>true, //снизу кнопка "сегодня"
+        ]
+    ]); ?>
 
     <?= $form->field($model, 'password_hash')->textInput() ?>
 
@@ -30,7 +57,20 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'avatar')->textInput() ?>
 
-    <?= $form->field($model, 'online')->textInput() ?>
+    <?= $form->field($model, 'online')->widget(DateTimePicker::className(),[
+        'name' => 'online',
+        'type' => DateTimePicker::TYPE_INPUT,
+        'options' => ['placeholder' => 'Ввод даты/времени...'],
+        'convertFormat' => true,
+        'value'=> date("d.m.Y h:i",(integer) $model->online),
+        'pluginOptions' => [
+            'format' => 'dd.MM.yyyy hh:i',
+            'autoclose'=>true,
+            'weekStart'=>1, //неделя начинается с понедельника
+            'startDate' => '01.05.2015 00:00', //самая ранняя возможная дата
+            'todayBtn'=>true, //снизу кнопка "сегодня"
+        ]
+    ]); ?>
 
     <?= $form->field($model, 'status')->dropdownList([
         0 => 'Not active',

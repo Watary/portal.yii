@@ -22,6 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'formatter' => [
+            'class' => '\yii\i18n\Formatter',
+            'dateFormat' => 'MM/dd/yyyy',
+            'datetimeFormat' => 'dd/MM/yyyy HH:mm:ss',
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -30,14 +35,20 @@ $this->params['breadcrumbs'][] = $this->title;
             //'auth_key',
             //'password_hash',
             //'password_reset_token',
-            //'email:email',
-            'status',
-            'created_at',
-            'updated_at',
+            'email:email',
+            [
+                'attribute' => 'status',
+                'format' => 'raw',
+                'value' => function($data){
+                    return $data->status ? '<span class="text-success">Активний</span>' : '<span class="text-danger">Не активний</span>';
+                }
+            ],
+            'created_at:datetime',
+            'updated_at:datetime',
             'first_name',
             'last_name',
             //'avatar',
-            'online',
+            'online:datetime',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
