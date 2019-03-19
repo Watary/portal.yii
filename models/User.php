@@ -3,6 +3,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use mdm\admin\components\UserStatus;
 use mdm\admin\models\User as UserModel;
 use yii\helpers\Url;
 
@@ -28,6 +29,23 @@ use yii\helpers\Url;
 
 class User extends UserModel
 {
+    const STATUS_INACTIVE = 0;
+    const STATUS_ACTIVE = 10;
+
+    public function rules()
+    {
+        return [
+            ['status', 'in', 'range' => [UserStatus::ACTIVE, UserStatus::INACTIVE]],
+            ['username', 'required', 'message' => 'Please choose a username.'],
+            ['email', 'email'],
+            ['email', 'required'],
+            ['password_hash', 'required'],
+            [['first_name', 'last_name'], 'string'],
+            [['created_at', 'updated_at', 'online'], 'string'],
+            [['id'], 'integer'],
+        ];
+    }
+
     public function getCount(){
         return User::find()->count();
     }
@@ -61,7 +79,7 @@ class User extends UserModel
 
     public function isOnline($id = NULL){
         if($id == NULL) {
-            $id = $this->id;
+            return true;
         }
 
         $user = self::getUserBuId($id);

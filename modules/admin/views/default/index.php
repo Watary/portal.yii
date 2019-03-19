@@ -23,7 +23,7 @@
                             <div class="icon">
                                 <i class="fa fa-users"></i>
                             </div>
-                            <a href="<?= Url::to('rbac/user') ?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                            <a href="<?= Url::to('admin/user') ?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
