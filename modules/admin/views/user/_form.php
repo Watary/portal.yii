@@ -11,7 +11,7 @@ use kartik\datetime\DateTimePicker;
 
 <div class="user-form">
 
-    <?php $form = ActiveForm::begin(['enableClientValidation' => false,]); ?>
+    <?php $form = ActiveForm::begin(['enableClientValidation' => false, 'options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'id')->textInput() ?>
 
@@ -55,7 +55,7 @@ use kartik\datetime\DateTimePicker;
 
     <?= $form->field($model, 'last_name')->textInput() ?>
 
-    <?= $form->field($model, 'avatar')->textInput() ?>
+    <?= $form->field($model, 'imageFile')->fileInput()->label('Avatar') ?>
 
     <?= $form->field($model, 'online')->widget(DateTimePicker::className(),[
         'name' => 'online',

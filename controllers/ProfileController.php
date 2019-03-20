@@ -1,20 +1,20 @@
 <?php
 
-namespace app\modules\admin\controllers;
+namespace app\controllers;
 
 use Yii;
 use app\models\User;
-use app\models\UserSearch;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
-use yii\helpers\Url;
+use yii\helpers\Html;
 
 /**
- * UserController implements the CRUD actions for User model.
+ * ProfileController implements the CRUD actions for User model.
  */
-class UserController extends Controller
+class ProfileController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -34,15 +34,28 @@ class UserController extends Controller
     /**
      * Lists all User models.
      * @return mixed
-     */
+     *
     public function actionIndex()
     {
-        $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = new ActiveDataProvider([
+            'query' => User::find(),
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+     **/
+
+    public function actionIndex($id = NULL)
+    {
+
+        if($id == NULL){
+            $id = Yii::$app->user->identity->getId();
+        }
+
+        return $this->render('view', [
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -87,47 +100,22 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-/*
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+
+        if(!Yii::$app->user->can('Administrator') && $model->id != Yii::$app->user->getId()){
+            $this->redirect('/profile/' . $model->id);
         }
-*/
+
         if (Yii::$app->request->isPost && $model->imageFile  = UploadedFile::getInstance($model, 'imageFile')) {
             $model->avatar = $model->uploadAvatar($model->getId());
         }
 
-        if ($model->load(Yii::$app->request->post())) {
-
-            $model->online = mktime($model->online);
-            $model->created_at = mktime($model->created_at);
-            $model->updated_at = mktime($model->updated_at);
-
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         }
-
-        $model->online = date("d.m.Y h:i",(integer) $model->online);
-        $model->created_at = date("d.m.Y h:i",(integer) $model->created_at);
-        $model->updated_at = date("d.m.Y h:i",(integer) $model->updated_at);
 
         return $this->render('update', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**

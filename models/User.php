@@ -6,6 +6,7 @@ use yii\db\ActiveRecord;
 use mdm\admin\components\UserStatus;
 use mdm\admin\models\User as UserModel;
 use yii\helpers\Url;
+use yii\web\UploadedFile;
 
 /**
  * User model
@@ -23,7 +24,7 @@ use yii\helpers\Url;
  * @property string $first_name
  * @property string $last_name
  * @property string $avatar
- * @property string $online
+ * @property integer $online
  *
  */
 
@@ -31,6 +32,8 @@ class User extends UserModel
 {
     const STATUS_INACTIVE = 0;
     const STATUS_ACTIVE = 10;
+
+    public $imageFile;
 
     public function rules()
     {
@@ -40,7 +43,7 @@ class User extends UserModel
             ['email', 'email'],
             ['email', 'required'],
             ['password_hash', 'required'],
-            [['first_name', 'last_name'], 'string'],
+            [['first_name', 'last_name', 'avatar'], 'string'],
             [['created_at', 'updated_at', 'id', 'online'], 'integer'],
         ];
     }
@@ -57,6 +60,15 @@ class User extends UserModel
 
     public function uploadFiles($folder = 'main'){
         $url = 'uploads/' . $folder . '/' . $this->imageFile->baseName . '.' . $this->imageFile->extension;
+        if($this->imageFile->saveAs($url)){
+            return $url;
+        }else{
+            return NULL;
+        }
+    }
+
+    public function uploadAvatar($id){
+        $url = 'uploads/avatar/avatar_' . $id . '.' . $this->imageFile->extension;
         if($this->imageFile->saveAs($url)){
             return $url;
         }else{
