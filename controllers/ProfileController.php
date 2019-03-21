@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\User;
+use app\models\Friend;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -16,6 +17,10 @@ use yii\helpers\Html;
  */
 class ProfileController extends Controller
 {
+
+    public $own = false;
+    public $friend = false;
+
     /**
      * {@inheritdoc}
      */
@@ -31,31 +36,34 @@ class ProfileController extends Controller
         ];
     }
 
-    /**
-     * Lists all User models.
-     * @return mixed
-     *
-    public function actionIndex()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => User::find(),
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-     **/
-
     public function actionIndex($id = NULL)
     {
 
-        if($id == NULL){
-            $id = Yii::$app->user->identity->getId();
+        if(!$id){
+            $id = Yii::$app->getUser()->identity->id;
         }
 
+        $this->isOwn($id);
+        $this->isFriend($id);
+
+        $model = User::getUserBuId($id);
+
+        $user['id'] = $model['id'];
+        $user['username'] = $model['username'];
+        $user['first_name'] = $model['first_name'];
+        $user['last_name'] = $model['last_name'];
+        $user['email'] = $model['email'];
+        $user['status'] = $model['status'];
+        $user['created_at'] = $model['created_at'];
+        $user['updated_at'] = $model['updated_at'];
+        $user['friends'] = $model->friends;
+        $user['own'] = $this->own;
+        $user['friend'] = $this->friend;
+        $user['count_friends'] = Friend::countFriends();
+        $user['avatar'] = $model->getAvatar();
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'user' => $user,
         ]);
     }
 
@@ -67,26 +75,28 @@ class ProfileController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new User model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new User();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if(!$id){
+            $id = Yii::$app->getUser()->identity->id;
         }
 
-        return $this->render('create', [
-            'model' => $model,
+        $this->isOwn($id);
+        $this->isFriend($id);
+
+        $model = User::getUserBuId($id);
+
+        $user['id'] = $model['id'];
+        $user['username'] = $model['username'];
+        $user['email'] = $model['email'];
+        $user['status'] = $model['status'];
+        $user['created_at'] = $model['created_at'];
+        $user['updated_at'] = $model['updated_at'];
+        $user['friends'] = $model->friends;
+        $user['own'] = $this->own;
+        $user['friend'] = $this->friend;
+        $user['avatar'] = $model->getAvatar();
+
+        return $this->render('view', [
+            'user' => $user,
         ]);
     }
 
@@ -118,6 +128,30 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function actionAddFriend($id = NULL)
+    {
+        if($id) {
+            $model = new Friend();
+            $model->addFriend($id);
+        }
+        return $this->redirect('/profile/view/' . $id);
+    }
+
+    public function actionRemoveFriend($id = NULL)
+    {
+        if($id) {
+            $model = new Friend();
+            $model->removeFriend($id);
+        }
+        return $this->redirect('/profile/view/' . $id);
+    }
+
+    public function actionWriteMessage($id = NULL)
+    {
+        echo 'write-message';
+        return $this->redirect('/profile/view/' . $id);
+    }
+
     /**
      * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -132,5 +166,22 @@ class ProfileController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function isOwn($id)
+    {
+        if (Yii::$app->getUser()->identity->id == $id){
+            $this->own = true;
+        }
+        return;
+    }
+
+    private function isFriend($id)
+    {
+        $model = new Friend();
+        if ($model->isFriends($id, Yii::$app->getUser()->identity->id)){
+            $this->friend = true;
+        }
+        return;
     }
 }

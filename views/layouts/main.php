@@ -40,11 +40,10 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
+
+    $menuItems = [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Admin', 'url' => ['/admin']],
+            ['label' => 'Admin', 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest ? (
@@ -60,7 +59,13 @@ AppAsset::register($this);
                 . '</li>'
             ),
             Yii::$app->user->isGuest ? (['label' => 'Signup', 'url' => ['/site/signup']]) : (''),
-        ],
+        ];
+
+    //$menuItems = Helper::filter($menuItems);
+
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-right'],
+        'items' => $menuItems,
     ]);
     NavBar::end();
     ?>
