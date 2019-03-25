@@ -43,28 +43,7 @@ class ProfileController extends Controller
             $id = Yii::$app->getUser()->identity->id;
         }
 
-        $this->isOwn($id);
-        $this->isFriend($id);
-
-        $model = User::getUserBuId($id);
-
-        $user['id'] = $model['id'];
-        $user['username'] = $model['username'];
-        $user['first_name'] = $model['first_name'];
-        $user['last_name'] = $model['last_name'];
-        $user['email'] = $model['email'];
-        $user['status'] = $model['status'];
-        $user['created_at'] = $model['created_at'];
-        $user['updated_at'] = $model['updated_at'];
-        $user['friends'] = $model->friends;
-        $user['own'] = $this->own;
-        $user['friend'] = $this->friend;
-        $user['count_friends'] = Friend::countFriends();
-        $user['avatar'] = $model->getAvatar();
-
-        return $this->render('view', [
-            'user' => $user,
-        ]);
+        return $this->actionView($id);
     }
 
     /**
@@ -86,6 +65,8 @@ class ProfileController extends Controller
 
         $user['id'] = $model['id'];
         $user['username'] = $model['username'];
+        $user['first_name'] = $model['first_name'];
+        $user['last_name'] = $model['last_name'];
         $user['email'] = $model['email'];
         $user['status'] = $model['status'];
         $user['created_at'] = $model['created_at'];
@@ -93,7 +74,9 @@ class ProfileController extends Controller
         $user['friends'] = $model->friends;
         $user['own'] = $this->own;
         $user['friend'] = $this->friend;
+        $user['count_friends'] = Friend::countFriends();
         $user['avatar'] = $model->getAvatar();
+        $user['online'] = $model->isOnline($model['id']);
 
         return $this->render('view', [
             'user' => $user,

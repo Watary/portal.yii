@@ -3,19 +3,19 @@
 use yii\db\Migration;
 
 /**
- * Class m190321_084926_create_table_friends
+ * Class m190325_085800_create_table_message
  */
-class m190321_084926_create_table_friends extends Migration
+class m190325_085800_create_table_message extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('friends', [
+        $this->createTable('messages', [
             'id'            =>  $this->primaryKey(),
             'id_user'       =>  $this->integer()->notNull(),
-            'id_friend'     =>  $this->integer()->notNull(),
+            'id_whom'       =>  $this->integer()->notNull(),
             'active'        =>  $this->boolean()->notNull()->defaultValue(false),
             'date'          =>  $this->integer()->notNull()
         ]);
@@ -26,7 +26,9 @@ class m190321_084926_create_table_friends extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('friends');
+        $this->dropTable('messages');
+
+        return false;
     }
 
     /*
@@ -38,7 +40,7 @@ class m190321_084926_create_table_friends extends Migration
 
     public function down()
     {
-        echo "m190321_084926_create_table_friends cannot be reverted.\n";
+        echo "m190325_085800_create_table_message cannot be reverted.\n";
 
         return false;
     }

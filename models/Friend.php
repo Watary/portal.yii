@@ -47,11 +47,15 @@ class Friend extends \yii\db\ActiveRecord
 
     public function addFriend($friend_id)
     {
+
         if($this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) return;
-        if($friend = $this->isFriends(Yii::$app->getUser()->identity->getId(), $friend_id)) {
+
+        if($friend = $this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) {
+
             $friend->active = true;
             $this->active = true;
             $friend->save();
+            var_dump($friend_id);die();
         }
         $this->id_friend = $friend_id;
         $this->id_user = Yii::$app->getUser()->identity->getId();
