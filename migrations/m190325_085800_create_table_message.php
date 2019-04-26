@@ -12,12 +12,12 @@ class m190325_085800_create_table_message extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('messages', [
+        $this->createTable('message', [
             'id'            =>  $this->primaryKey(),
-            'id_user'       =>  $this->integer()->notNull(),
-            'id_whom'       =>  $this->integer()->notNull(),
-            'active'        =>  $this->boolean()->notNull()->defaultValue(false),
-            'date'          =>  $this->integer()->notNull()
+            'id_from'       =>  $this->integer()->notNull(),
+            'id_to'       =>  $this->integer()->notNull(),
+            'date'          =>  $this->integer()->notNull(),
+            'text'       =>  $this->text()->notNull(),
         ]);
     }
 
@@ -26,7 +26,7 @@ class m190325_085800_create_table_message extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('messages');
+        $this->dropTable('message');
 
         return false;
     }
