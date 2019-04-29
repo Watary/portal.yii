@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\widgets\Pjax;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
@@ -12,25 +12,109 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="message-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php Pjax::begin(); ?>
 
-    <p>
-        <?= Html::a('Create Message', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <div id="message-list" class="message-list"></div>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+    <?= $this->render('_form', [
+        'model' => $model,
+    ]) ?>
 
-            'id',
-            'id_from',
-            'id_to',
-            'date',
-            'text:ntext',
+    <script>
+        var countMessages = <?= $countMessages ?>;
+        var lastIdMessage = <?= $lastIdMessage ?>;
+        var countShow = 10;
+        var startShow;
+        var checkScroll = true;
 
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
-    <?php Pjax::end(); ?>
+        if(countMessages < countShow){
+            startShow = 0;
+        } else {
+            startShow = countMessages - countShow;
+        }
+
+        function showBeforeMessages(data){
+            var list = document.getElementById("message-list");
+            var node = document.createElement("div");
+            node.innerHTML = data;
+            list.insertBefore(node, list.children[0]);
+
+            scrollBy(0, document.getElementById("message-list").children[0].offsetHeight+5);
+            checkScroll = true;
+        }
+
+        function showAfterMessages(data){
+            var list = document.getElementById("message-list");
+            var node = document.createElement("div");
+            var scroll = false;
+
+            if((window.scrollY + 10) >= (document.body.scrollHeight - document.body.clientHeight)) {
+                scroll = true;
+            }
+
+            node.innerHTML = data;
+            list.append(node);
+
+            if(data && scroll) {
+                scrollTo(0, document.body.scrollHeight);
+            }
+        }
+
+        function showOldMessage() {
+            if(!countMessages){
+                return;
+            }
+
+            countMessages -= countShow;
+
+            $.ajax({
+                url: 'http://portal.yii/message/view/',
+                type: 'post',
+                data: {
+                    id_to: <?= $user_to->id ?>,
+                    startShow: startShow,
+                    countShow: countShow,
+                    _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
+                },
+                success: function (data) {
+                    //console.log(data.message);
+                    showBeforeMessages(data.message);
+                }
+            });
+
+            if(startShow < countShow){
+                startShow = 0;
+                countShow = countMessages;
+            } else {
+                startShow -= countShow;
+            }
+        }
+
+        function showNewMessage() {
+            $.ajax({
+                url: 'http://portal.yii/message/view-new-message/',
+                type: 'post',
+                data: {
+                    id_to: <?= $user_to->id ?>,
+                    lastIdMessage: lastIdMessage,
+                    _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
+                },
+                success: function (data) {
+                    //console.log(data.message);
+                    showAfterMessages(data.message);
+                    lastIdMessage = data.lastIdMessage;
+                }
+            });
+        }
+
+        window.onscroll = function() {
+            if(window.pageYOffset < document.getElementById("message-list").offsetTop && checkScroll) {
+                showOldMessage();
+                checkScroll = false;
+            }
+        };
+
+        setTimeout(showOldMessage, 100);
+        setInterval(showNewMessage, 1000);
+    </script>
+
 </div>

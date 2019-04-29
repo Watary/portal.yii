@@ -2,19 +2,23 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use app\models\message;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\models\User;
 
 /**
  * MessageController implements the CRUD actions for message model.
  */
 class MessageController extends Controller
 {
+    public $user_from;
+    public $user_to;
+
     /**
      * {@inheritdoc}
      */
@@ -34,14 +38,29 @@ class MessageController extends Controller
      * Lists all message models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($id_to)
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => message::find(),
-        ]);
+        $model = new message();
+
+        $model->date = time();
+        $model->id_from = Yii::$app->user->getId();
+        $model->id_to = $id_to;
+        $count = message::countMessage($model->id_from, $model->id_to);
+        $lastIdMessage = message::lastIdMessage($model->id_from, $model->id_to)->id;
+
+        $this->user_from = User::findOne($model->id_from);
+        $this->user_to = User::findOne($model->id_to);
+
+        if($model->load(Yii::$app->request->post()) && $model->save()){
+            $model = new message();
+        }
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+            'model' => $model,
+            'user_from' => $this->user_from,
+            'user_to' => $this->user_to,
+            'countMessages' => $count,
+            'lastIdMessage' => $lastIdMessage,
         ]);
     }
 
@@ -51,33 +70,52 @@ class MessageController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id){
+    public function actionView()
+    {
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            $id_from = Yii::$app->user->getId();
+            $resalt = '';
 
-        $currentUserId = Yii::$app->user->identity->getId();
-        $messagesQuery = Message::findMessages($currentUserId, $id);
+            $model = message::findMessage($id_from, $data['id_to'], $data['startShow'], $data['countShow']);
 
-        $userFrom = User::findOne($id);
-        $userTo = User::findOne($currentUserId);
-
-        $message = new Message([
-            'id_from' => $currentUserId,
-            'id_to' => $id,
-        ]);
-
-        if ($message->load(Yii::$app->request->post()) && $message->validate()) {
-            $message->save();
-            $message = new Message([
-                'id_from' => $currentUserId
-            ]);
-            if (Yii::$app->request->isPjax) {
-                return $this->renderAjax('_chat', compact('messagesQuery', 'message', 'userFrom', 'userTo'));
+            foreach ($model as $item){
+                $resalt .= $this->constructMessage($item);
             }
-        }
-        if (Yii::$app->request->isPjax) {
-            return $this->renderAjax('_list', compact('messagesQuery', 'message', 'userFrom', 'userTo'));
-        }
 
-        return $this->render('chat', compact('messagesQuery', 'message', 'user', 'userFrom', 'userTo'));
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return [
+                'message' => $resalt,
+            ];
+        }
+    }
+
+    /**
+     * Displays a single message model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewNewMessage()
+    {
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            $id_from = Yii::$app->user->getId();
+            $resalt = '';
+
+            $lastIdMessage = message::lastIdMessage($id_from, $data['id_to'])->id;
+            $model = message::findNewMessage($id_from, $data['id_to'], $data['lastIdMessage']);
+
+            foreach ($model as $item){
+                $resalt .= $this->constructMessage($item);
+            }
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return [
+                'message' => $resalt,
+                'lastIdMessage' => $lastIdMessage,
+            ];
+        }
     }
 
     /**
@@ -148,4 +186,21 @@ class MessageController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    public function constructMessage($item){
+        /*$this->user_from
+        $this->user_to*/
+        $user = User::findOne($item->id_from);
+
+        $result = '<div class="row" style="margin: 5px;">
+            <div class="col-sm-1">
+                <img src="'.$user->getAvatar().'" class="rounded" width="100%" alt="">
+            </div>
+            <div class="col-sm-11">
+                <div><span style="font-weight: bold">'.$user->username.'</span><span class="pull-right">'.date("d.m.Y h:i:s",(integer) $item->date).'</span></div>
+                <div>'.preg_replace( "#\r?\n#", "<br />", $item->text ).'</div>
+            </div>
+        </div><hr style="padding: 0;margin: 0;">';
+
+        return $result;
+    }
 }

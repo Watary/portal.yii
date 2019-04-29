@@ -46,6 +46,7 @@ AppAsset::register($this);
             ['label' => 'Admin', 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
+            ['label' => 'Profile', 'url' => ['/profile']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (

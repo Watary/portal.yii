@@ -10,7 +10,7 @@
             <div class="pull-left info">
                 <p><?= Yii::$app->user->identity->first_name ?> <?= Yii::$app->user->identity->last_name ?></p>
 
-                <a href="#"><i class="fa fa-circle text-success"></i> <?= Yii::$app->user->identity->isOnline() ? 'Online' : 'Offline' ?></a>
+                <i class="fa fa-circle text-success"></i> <?= Yii::$app->user->identity->isOnline() ? 'Online' : 'Offline' ?>
             </div>
         </div>
 

@@ -74,7 +74,7 @@ class ProfileController extends Controller
         $user['friends'] = $model->friends;
         $user['own'] = $this->own;
         $user['friend'] = $this->friend;
-        $user['count_friends'] = Friend::countFriends();
+        $user['count_friends'] = Friend::countFriends($user['id']);
         $user['avatar'] = $model->getAvatar();
         $user['online'] = $model->isOnline($model['id']);
 

@@ -46,6 +46,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'message/<id_to:\d+>' => 'message/index',
                 'profile/add-friend/<id:\d+>' => 'profile/add-friend',
                 'profile/remove-friend/<id:\d+>' => 'profile/remove-friend',
                 'profile/write-message/<id:\d+>' => 'profile/write-message',

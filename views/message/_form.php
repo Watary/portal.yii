@@ -9,21 +9,25 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="message-form">
+    <?php yii\widgets\Pjax::begin(['id' => 'message-form-pjax']) ?>
+        <?php $form = ActiveForm::begin(['options' => ['data-pjax' => true]]); ?>
+            <?= $form->field($model, 'text', ['template' => "{input}"])->textarea(['rows' => 3, 'id' => 'message-text'])->label(false) ?>
+        <?php ActiveForm::end(); ?>
 
-    <?php $form = ActiveForm::begin(); ?>
+        <script>
+            var sendMessage = document.getElementById('message-text');
+            sendMessage.onkeydown = handle;
 
-    <?= $form->field($model, 'id_from')->textInput() ?>
-
-    <?= $form->field($model, 'id_to')->textInput() ?>
-
-    <?= $form->field($model, 'date')->textInput() ?>
-
-    <?= $form->field($model, 'text')->textarea(['rows' => 6]) ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-    </div>
-
-    <?php ActiveForm::end(); ?>
-
+            function handle(event) {
+                if (event.which === 13 && !event.shiftKey) {
+                    event.target.form.dispatchEvent(new Event("submit", {cancelable: true}));
+                    event.preventDefault();
+                    focusElemen('#message-text');
+                }
+            }
+            function focusElemen($id){
+                setTimeout( function() { $( $id ).focus() }, 500 );
+            }
+        </script>
+    <?php yii\widgets\Pjax::end(); ?>
 </div>

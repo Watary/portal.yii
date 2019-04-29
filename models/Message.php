@@ -3,8 +3,6 @@
 namespace app\models;
 
 use Yii;
-use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "message".
@@ -15,9 +13,8 @@ use yii\db\ActiveRecord;
  * @property int $date
  * @property string $text
  */
-class Message extends ActiveRecord
+class Message extends \yii\db\ActiveRecord
 {
-
     /**
      * {@inheritdoc}
      */
@@ -32,7 +29,7 @@ class Message extends ActiveRecord
     public function rules()
     {
         return [
-            [['id_from', 'id_to', 'text'], 'required'],
+            [['id_from', 'id_to', 'date', 'text'], 'required'],
             [['id_from', 'id_to', 'date'], 'integer'],
             [['text'], 'string'],
         ];
@@ -52,21 +49,70 @@ class Message extends ActiveRecord
         ];
     }
 
-    public function selectUser($from, $to){
-        $this->user_from = (integer)$from;
-        $this->user_to = (integer)$to;
+    public function findMessage($id_from, $id_to, $offset, $limit = 10){
+        return Message::find()->
+            where([
+                'id_from' => $id_from,
+                'id_to' => $id_to,
+            ])
+            ->orWhere([
+                'id_from' => $id_to,
+                'id_to' => $id_from,
+            ])
+            ->limit($limit)
+            ->offset($offset)
+            ->all();
     }
 
-    /**
-     * @param int $from
-     * @param int $to
-     * @return ActiveQuery
-     */
-    public static function findMessages($from, $to)
-    {
-        return self::find()
-            ->where(['id_from' => $from, 'id_to' => $to])
-            ->orWhere(['id_from' => $to, 'id_to' => $from]);
+    public function findNewMessage($id_from, $id_to, $lastIdMessage){
+        return Message::find()->
+            where([
+                'id_from' => $id_from,
+                'id_to' => $id_to,
+            ])
+            ->orWhere([
+                'id_from' => $id_to,
+                'id_to' => $id_from,
+            ])
+            ->andWhere('id > '.$lastIdMessage)
+            ->all();
     }
 
+    public function lastIdMessage($id_from, $id_to){
+        return Message::find()
+        ->select('id')
+        ->where([
+            'id_from' => $id_from,
+            'id_to' => $id_to,
+        ])->orWhere([
+            'id_from' => $id_to,
+            'id_to' => $id_from,
+        ])
+        ->orderBy(['id' => SORT_DESC])
+        ->one();
+    }
+
+    public function selectMessage($id_from, $id_to){
+        return Message::find()->
+            where([
+                'id_from' => $id_from,
+                'id_to' => $id_to,
+            ])->orWhere([
+                'id_from' => $id_to,
+                'id_to' => $id_from,
+            ])/*->limit(10)*/;
+    }
+
+
+
+    public function countMessage($id_from, $id_to){
+        return Message::find()->
+        where([
+            'id_from' => $id_from,
+            'id_to' => $id_to,
+        ])->orWhere([
+            'id_from' => $id_to,
+            'id_to' => $id_from,
+        ])->count();
+    }
 }
