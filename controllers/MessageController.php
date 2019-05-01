@@ -196,7 +196,7 @@ class MessageController extends Controller
                 <img src="'.$user->getAvatar().'" class="rounded" width="100%" alt="">
             </div>
             <div class="col-sm-11">
-                <div><span style="font-weight: bold">'.$user->username.'</span><span class="pull-right">'.date("d.m.Y h:i:s",(integer) $item->date).'</span></div>
+                <div><span style="font-weight: bold"><a href="/profile/view/'.$user->id.'">'.$user->username.'</a></span><span class="pull-right">'.date("d.m.Y H:i:s",(integer) $item->date).'</span></div>
                 <div>'.preg_replace( "#\r?\n#", "<br />", $item->text ).'</div>
             </div>
         </div><hr style="padding: 0;margin: 0;">';
