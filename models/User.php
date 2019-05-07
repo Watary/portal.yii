@@ -106,9 +106,9 @@ class User extends UserModel
         $model = User::find()
             ->where(['id' => $this->id])
             ->one();
-        $model->online = mktime();
+        $model->online = time();
         if($model->save()) {
-            $this->online = mktime();
+            $this->online = time();
         }
     }
 }

@@ -2,23 +2,20 @@
 
 namespace app\controllers;
 
-use app\models\User;
 use Yii;
-use app\models\message;
+use app\models\ConversationMessages;
+use app\models\ConversationParticipant;
+use app\models\User;
 use yii\data\ActiveDataProvider;
-use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * MessageController implements the CRUD actions for message model.
+ * ConversationMessagesController implements the CRUD actions for ConversationMessages model.
  */
-class MessageController extends Controller
+class ConversationMessagesController extends Controller
 {
-    public $user_from;
-    public $user_to;
-
     /**
      * {@inheritdoc}
      */
@@ -35,49 +32,58 @@ class MessageController extends Controller
     }
 
     /**
-     * Lists all message models.
+     * Lists all ConversationMessages mod
+     * @param integer $id_conversation
      * @return mixed
      */
-    public function actionIndex($id_to)
+    public function actionIndex($id_conversation)
     {
-        $model = new message();
+        $participant = ConversationParticipant::isParticipant($id_conversation, Yii::$app->user->getId());
 
-        $model->date = time();
-        $model->id_from = Yii::$app->user->getId();
-        $model->id_to = $id_to;
-        $count = message::countMessage($model->id_from, $model->id_to);
-        $lastIdMessage = message::lastIdMessage($model->id_from, $model->id_to)->id;
-
-        $this->user_from = User::findOne($model->id_from);
-        $this->user_to = User::findOne($model->id_to);
-
-        if($model->load(Yii::$app->request->post()) && $model->save()){
-            $model = new message();
+        if(!$participant[0]){
+            throw new \yii\web\ForbiddenHttpException('Это не Ваш диалог!!!');
+        }elseif($participant[0]->date_exit){
+            throw new \yii\web\ForbiddenHttpException('Это не Ваш диалог!!!');
         }
 
+        $model = new ConversationMessages();
+        $countMessages = ConversationMessages::countConversationMessage($id_conversation);
+        $lastIdMessage = ConversationMessages::findLastMessage($id_conversation)->id;
+
+        $model->date = time();
+        $model->id_owner = Yii::$app->user->getId();
+        $model->id_conversation = $id_conversation;
+
+        if($model->load(Yii::$app->request->post()) && $model->save()){
+            $model = new ConversationMessages();
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => ConversationMessages::find(),
+        ]);
+
         return $this->render('index', [
+            'dataProvider' => $dataProvider,
             'model' => $model,
-            'user_from' => $this->user_from,
-            'user_to' => $this->user_to,
-            'countMessages' => $count,
+            'id_conversation' => $id_conversation,
+            'countMessages' => $countMessages,
             'lastIdMessage' => $lastIdMessage,
         ]);
     }
 
     /**
-     * Displays a single message model.
-     * @param integer $id
+     * Displays a single ConversationMessages model.
+     * @param integer $id_conversation
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView()
+    public function actionView($id_conversation)
     {
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request->post();
-            $id_from = Yii::$app->user->getId();
             $resalt = '';
 
-            $model = message::findMessage($id_from, $data['id_to'], $data['startShow'], $data['countShow']);
+            $model = ConversationMessages::findMessage($id_conversation, $data['startShow'], $data['countShow']);
 
             foreach ($model as $item){
                 $resalt .= $this->constructMessage($item);
@@ -91,20 +97,19 @@ class MessageController extends Controller
     }
 
     /**
-     * Displays a single message model.
-     * @param integer $id
+     * Displays a single ConversationMessages model.
+     * @param integer $id_conversation
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionViewNewMessage()
+    public function actionViewNewMessage($id_conversation)
     {
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request->post();
-            $id_from = Yii::$app->user->getId();
             $resalt = '';
 
-            $lastIdMessage = message::lastIdMessage($id_from, $data['id_to'])->id;
-            $model = message::findNewMessage($id_from, $data['id_to'], $data['lastIdMessage']);
+            $lastIdMessage = ConversationMessages::findLastMessage($id_conversation)->id;
+            $model = ConversationMessages::findNewMessage($id_conversation, $data['lastIdMessage']);
 
             foreach ($model as $item){
                 $resalt .= $this->constructMessage($item);
@@ -119,25 +124,39 @@ class MessageController extends Controller
     }
 
     /**
-     * Creates a new message model.
+     * Creates a new ConversationMessages model.
+     * @param integer $id_conversation
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id_conversation)
     {
-        $model = new message();
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $model = new ConversationMessages();
+
+            $model->date = time();
+            $model->id_owner = Yii::$app->user->getId();
+            $model->id_conversation = $id_conversation;
+            $model->text = $data['text'];
+
+            if ($model->save()) {
+                return [
+                    'message' => 'true',
+                ];
+            }else {
+                return [
+                    'message' => 'false',
+                ];
+            }
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return false;
     }
 
     /**
-     * Updates an existing message model.
+     * Updates an existing ConversationMessages model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -157,7 +176,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Deletes an existing message model.
+     * Deletes an existing ConversationMessages model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -171,15 +190,15 @@ class MessageController extends Controller
     }
 
     /**
-     * Finds the message model based on its primary key value.
+     * Finds the ConversationMessages model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return message the loaded model
+     * @return ConversationMessages the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = message::findOne($id)) !== null) {
+        if (($model = ConversationMessages::findOne($id)) !== null) {
             return $model;
         }
 
@@ -187,9 +206,7 @@ class MessageController extends Controller
     }
 
     public function constructMessage($item){
-        /*$this->user_from
-        $this->user_to*/
-        $user = User::findOne($item->id_from);
+        $user = User::findOne($item->id_owner);
 
         $result = '<div class="row" style="margin: 5px;">
             <div class="col-sm-1">

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: ADMIN
+ * Date: 2019-05-02
+ * Time: 15:16
+ */
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -9,6 +14,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="message-form">
+
     <?php yii\widgets\Pjax::begin(['id' => 'message-form-pjax']) ?>
         <?php $form = ActiveForm::begin(['options' => ['data-pjax' => true]]); ?>
             <?= $form->field($model, 'text', ['template' => "{input}"])->textarea(['rows' => 3, 'id' => 'message-text'])->label(false) ?>
