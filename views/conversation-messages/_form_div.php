@@ -15,11 +15,7 @@ use yii\widgets\ActiveForm;
 
 <div class="message-form">
 
-    <?php /*$form = ActiveForm::begin(); ?>
-        <?= $form->field($model, 'text', ['template' => "{input}"])->textarea(['rows' => 3, 'id' => 'message-text'])->label(false) ?>
-    <?php ActiveForm::end(); */?>
-
-    <div id="message-text" contenteditable="true" style="border: 1px solid #747f9c; border-radius: 5px; height: 100px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;"></div>
+    <div id="message-text" contenteditable="true" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 100px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;"></div>
 
     <script>
         var sendMessage = document.getElementById('message-text');

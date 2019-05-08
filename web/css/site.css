@@ -117,3 +117,7 @@ a.desc:after {
 .panel_profile_friends .thumbnail{
     border: none;
 }
+
+.select-message{
+    background-color: rgba(196, 213, 230, 0.71);
+}

@@ -102,8 +102,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                     success: function (data) {
                         //console.log(data.message);
-                        showAfterMessages(data.message);
-                        lastIdMessage = data.lastIdMessage;
+                        if(data.message){
+                            showAfterMessages(data.message);
+                            lastIdMessage = data.lastIdMessage;
+                        }
                     }
                 });
             }
@@ -117,6 +119,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
             setTimeout(showOldMessage, 100);
             setInterval(showNewMessage, 1000);
+        </script>
+
+        <script>
+            var selectList = [];
+
+            function selectMessage(element, id){
+                if(selectList[id]){
+                    element.classList.remove("select-message");
+                    selectList[id] = false;
+                }else{
+                    element.classList.add("select-message");
+                    selectList[id] = true;
+                }
+            }
         </script>
 
     </div>

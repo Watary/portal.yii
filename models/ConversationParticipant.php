@@ -50,7 +50,15 @@ class ConversationParticipant extends \yii\db\ActiveRecord
         ];
     }
 
-
+    public function isParticipantNow($id_conversation, $id_participant){
+        return ConversationParticipant::find()
+            ->where([
+                'id_conversation' => $id_conversation,
+                'id_user' => $id_participant,
+                'date_exit' => NULL,
+            ])
+            ->count();
+    }
 
     public function isParticipant($id_conversation, $id_participant){
         return ConversationParticipant::find()

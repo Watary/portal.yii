@@ -131,7 +131,8 @@ class ConversationMessagesController extends Controller
      */
     public function actionCreate($id_conversation)
     {
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())) {
+
             $data = Yii::$app->request->post();
 
             $model = new ConversationMessages();
@@ -208,7 +209,7 @@ class ConversationMessagesController extends Controller
     public function constructMessage($item){
         $user = User::findOne($item->id_owner);
 
-        $result = '<div class="row" style="margin: 5px;">
+        $result = '<div class="row" onclick="selectMessage(this, '.$item->id.')" style="padding: 5px;">
             <div class="col-sm-1">
                 <img src="'.$user->getAvatar().'" class="rounded" width="100%" alt="">
             </div>
