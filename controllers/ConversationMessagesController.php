@@ -79,7 +79,7 @@ class ConversationMessagesController extends Controller
      */
     public function actionView($id_conversation)
     {
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())) {
             $data = Yii::$app->request->post();
             $resalt = '';
 
@@ -104,7 +104,7 @@ class ConversationMessagesController extends Controller
      */
     public function actionViewNewMessage($id_conversation)
     {
-        if (Yii::$app->request->isAjax) {
+        if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())) {
             $data = Yii::$app->request->post();
             $resalt = '';
 
@@ -176,18 +176,29 @@ class ConversationMessagesController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing ConversationMessages model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    public function actionRemove(){
+        if (Yii::$app->request->isAjax) {
 
-        return $this->redirect(['index']);
+            $data = Yii::$app->request->post();
+            $selectList = $data['selectList'];
+            $listRemoved = [];
+            $counter = 0;
+
+            foreach ($selectList as $key => $item){
+                $model = ConversationMessages::find()->where(['id' => $key])->andWhere(['not like', 'remove', Yii::$app->user->getId()])->one();
+                $model->remove = $model->remove . ' ' . Yii::$app->user->getId();
+                $model->update();
+                $listRemoved[$counter] = $key;
+                $counter++;
+            }
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return [
+                'message' => $listRemoved,
+            ];
+        }
+
+        return false;
     }
 
     /**
@@ -209,7 +220,7 @@ class ConversationMessagesController extends Controller
     public function constructMessage($item){
         $user = User::findOne($item->id_owner);
 
-        $result = '<div class="row" onclick="selectMessage(this, '.$item->id.')" style="padding: 5px;">
+        $result = '<div id="conversation-messages-'.$item->id.'" class="row" onclick="selectMessage(this, '.$item->id.')" style="padding: 5px;">
             <div class="col-sm-1">
                 <img src="'.$user->getAvatar().'" class="rounded" width="100%" alt="">
             </div>

@@ -65,9 +65,8 @@ class ConversationMessages extends \yii\db\ActiveRecord
 
     public function findMessage($id_conversation, $offset, $limit = 10){
         return ConversationMessages::find()->
-        where([
-            'id_conversation' => $id_conversation,
-        ])
+        where(['id_conversation' => $id_conversation])
+        ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
         ->limit($limit)
         ->offset($offset)
         ->all();
@@ -97,6 +96,8 @@ class ConversationMessages extends \yii\db\ActiveRecord
             ->where([
                 'id_conversation' => $id_conversation,
             ])
+            ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
             ->count();
     }
+
 }

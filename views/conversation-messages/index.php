@@ -20,6 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'id_conversation' => $id_conversation,
         ]) ?>
 
+        <button onclick="deleteMessage()" type="button" class="btn btn-danger">Delete</button>
+
         <script>
 
             var countMessages = <?= $countMessages ?>;
@@ -117,21 +119,40 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             };
 
-            setTimeout(showOldMessage, 100);
+            setTimeout(showOldMessage, 500);
+            setTimeout(showOldMessage, 1);
             setInterval(showNewMessage, 1000);
         </script>
 
         <script>
-            var selectList = [];
+            var selectList = {};
 
             function selectMessage(element, id){
                 if(selectList[id]){
                     element.classList.remove("select-message");
-                    selectList[id] = false;
+                    delete selectList[id];
                 }else{
                     element.classList.add("select-message");
                     selectList[id] = true;
                 }
+            }
+
+            function deleteMessage() {
+                $.ajax({
+                    url: 'http://portal.yii/conversation-messages/remove',
+                    type: 'post',
+                    data: {
+                        selectList: selectList,
+                        _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
+                    },
+                    success: function (data) {
+                        console.log(data.message);
+
+                        for(var i = 0; i < data.message.length; i++){
+                            document.getElementById("conversation-messages-"+data.message[i]).classList.add("hidden");
+                        }
+                    }
+                });
             }
         </script>
 

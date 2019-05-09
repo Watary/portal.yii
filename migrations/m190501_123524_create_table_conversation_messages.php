@@ -17,8 +17,8 @@ class m190501_123524_create_table_conversation_messages extends Migration
             'id_conversation'   =>  $this->integer()->notNull(),
             'id_owner'          =>  $this->integer()->notNull(),
             'date'              =>  $this->integer()->notNull(),
-            'text'              =>  $this->text(),
-            'remove'            =>  $this->text()->defaultValue(NULL),
+            'text'              =>  $this->text()->notNull(),
+            'remove'            =>  $this->text()->notNull()->defaultValue(' '),
         ]);
     }
 
