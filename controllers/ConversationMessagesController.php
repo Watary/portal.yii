@@ -32,23 +32,23 @@ class ConversationMessagesController extends Controller
     }
 
     /**
-     * Lists all ConversationMessages mod
-     * @param integer $id_conversation
-     * @return mixed
+     * @param $id_conversation
+     * @return string
+     * @throws \yii\web\ForbiddenHttpException
      */
     public function actionIndex($id_conversation)
     {
-        $participant = ConversationParticipant::isParticipant($id_conversation, Yii::$app->user->getId());
-
-        if(!$participant[0]){
+        if(!ConversationParticipant::isParticipant($id_conversation, Yii::$app->user->getId())){
             throw new \yii\web\ForbiddenHttpException('Это не Ваш диалог!!!');
-        }elseif($participant[0]->date_exit){
-            throw new \yii\web\ForbiddenHttpException('Это не Ваш диалог!!!');
+        }elseif(!ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())){
+            throw new \yii\web\ForbiddenHttpException('Это уже не Ваш диалог!!!');
         }
 
+        $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
+
         $model = new ConversationMessages();
-        $countMessages = ConversationMessages::countConversationMessage($id_conversation);
-        $lastIdMessage = ConversationMessages::findLastMessage($id_conversation)->id;
+        $countMessages = ConversationMessages::countConversationMessage($id_conversation, $where);
+        $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
 
         $model->date = time();
         $model->id_owner = Yii::$app->user->getId();
@@ -58,12 +58,7 @@ class ConversationMessagesController extends Controller
             $model = new ConversationMessages();
         }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => ConversationMessages::find(),
-        ]);
-
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
             'model' => $model,
             'id_conversation' => $id_conversation,
             'countMessages' => $countMessages,
@@ -75,7 +70,6 @@ class ConversationMessagesController extends Controller
      * Displays a single ConversationMessages model.
      * @param integer $id_conversation
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id_conversation)
     {
@@ -83,7 +77,9 @@ class ConversationMessagesController extends Controller
             $data = Yii::$app->request->post();
             $resalt = '';
 
-            $model = ConversationMessages::findMessage($id_conversation, $data['startShow'], $data['countShow']);
+            $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
+
+            $model = ConversationMessages::findMessage($id_conversation, $data['startShow'], $data['countShow'], $where);
 
             foreach ($model as $item){
                 $resalt .= $this->constructMessage($item);
@@ -108,7 +104,9 @@ class ConversationMessagesController extends Controller
             $data = Yii::$app->request->post();
             $resalt = '';
 
-            $lastIdMessage = ConversationMessages::findLastMessage($id_conversation)->id;
+            $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
+
+            $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
             $model = ConversationMessages::findNewMessage($id_conversation, $data['lastIdMessage']);
 
             foreach ($model as $item){
@@ -231,5 +229,20 @@ class ConversationMessagesController extends Controller
         </div><hr style="padding: 0;margin: 0;">';
 
         return $result;
+    }
+
+    public function getWhereDate($id_conversation, $id_participant){
+        $list = ConversationParticipant::findParticipant($id_conversation, $id_participant);
+        $listConversation = ['or'];
+
+        foreach ($list as $key => $item){
+            if($item->date_exit){
+                $listConversation[] = ['and', 'date>='.$item->date_entry, 'date<='.$item->date_exit];
+            }else{
+                $listConversation[] = ['and', 'date>='.$item->date_entry];
+            }
+        }
+
+        return $listConversation;
     }
 }

@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             if(countMessages < countShow){
                 startShow = 0;
             } else {
-                startShow = countMessages - countShow;
+                startShow = countMessages - countShow + 1;
             }
 
             function showBeforeMessages(data){

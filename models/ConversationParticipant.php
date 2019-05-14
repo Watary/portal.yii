@@ -50,6 +50,13 @@ class ConversationParticipant extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * Перевіряє чи бере користувач ($id_participant) учась в бесіді ($id_conversation) в даний час
+     *
+     * @param $id_conversation
+     * @param $id_participant
+     * @return int|string
+     */
     public function isParticipantNow($id_conversation, $id_participant){
         return ConversationParticipant::find()
             ->where([
@@ -60,12 +67,48 @@ class ConversationParticipant extends \yii\db\ActiveRecord
             ->count();
     }
 
+    /**
+     * Повертає масив з всима входами і виходими користувача ($id_participant) в бесіді ($id_conversation)
+     *
+     * @param $id_conversation
+     * @param $id_participant
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function findParticipant($id_conversation, $id_participant){
+        return ConversationParticipant::find()
+            ->where([
+                'id_conversation' => $id_conversation,
+                'id_user' => $id_participant,
+            ])
+            ->all();
+    }
+
+    /**
+     * Повертає кількість входів і виходів користувача ($id_participant) в бесіду ($id_conversation)
+     *
+     * @param $id_conversation
+     * @param $id_participant
+     * @return int|string
+     */
     public function isParticipant($id_conversation, $id_participant){
         return ConversationParticipant::find()
             ->where([
                 'id_conversation' => $id_conversation,
                 'id_user' => $id_participant,
             ])
+            ->count();
+    }
+
+    /**
+     * Повертає всі бесіди в яких бере участь користувач ($id_participant), кожен вхід в бесіду є окремим елементом в масиві
+     *
+     * @param null $id_participant
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function findAllConversationsForUser($id_participant = NULL){
+        if(!$id_participant) $id_participant = Yii::$app->user->getId();
+        return ConversationParticipant::find()
+            ->where(['id_user' => $id_participant])
             ->all();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\ConversationParticipant;
+use app\models\ConversationMessages;
 use Yii;
 use app\models\Conversation;
 use yii\data\ActiveDataProvider;
@@ -35,12 +37,36 @@ class ConversationController extends Controller
      */
     public function actionIndex()
     {
+        $model = ConversationParticipant::findAllConversationsForUser(Yii::$app->user->getId());
+        $listConversation = [];
+
+        foreach ($model as $key => $item){
+            $listConversation[$item->id_conversation][] = [
+                'id_conversation' => $item->id_conversation,
+                'id_last_see' => $item->id_last_see,
+                'date_entry' => $item->date_entry,
+                'date_exit' => $item->date_exit
+            ];
+        }
+
+        $where = ['or',
+            ['and', 'date>=123', 'date<=7445653'],
+            ['and', 'date>=10445653'],
+        ];
+        $listCountMessageConversation = ConversationMessages::countConversationMessageWhere(Yii::$app->user->getId(), $where);
+
+        echo '<pre>';
+        print_r($listCountMessageConversation);
+        echo '</pre>';
+        exit;
+
         $dataProvider = new ActiveDataProvider([
             'query' => Conversation::find(),
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'listConversation' => $listConversation,
         ]);
     }
 
