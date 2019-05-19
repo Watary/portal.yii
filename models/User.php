@@ -58,6 +58,12 @@ class User extends UserModel
             ->one();
     }
 
+    public static function getUserBuIdWhere($where){
+        return User::find()
+            ->where($where)
+            ->all();
+    }
+
     public function uploadFiles($folder = 'main'){
         $url = 'uploads/' . $folder . '/' . $this->imageFile->baseName . '.' . $this->imageFile->extension;
         if($this->imageFile->saveAs($url)){

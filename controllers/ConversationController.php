@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\ConversationParticipant;
 use app\models\ConversationMessages;
+use app\models\User;
 use Yii;
 use app\models\Conversation;
 use yii\data\ActiveDataProvider;
@@ -39,6 +40,7 @@ class ConversationController extends Controller
     {
         $model = ConversationParticipant::findAllConversationsForUser(Yii::$app->user->getId());
         $listConversation = [];
+        $lastMessage = [];
 
         foreach ($model as $key => $item){
             $listConversation[$item->id_conversation][] = [
@@ -49,23 +51,30 @@ class ConversationController extends Controller
             ];
         }
 
-        $where = ['or',
-            ['and', 'date>=123', 'date<=7445653'],
-            ['and', 'date>=10445653'],
-        ];
-        $listCountMessageConversation = ConversationMessages::countConversationMessageWhere(Yii::$app->user->getId(), $where);
+        foreach ($listConversation as $key => $item){
+            $lastMessage[] = ConversationMessages::findLastMessage($item[0]['id_conversation'], $this->getWhereDate($item));
+            $listConversation[$item[0]['id_conversation']]['message'] = ConversationMessages::findLastMessage($item[0]['id_conversation'], $this->getWhereDate($item));
+            $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
 
-        echo '<pre>';
-        print_r($listCountMessageConversation);
-        echo '</pre>';
-        exit;
+            if($listConversation[$item[0]['id_conversation']]['conversation']->title == NULL){
+                $participant = ConversationParticipant::findSeveralParticipant($item[0]['id_conversation']);
+                $whereParticipant = ['or'];
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => Conversation::find(),
-        ]);
+                foreach ($participant as $key_in => $item_in){
+                    $whereParticipant[] = ['id' => $item_in->id_user];
+                }
+
+                $participant = User::getUserBuIdWhere($whereParticipant);
+                $title = '';
+                foreach ($participant as $key_in => $item_in) {
+                    $title .= ' '.$item_in->username.',';
+                }
+                $listConversation[$item[0]['id_conversation']]['conversation']->title = rtrim($title,",");
+            }
+
+        }
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
             'listConversation' => $listConversation,
         ]);
     }
@@ -149,5 +158,19 @@ class ConversationController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function getWhereDate($list){
+        $listConversation = ['or'];
+
+        foreach ($list as $key => $item){
+            if($item['date_exit']){
+                $listConversation[] = ['and', 'date>='.$item['date_entry'], 'date<='.$item['date_exit']];
+            }else{
+                $listConversation[] = ['and', 'date>='.$item['date_entry']];
+            }
+        }
+
+        return $listConversation;
     }
 }

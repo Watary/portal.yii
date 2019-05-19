@@ -82,7 +82,7 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $where
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function findMessage($id_conversation, $offset, $limit = 10, $where){
+    public static function findMessage($id_conversation, $offset, $limit = 10, $where){
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation])
             ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
@@ -99,9 +99,8 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $where
      * @return array|null|\yii\db\ActiveRecord
      */
-    public function findLastMessage($id_conversation, $where){
+    public static function findLastMessage($id_conversation, $where){
         return ConversationMessages::find()
-            ->select('id')
             ->where(['id_conversation' => $id_conversation,])
             ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
             ->andWhere($where)
@@ -116,7 +115,7 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $lastIdMessage
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function findNewMessage($id_conversation, $lastIdMessage){
+    public static function findNewMessage($id_conversation, $lastIdMessage){
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation,])
             ->andWhere('id > '.$lastIdMessage)
@@ -129,7 +128,7 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $id_conversation
      * @return int|string
      */
-    public function countConversationMessage($id_conversation){
+    public static function countConversationMessage($id_conversation){
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation,])
             ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
@@ -143,7 +142,7 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $where
      * @return int|string
      */
-    public function countConversationMessageWhere($id_conversation, $where){
+    public static function countConversationMessageWhere($id_conversation, $where){
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation,])
             ->andWhere($where)

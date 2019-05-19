@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m190502_090415_update_table_conversation
+ * Class m190518_161649_update_table_conversation_add_image
  */
-class m190502_090415_update_table_conversation extends Migration
+class m190518_161649_update_table_conversation_add_image extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->addColumn('conversation', 'title', $this->string()->defaultValue(NULL));
+        $this->addColumn('conversation', 'image', $this->string()->defaultValue(NULL));
     }
 
     /**
@@ -20,7 +20,7 @@ class m190502_090415_update_table_conversation extends Migration
      */
     public function safeDown()
     {
-        echo "m190502_090415_update_table_conversation cannot be reverted.\n";
+        echo "m190518_161649_update_table_conversation_add_image cannot be reverted.\n";
 
         return false;
     }
@@ -34,7 +34,7 @@ class m190502_090415_update_table_conversation extends Migration
 
     public function down()
     {
-        echo "m190502_090415_update_table_conversation cannot be reverted.\n";
+        echo "m190518_161649_update_table_conversation_add_image cannot be reverted.\n";
 
         return false;
     }

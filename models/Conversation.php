@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Url;
 
 /**
  * This is the model class for table "conversation".
@@ -41,5 +42,20 @@ class Conversation extends \yii\db\ActiveRecord
             'id_owner' => 'Id Owner',
             'dialog' => 'Dialog',
         ];
+    }
+
+    public static function findConversation($id){
+        return Conversation::find()
+            ->where(['id' => $id])
+            ->one();
+    }
+
+    public function uploadImage($id){
+        $url = 'uploads/conversation/image_' . $id . '.' . $this->imageFile->extension;
+        if($this->imageFile->saveAs($url)){
+            return $url;
+        }else{
+            return NULL;
+        }
     }
 }

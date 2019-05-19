@@ -21,8 +21,6 @@ class DefaultController extends Controller
 
         $user = $user->findIdentity(1);
 
-        //var_dump($user);
-
         return $this->render('index', [
             'user' => $user,
         ]);

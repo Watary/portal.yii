@@ -47,7 +47,7 @@ class ConversationMessagesController extends Controller
         $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
 
         $model = new ConversationMessages();
-        $countMessages = ConversationMessages::countConversationMessage($id_conversation, $where);
+        $countMessages = ConversationMessages::countConversationMessage($id_conversation);
         $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
 
         $model->date = time();

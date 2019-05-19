@@ -57,7 +57,7 @@ class ConversationParticipant extends \yii\db\ActiveRecord
      * @param $id_participant
      * @return int|string
      */
-    public function isParticipantNow($id_conversation, $id_participant){
+    public static function isParticipantNow($id_conversation, $id_participant){
         return ConversationParticipant::find()
             ->where([
                 'id_conversation' => $id_conversation,
@@ -74,7 +74,7 @@ class ConversationParticipant extends \yii\db\ActiveRecord
      * @param $id_participant
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function findParticipant($id_conversation, $id_participant){
+    public static function findParticipant($id_conversation, $id_participant){
         return ConversationParticipant::find()
             ->where([
                 'id_conversation' => $id_conversation,
@@ -90,7 +90,7 @@ class ConversationParticipant extends \yii\db\ActiveRecord
      * @param $id_participant
      * @return int|string
      */
-    public function isParticipant($id_conversation, $id_participant){
+    public static function isParticipant($id_conversation, $id_participant){
         return ConversationParticipant::find()
             ->where([
                 'id_conversation' => $id_conversation,
@@ -105,10 +105,17 @@ class ConversationParticipant extends \yii\db\ActiveRecord
      * @param null $id_participant
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function findAllConversationsForUser($id_participant = NULL){
+    public static function findAllConversationsForUser($id_participant = NULL){
         if(!$id_participant) $id_participant = Yii::$app->user->getId();
         return ConversationParticipant::find()
             ->where(['id_user' => $id_participant])
+            ->all();
+    }
+
+    public static function findSeveralParticipant($id_conversation, $count = 3){
+        return ConversationParticipant::find()
+            ->where(['id_conversation' => $id_conversation])
+            ->limit($count)
             ->all();
     }
 }

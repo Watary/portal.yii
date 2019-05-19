@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?= Html::a('Friends <span class="badge pull-right">' .  $user['count_friends'] .'</span>', '/profile/friends/' . $user['id'], ['class' => 'list-group-item']) ?>
 
                                     <?php if($user['own']){ ?>
-                                        <?= Html::a('Messages <span class="badge pull-right">25</span>', '/profile/messages', ['class' => 'list-group-item']) ?>
+                                        <?= Html::a('Messages <span class="badge pull-right">25</span>', '/conversation', ['class' => 'list-group-item']) ?>
                                     <?php } ?>
                                 </div>
                             </div>
