@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Conversation;
 use Yii;
 use app\models\ConversationMessages;
 use app\models\ConversationParticipant;
@@ -40,15 +41,20 @@ class ConversationMessagesController extends Controller
     {
         if(!ConversationParticipant::isParticipant($id_conversation, Yii::$app->user->getId())){
             throw new \yii\web\ForbiddenHttpException('Это не Ваш диалог!!!');
-        }elseif(!ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())){
-            throw new \yii\web\ForbiddenHttpException('Это уже не Ваш диалог!!!');
         }
 
         $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
-
         $model = new ConversationMessages();
         $countMessages = ConversationMessages::countConversationMessage($id_conversation);
-        $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
+        $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where);
+        $participant_now = ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId());
+        $conversation = Conversation::findConversation($id_conversation);
+
+        if(!$lastIdMessage){
+            $lastIdMessage = 1;
+        }else{
+            $lastIdMessage = $lastIdMessage->id;
+        }
 
         $model->date = time();
         $model->id_owner = Yii::$app->user->getId();
@@ -58,11 +64,15 @@ class ConversationMessagesController extends Controller
             $model = new ConversationMessages();
         }
 
+        $this->updateLastSee($id_conversation, $lastIdMessage);
+
         return $this->render('index', [
             'model' => $model,
             'id_conversation' => $id_conversation,
+            'conversation_title' => $conversation->title,
             'countMessages' => $countMessages,
             'lastIdMessage' => $lastIdMessage,
+            'participant_now' => $participant_now,
         ]);
     }
 
@@ -96,6 +106,33 @@ class ConversationMessagesController extends Controller
      * Displays a single ConversationMessages model.
      * @param integer $id_conversation
      * @return mixed
+     */
+    public function actionRename()
+    {
+        $data = Yii::$app->request->post();
+
+        if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($data['id_conversation'], Yii::$app->user->getId())) {
+
+            $model = Conversation::findConversation($data['id_conversation']);
+
+            if($model->id_owner == Yii::$app->user->getId()) {
+
+                $model->title = $data['title'];
+
+                if($model->save()) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return [
+                        'message' => $model->title,
+                    ];
+                }
+            }
+        }
+    }
+
+    /**
+     * Displays a single ConversationMessages model.
+     * @param integer $id_conversation
+     * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionViewNewMessage($id_conversation)
@@ -108,6 +145,10 @@ class ConversationMessagesController extends Controller
 
             $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
             $model = ConversationMessages::findNewMessage($id_conversation, $data['lastIdMessage']);
+
+            if($model){
+                $this->updateLastSee($id_conversation, $lastIdMessage);
+            }
 
             foreach ($model as $item){
                 $resalt .= $this->constructMessage($item);
@@ -140,6 +181,7 @@ class ConversationMessagesController extends Controller
             $model->id_conversation = $id_conversation;
             $model->text = $data['text'];
 
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             if ($model->save()) {
                 return [
                     'message' => 'true',
@@ -244,5 +286,13 @@ class ConversationMessagesController extends Controller
         }
 
         return $listConversation;
+    }
+
+    public function updateLastSee($id_conversation, $lastIdMessage){
+        $model_participant = ConversationParticipant::findLastPFC($id_conversation, Yii::$app->user->getId());
+        if($model_participant->id_last_see != $lastIdMessage){
+            $model_participant->id_last_see = $lastIdMessage;
+            $model_participant->save();
+        }
     }
 }

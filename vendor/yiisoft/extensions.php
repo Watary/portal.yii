@@ -111,4 +111,13 @@ return array (
       '@kop/y2sp' => $vendorDir . '/kop/yii2-scroll-pager',
     ),
   ),
+  'yiisoft/yii2-bootstrap4' => 
+  array (
+    'name' => 'yiisoft/yii2-bootstrap4',
+    'version' => '2.0.2.0',
+    'alias' => 
+    array (
+      '@yii/bootstrap4' => $vendorDir . '/yiisoft/yii2-bootstrap4/src',
+    ),
+  ),
 );

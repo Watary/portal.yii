@@ -13,6 +13,7 @@ use Yii;
  * @property int $id_last_see
  * @property int $date_entry
  * @property int $date_exit
+ * @property int $invited
  */
 class ConversationParticipant extends \yii\db\ActiveRecord
 {
@@ -31,7 +32,7 @@ class ConversationParticipant extends \yii\db\ActiveRecord
     {
         return [
             [['id_conversation', 'id_user', 'id_last_see', 'date_entry'], 'required'],
-            [['id_conversation', 'id_user', 'id_last_see', 'date_entry', 'date_exit'], 'integer'],
+            [['id_conversation', 'id_user', 'id_last_see', 'date_entry', 'date_exit', 'invited'], 'integer'],
         ];
     }
 
@@ -48,6 +49,10 @@ class ConversationParticipant extends \yii\db\ActiveRecord
             'date_entry' => 'Date Entry',
             'date_exit' => 'Date Exit',
         ];
+    }
+
+    public function getMessages(){
+        return $this->hasMany(ConversationMessages::className(), ['id_conversation' => 'id_conversation']);
     }
 
     /**
@@ -112,10 +117,28 @@ class ConversationParticipant extends \yii\db\ActiveRecord
             ->all();
     }
 
+    /**
+     * Повертає декілька ($count) користувачів які беруть участь в бесіді ($id_conversation)
+     *
+     * @param $id_conversation
+     * @param int $count
+     * @return array|\yii\db\ActiveRecord[]
+     */
     public static function findSeveralParticipant($id_conversation, $count = 3){
         return ConversationParticipant::find()
             ->where(['id_conversation' => $id_conversation])
             ->limit($count)
             ->all();
+    }
+
+    public static function findLastPFC($id_conversation, $id_participant = NULL){
+        if(!$id_participant) $id_participant = Yii::$app->user->getId();
+        return ConversationParticipant::find()
+            ->where([
+                'id_conversation' => $id_conversation,
+                'id_user' => $id_participant,
+            ])
+            ->orderBy(['id' => SORT_DESC])
+            ->one();
     }
 }

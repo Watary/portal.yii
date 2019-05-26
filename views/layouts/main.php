@@ -43,15 +43,6 @@ AppAsset::register($this);
     ]);
 
     $menuItems = [
-            [
-                'label' => 'Message',
-                'items' => [
-                    ['label' => 'Conversation', 'url' => ['/conversation']],
-                    ['label' => 'Messages', 'url' => ['/messages/1']],
-                    ['label' => 'Messages create', 'url' => ['/conversation-messages/create']],
-                    ['label' => 'Conversation participant', 'url' => ['/conversation-participant']],
-                ]
-            ],
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'Admin', 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
             ['label' => 'About', 'url' => ['/site/about']],

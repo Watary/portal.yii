@@ -46,6 +46,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'messages/rename' => 'conversation-messages/rename',
                 'messages/<id_conversation:\d+>' => 'conversation-messages/index',
                 'conversation-messages/view/<id_conversation:\d+>' => 'conversation-messages/view',
                 'conversation-messages/create/<id_conversation:\d+>' => 'conversation-messages/create',

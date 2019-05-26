@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\ConversationParticipant;
 use app\models\ConversationMessages;
 use app\models\User;
+use app\models\Friend;
 use Yii;
 use app\models\Conversation;
 use yii\data\ActiveDataProvider;
@@ -52,9 +53,10 @@ class ConversationController extends Controller
         }
 
         foreach ($listConversation as $key => $item){
-            $lastMessage[] = ConversationMessages::findLastMessage($item[0]['id_conversation'], $this->getWhereDate($item));
-            $listConversation[$item[0]['id_conversation']]['message'] = ConversationMessages::findLastMessage($item[0]['id_conversation'], $this->getWhereDate($item));
+            $lastMessage[] = ConversationMessages::findLastMessage($item[0]['id_conversation'], ConversationMessages::getWhereDate($item));
+            $listConversation[$item[0]['id_conversation']]['message'] = ConversationMessages::findLastMessage($item[0]['id_conversation'], ConversationMessages::getWhereDate($item));
             $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
+            $whereParticipant = [];
 
             if($listConversation[$item[0]['id_conversation']]['conversation']->title == NULL){
                 $participant = ConversationParticipant::findSeveralParticipant($item[0]['id_conversation']);
@@ -69,13 +71,20 @@ class ConversationController extends Controller
                 foreach ($participant as $key_in => $item_in) {
                     $title .= ' '.$item_in->username.',';
                 }
+
                 $listConversation[$item[0]['id_conversation']]['conversation']->title = rtrim($title,",");
             }
 
+            $listConversation[$item[0]['id_conversation']]['count_not_read'] = ConversationMessages::countNotReadMessages($item[0]['id_conversation'], $whereParticipant);
+
         }
+
+        $user = User::getUserBuId(Yii::$app->user->getId());
+        $friends = $user->friends;
 
         return $this->render('index', [
             'listConversation' => $listConversation,
+            'friends' => $friends,
         ]);
     }
 
@@ -99,15 +108,46 @@ class ConversationController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Conversation();
+        $result =  [
+            'message' => 'No',
+        ];
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isAjax) {
+            $model = new Conversation();
+            $data = Yii::$app->request->post();
+
+            $model->title = $data['title'];
+            $model->id_owner = Yii::$app->user->getId();
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if($model->save()){
+                $this->addParticipant(Yii::$app->user->getId(), $model->id);
+                foreach ($data['selectList'] as $key => $item){
+                    $this->addParticipant($key, $model->id, Yii::$app->user->getId());
+                }
+
+                $result =  [
+                    'message' => 'Yes',
+                ];
+            }
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $result;
+    }
+
+    function addParticipant($participant_id, $conversation_id, $invited = NULL){
+        $model_participant = new ConversationParticipant();
+
+        $model_participant->id_conversation =$conversation_id;
+        $model_participant->id_user = $participant_id;
+        $model_participant->id_last_see = 0;
+        $model_participant->date_entry = time();
+
+        if($invited){
+            $model_participant->invited = $invited;
+        }
+
+        $model_participant->save();
     }
 
     /**
@@ -160,17 +200,4 @@ class ConversationController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function getWhereDate($list){
-        $listConversation = ['or'];
-
-        foreach ($list as $key => $item){
-            if($item['date_exit']){
-                $listConversation[] = ['and', 'date>='.$item['date_entry'], 'date<='.$item['date_exit']];
-            }else{
-                $listConversation[] = ['and', 'date>='.$item['date_entry']];
-            }
-        }
-
-        return $listConversation;
-    }
 }

@@ -11,6 +11,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use yii\helpers\Html;
+use app\models\ConversationParticipant;
+use app\models\ConversationMessages;
+use app\models\Conversation;
 
 /**
  * ProfileController implements the CRUD actions for User model.
@@ -55,7 +58,7 @@ class ProfileController extends Controller
     public function actionView($id)
     {
         if(!$id){
-            $id = Yii::$app->getUser()->identity->id;
+            $id = Yii::$app->getUser()->identity->getId();
         }
 
         $this->isOwn($id);
@@ -77,6 +80,7 @@ class ProfileController extends Controller
         $user['count_friends'] = Friend::countFriends($user['id']);
         $user['avatar'] = $model->getAvatar();
         $user['online'] = $model->isOnline($model['id']);
+        $user['not_read_message'] = ConversationMessages::notReadMessages();
 
         return $this->render('view', [
             'user' => $user,
@@ -98,7 +102,7 @@ class ProfileController extends Controller
             $this->redirect('/profile/' . $model->id);
         }
 
-        if (Yii::$app->request->isPost && $model->imageFile  = UploadedFile::getInstance($model, 'imageFile')) {
+        if (Yii::$app->request->isPost && $model->imageFile = UploadedFile::getInstance($model, 'imageFile')) {
             $model->avatar = $model->uploadAvatar($model->getId());
         }
 

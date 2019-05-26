@@ -19,6 +19,7 @@ class m190501_124206_create_table_conversation_participant extends Migration
             'id_last_see'           =>  $this->integer()->notNull(),
             'date_entry'            =>  $this->integer()->notNull(),
             'date_exit'             =>  $this->integer()->defaultValue(NULL),
+            'invited'               =>  $this->integer()->defaultValue(NULL),
         ]);
     }
 

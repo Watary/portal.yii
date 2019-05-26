@@ -51,6 +51,10 @@ class ConversationMessages extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getParticipant(){
+        return $this->hasMany(ConversationParticipant::className(), ['id_conversation' => 'id_conversation']);
+    }
+
     /**
      * Повертає всі повідомлення, що є в базі даних
      *
@@ -148,5 +152,70 @@ class ConversationMessages extends \yii\db\ActiveRecord
             ->andWhere($where)
             ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
             ->count();
+    }
+
+
+
+    public static function countNotReadMessages($id_conversation, $where, $id_user = NULL){
+        if(!$id_user){
+            $id_user = Yii::$app->user->getId();
+        }
+
+        $model_participant = ConversationParticipant::findLastPFC($id_conversation, $id_user);
+        $participant = ConversationParticipant::findOne($model_participant->id);
+        $count_messages = $participant->getMessages()
+            ->where('id > '.$model_participant->id_last_see)
+            ->andWhere($where)
+            ->count();
+
+        return $count_messages;
+    }
+
+    public static function notReadMessages(){
+        $model = ConversationParticipant::findAllConversationsForUser(Yii::$app->user->getId());
+        $listConversation = [];
+        $count_message = 0;
+
+        foreach ($model as $key => $item){
+            $listConversation[$item->id_conversation][] = [
+                'id_conversation' => $item->id_conversation,
+                'id_last_see' => $item->id_last_see,
+                'date_entry' => $item->date_entry,
+                'date_exit' => $item->date_exit
+            ];
+        }
+
+        foreach ($listConversation as $key => $item){
+            $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
+            $whereParticipant = [];
+
+            if($listConversation[$item[0]['id_conversation']]['conversation']->title == NULL){
+                $participant = ConversationParticipant::findSeveralParticipant($item[0]['id_conversation']);
+                $whereParticipant = ['or'];
+
+                foreach ($participant as $key_in => $item_in){
+                    $whereParticipant[] = ['id' => $item_in->id_user];
+                }
+            }
+
+            $count_message += ConversationMessages::countNotReadMessages($item[0]['id_conversation'], $whereParticipant);
+
+        }
+
+        return $count_message;
+    }
+
+    public static function getWhereDate($list){
+        $listConversation = ['or'];
+
+        foreach ($list as $key => $item){
+            if($item['date_exit']){
+                $listConversation[] = ['and', 'date>='.$item['date_entry'], 'date<='.$item['date_exit']];
+            }else{
+                $listConversation[] = ['and', 'date>='.$item['date_entry']];
+            }
+        }
+
+        return $listConversation;
     }
 }
