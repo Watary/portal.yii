@@ -131,6 +131,11 @@ class ConversationParticipant extends \yii\db\ActiveRecord
             ->all();
     }
 
+    /**
+     * @param $id_conversation
+     * @param null $id_participant
+     * @return array|null|\yii\db\ActiveRecord
+     */
     public static function findLastPFC($id_conversation, $id_participant = NULL){
         if(!$id_participant) $id_participant = Yii::$app->user->getId();
         return ConversationParticipant::find()

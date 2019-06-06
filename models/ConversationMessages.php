@@ -86,7 +86,7 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $where
      * @return array|\yii\db\ActiveRecord[]
      */
-    public static function findMessage($id_conversation, $offset, $limit = 10, $where){
+    public static function findMessage($id_conversation, $offset, $where, $limit = 10){
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation])
             ->andWhere(['not like', 'remove', Yii::$app->user->getId()])

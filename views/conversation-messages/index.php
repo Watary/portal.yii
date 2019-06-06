@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -9,6 +10,10 @@ use yii\grid\GridView;
 
 $this->title = 'Conversation Messages';
 $this->params['breadcrumbs'][] = $this->title;
+
+if(!$conversation_title){
+    $conversation_title = 'Not name';
+}
 ?>
 <style>
     .conversation-top{
@@ -17,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: rgba(212, 212, 212, 0.91);
         z-index: 100;
         border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
     }
         .conversation-top .title{
             text-align: center;
@@ -45,6 +51,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="dropdown-menu" aria-labelledby="dropdownButton">
             <button onclick="deleteMessage()" type="button" class="dropdown-item">Delete messages</button>
             <button type="button" class="dropdown-item" data-toggle="modal" data-target="#rename_conversation">Rename conversation</button>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#image_conversation">Image conversation</button>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#leave_conversation">Leave this conversation</button>
         </div>
     </div>
 
@@ -144,6 +152,7 @@ $this->params['breadcrumbs'][] = $this->title;
     function showNewMessage() {
         $.ajax({
             url: 'http://portal.yii/conversation-messages/view-new-message/<?= $id_conversation ?>',
+
             type: 'post',
             data: {
                 id_conversation: <?= $id_conversation ?>,
@@ -187,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     function deleteMessage() {
         $.ajax({
-            url: 'http://portal.yii/conversation-messages/remove',
+            url: '<?= Url::toRoute('/conversation-messages/remove', true) ?>',
             type: 'post',
             data: {
                 selectList: selectList,
@@ -208,7 +217,7 @@ $this->params['breadcrumbs'][] = $this->title;
         var show_title = document.getElementById('show-title');
 
         $.ajax({
-            url: 'http://portal.yii/messages/rename',
+            url: '<?= Url::toRoute('/messages/rename', true) ?>',
             type: 'post',
             data: {
                 title: title.textContent,
@@ -218,12 +227,13 @@ $this->params['breadcrumbs'][] = $this->title;
             success: function (data) {
                 //console.log(data.message);
                 show_title.innerHTML = data.message;
+                $('#rename_conversation').modal('hide');
             }
         });
     }
 </script>
 
-<!-- Modal "Rename conversation" -->
+<!-- Modal "Rename conversation" BEGIN -->
 <div class="modal fade" id="rename_conversation" tabindex="-1" role="dialog" aria-labelledby="Rename conversation" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -246,3 +256,129 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<!-- Modal "Rename conversation" END -->
+
+<!-- Modal "Image conversation" BEGIN -->
+<div class="modal fade" id="image_conversation" tabindex="-1" role="dialog" aria-labelledby="Image conversation" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title">Image conversation</h3>
+            </div>
+
+            <div class="modal-body">
+                <div style="position:relative;">
+                    <label for="image-conversation" class='btn btn-primary' href='javascript:;'>
+                        <span style="cursor: pointer">Choose File...</span>
+                        <input id="image-conversation" type="file" style='display: none;cursor: pointer;position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
+                    </label>
+                    &nbsp;
+                    <span class='label label-info' id="upload-file-info"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="image-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+$script =  <<< JS
+    var files; // переменная. будет содержать данные файлов
+    
+    // заполняем переменную данными, при изменении значения поля file 
+    $('input[type=file]').on('change', function(){
+        files = this.files;
+    });
+    
+    $('#image-conversation-button').on( 'click', function( event ){
+        event.stopPropagation(); // остановка всех текущих JS событий
+    
+        // ничего не делаем если files пустой
+        if( typeof files == 'undefined' ) return;
+    
+        // создадим объект данных формы
+        var data = new FormData();
+    
+        // заполняем объект данных файлами в подходящем для отправки формате
+        $.each( files, function( key, value ){
+            data.append( key, value );
+        });
+    
+        // добавим переменную для идентификации запроса
+        data.append( 'image_upload', 1 );
+        
+        // AJAX запрос
+        $.ajax({
+            url         : url,
+            type        : 'POST',
+            data        : data,
+            cache       : false,
+            dataType    : 'json',
+            processData : false,
+            contentType : false, 
+            success: function (data) {
+                console.log(data.message);
+                $('#image_conversation').modal('hide');
+            }    
+        });
+    
+    });
+JS;
+$this->registerJsVar('url',  Url::toRoute('/conversation-messages/upload/'.$id_conversation, true));
+$this->registerJs($script);
+?>
+<!-- Modal "Image conversation" END -->
+
+<!-- Modal "Leave conversation" BEGIN -->
+<div class="modal fade" id="leave_conversation" tabindex="-1" role="dialog" aria-labelledby="Leave this conversation" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title">Leave this conversation</h3>
+            </div>
+
+            <div class="modal-body">
+                Ви впевнені, що хочете покинути цю бесіду?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">NO</button>
+                <button id="leave-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal">YES</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+$script =  <<< JS
+    $('#leave-conversation-button').on( 'click', function( event ){
+        $.ajax({
+            url         : url,
+            type        : 'POST',
+            data        : {
+                id: id,
+            },
+            success: function (data) {
+                console.log(data.message);
+                $('#leave_conversation').modal('hide');
+                $('#message-text').remove();
+            }    
+        });
+    
+    });
+JS;
+$this->registerJsVar('id',  $id_conversation);
+$this->registerJsVar('url',  Url::toRoute('/conversation-participant/leave', true));
+$this->registerJs($script);
+?>
+<!-- Modal "Leave conversation" END -->

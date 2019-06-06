@@ -12,6 +12,9 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
+use yii\web\UploadedFile;
 
 /**
  * ConversationController implements the CRUD actions for Conversation model.
@@ -198,6 +201,24 @@ class ConversationController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionUpload($id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $data = Yii::$app->request->post();
+
+        $model = $this->findModel($id);
+
+        if (Yii::$app->request->isPost) {
+            $model->image = UploadedFile::getInstance($model, $data['image']);
+            if ($model->image = $model->uploadImage($id)) {
+                $model->save();
+                return;
+            }
+        }
+
+        //return $this->render('upload', ['model' => $model]);
     }
 
 }

@@ -139,6 +139,20 @@ class ProfileController extends Controller
         return $this->redirect('/profile/view/' . $id);
     }
 
+    public function actionIsOnline(){
+        if (Yii::$app->request->isAjax) {
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $data = Yii::$app->request->post();
+
+            return [
+                'message' => User::isOnline($data['user_id']),
+            ];
+        }
+
+        return false;
+    }
+
     /**
      * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

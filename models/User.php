@@ -96,7 +96,7 @@ class User extends UserModel
 
     public function isOnline($id = NULL){
         if($id == NULL) {
-            return true;
+            $id = Yii::$app->user->getId();
         }
 
         $user = self::getUserBuId($id);

@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><?= $user['username'] ?> <?= $user['online'] ? '<span class="text-success pull-right">֍</span>' : '<span class="text-danger pull-right">֍</span>' ?></h3>
+                        <h3 class="panel-title"><?= $user['username'] ?> <span id="user-online-show" class="text-danger pull-right">֍</span></h3>
                     </div>
                     <div class="panel-body">
                         <div class="card">
@@ -89,48 +89,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 
-<div class="user-view">
-    <?php /* DetailView::widget([
-        'model' => $model,
-        'formatter' => [
-            'class' => '\yii\i18n\Formatter',
-            'dateFormat' => 'MM/dd/yyyy',
-            'datetimeFormat' => 'dd/MM/yyyy HH:mm:ss',
-        ],
-        'attributes' => [
-            [
-                'attribute' => 'avatar',
-                'format' => 'raw',
-                'value' => function($data){
-                    return '<img src="' . $data->getAvatar() .'" alt="avatar" style="max-width: 200px;max-height: 200px;">';
-                }
-            ],
-            'first_name',
-            'last_name',
-            'email:email',
-            'created_at:datetime',
-            [
-                'attribute' => 'online',
-                'format' => 'raw',
-                'value' => function($data){
-                    return $data->isOnline($data->id) ? '<span class="text-success">Online</span>' : '<span class="text-danger">Offline</span>';
-                }
-            ],
-            [
-                'attribute' => 'Rules',
-                'format' => 'raw',
-                'value' => function($model){
-                    $userRules = '';
-                    $userAssigned = Yii::$app->authManager->getAssignments($model->id);
-
-                    foreach($userAssigned as $userAssign){
-                        $userRules .= $userAssign->roleName . ', ';
-                    }
-
-                    return substr($userRules,0,-2);
-                }
-            ],
-        ],
-    ])*/ ?>
-
-</div>
+<?php
+$script =  <<< JS
+    function isOnline(){
+        var user_online_show = document.getElementById('user-online-show');
+        
+        $.ajax({
+            url         : url,
+            type        : 'POST',
+            data        : {
+                user_id: id,
+                _csrf: _csrf_get
+            },
+            success: function (data) {
+                console.log(data.message);
+                if(data.message){
+                    user_online_show.classList.remove("text-danger");
+                    user_online_show.classList.add("text-success");
+                }else{
+                    user_online_show.classList.remove("text-success");
+                    user_online_show.classList.add("text-danger");
+                }                
+            }    
+        });
+    }
+    setTimeout(isOnline, 500);
+    setInterval(isOnline, 5000);
+JS;
+$this->registerJsVar('_csrf_get',  Yii::$app->request->getCsrfToken());
+$this->registerJsVar('id',  $user['id']);
+$this->registerJsVar('url',  Url::toRoute('/profile/is-online/', true));
+$this->registerJs($script);
+?>

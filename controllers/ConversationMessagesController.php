@@ -8,9 +8,12 @@ use app\models\ConversationMessages;
 use app\models\ConversationParticipant;
 use app\models\User;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\UploadForm;
+use yii\web\UploadedFile;
 
 /**
  * ConversationMessagesController implements the CRUD actions for ConversationMessages model.
@@ -70,6 +73,7 @@ class ConversationMessagesController extends Controller
             'model' => $model,
             'id_conversation' => $id_conversation,
             'conversation_title' => $conversation->title,
+            'conversation_model' => $conversation,
             'countMessages' => $countMessages,
             'lastIdMessage' => $lastIdMessage,
             'participant_now' => $participant_now,
@@ -83,19 +87,18 @@ class ConversationMessagesController extends Controller
      */
     public function actionView($id_conversation)
     {
-        if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())) {
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $data = Yii::$app->request->post();
             $resalt = '';
 
             $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
-
             $model = ConversationMessages::findMessage($id_conversation, $data['startShow'], $data['countShow'], $where);
 
             foreach ($model as $item){
                 $resalt .= $this->constructMessage($item);
             }
 
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             return [
                 'message' => $resalt,
             ];
@@ -112,11 +115,9 @@ class ConversationMessagesController extends Controller
         $data = Yii::$app->request->post();
 
         if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($data['id_conversation'], Yii::$app->user->getId())) {
-
             $model = Conversation::findConversation($data['id_conversation']);
 
             if($model->id_owner == Yii::$app->user->getId()) {
-
                 $model->title = $data['title'];
 
                 if($model->save()) {
@@ -143,8 +144,11 @@ class ConversationMessagesController extends Controller
 
             $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
 
+            $lastIdMessage = ConversationParticipant::findLastPFC($id_conversation);
+
+            $model = ConversationMessages::findNewMessage($id_conversation, $lastIdMessage->id_last_see);
+
             $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
-            $model = ConversationMessages::findNewMessage($id_conversation, $data['lastIdMessage']);
 
             if($model){
                 $this->updateLastSee($id_conversation, $lastIdMessage);
@@ -257,6 +261,12 @@ class ConversationMessagesController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /**
+     * Генерує HTML структуру для повідалення
+     *
+     * @param $item
+     * @return string
+     */
     public function constructMessage($item){
         $user = User::findOne($item->id_owner);
 
@@ -265,7 +275,7 @@ class ConversationMessagesController extends Controller
                 <img src="'.$user->getAvatar().'" class="rounded" width="100%" alt="">
             </div>
             <div class="col-sm-11">
-                <div><span style="font-weight: bold"><a href="/profile/view/'.$user->id.'">'.$user->username.'</a></span><span class="pull-right">'.date("d.m.Y H:i:s",(integer) $item->date).'</span></div>
+                <div><span style="font-weight: bold"><a href="/profile/'.$user->id.'">'.$user->username.'</a></span><span class="pull-right">'.date("d.m.Y H:i:s",(integer) $item->date).'</span></div>
                 <div>'.preg_replace( "#\r?\n#", "<br />", $item->text ).'</div>
             </div>
         </div><hr style="padding: 0;margin: 0;">';
@@ -273,6 +283,13 @@ class ConversationMessagesController extends Controller
         return $result;
     }
 
+    /**
+     * Генерує фільтри для випору повідомлення в бесіді $id_conversation для користувача $id_participant, з урахуванням залишення і поверення в беіду цим користувачем
+     *
+     * @param $id_conversation
+     * @param $id_participant
+     * @return array
+     */
     public function getWhereDate($id_conversation, $id_participant){
         $list = ConversationParticipant::findParticipant($id_conversation, $id_participant);
         $listConversation = ['or'];
@@ -288,11 +305,58 @@ class ConversationMessagesController extends Controller
         return $listConversation;
     }
 
+    /**
+     * Зберігає в базу даних останнє переглянуте повідомлення в бесіді $id_conversation поточним користувачем
+     *
+     * @param $id_conversation
+     * @param $lastIdMessage
+     */
     public function updateLastSee($id_conversation, $lastIdMessage){
         $model_participant = ConversationParticipant::findLastPFC($id_conversation, Yii::$app->user->getId());
-        if($model_participant->id_last_see != $lastIdMessage){
+        if($model_participant->id_last_see < $lastIdMessage){
             $model_participant->id_last_see = $lastIdMessage;
             $model_participant->save();
+        }
+    }
+
+    /**
+     * Завантаження зображень на сервер і зберігання в базу даних адреси на зобраення
+     *
+     * @param $id
+     * @return array
+     */
+    public function actionUpload($id){
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            if( isset( $data['image_upload'] ) ){
+
+                $uploaddir = './uploads/conversations';
+
+                if( ! is_dir( $uploaddir ) ) mkdir( $uploaddir, 0777 );
+
+                $files      = $_FILES;
+                $done_files = array();
+
+                foreach( $files as $file ){
+                    $file_name = "image_$id.".pathinfo($file['name'], PATHINFO_EXTENSION);
+
+                    if( move_uploaded_file( $file['tmp_name'], "$uploaddir/$file_name" ) ){
+                        $done_files[] = realpath( "$uploaddir/$file_name" );
+                    }
+                }
+
+                $data_done = $done_files ? array('files' => $done_files ) : array('error' => 'Ошибка загрузки файлов.');
+
+                if($data_done){
+                    $model = Conversation::findConversation($id);
+                    $model->image = "uploads/conversations/$file_name";
+                    $model->save();
+                }
+
+                return $data_done;
+            }
         }
     }
 }

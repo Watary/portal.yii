@@ -51,8 +51,8 @@ class Conversation extends \yii\db\ActiveRecord
     }
 
     public function uploadImage($id){
-        $url = 'uploads/conversation/image_' . $id . '.' . $this->imageFile->extension;
-        if($this->imageFile->saveAs($url)){
+        $url = 'uploads/conversations/image_' . $id . '.' . $this->image->extension;
+        if($this->image->saveAs($url)){
             return $url;
         }else{
             return NULL;

@@ -109,6 +109,36 @@ class ConversationParticipantController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionLeave(){
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $data = Yii::$app->request->post();
+
+            if(!ConversationParticipant::isParticipantNow($data['id'], Yii::$app->user->getId())){
+                return [
+                    'message' => 'not participant',
+                ];
+            }
+
+            $model = ConversationParticipant::findLastPFC($data['id'], Yii::$app->user->getId());
+
+            if(!$model->date_exit){
+                $model->date_exit = time();
+                $model->exclude = Yii::$app->user->getId();
+                if ($model->save()) {
+                    return [
+                        'message' => 'Yes',
+                    ];
+                }
+            }
+
+            return [
+                'message' => 'No',
+            ];
+        }
+    }
+
     /**
      * Finds the ConversationParticipant model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
