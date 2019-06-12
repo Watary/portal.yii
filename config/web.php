@@ -8,7 +8,7 @@ $config = [
     'name' => 'Portal yii',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'language' => 'ru',
+    'language' => 'en',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -43,6 +43,10 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
+            'class' => 'codemix\localeurls\UrlManager',
+            'languages' => ['en', 'ua'],
+            'enableDefaultLanguageUrlCode' => false,
+            'enableLanguagePersistence' => false,
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
@@ -64,6 +68,27 @@ $config = [
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
+        ],
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/translations',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app'       => 'app.php',
+                        'app/error' => 'error.php',
+                    ],
+                ],
+                'menu' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/translations',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app'       => 'menu.php',
+                    ],
+                ],
+            ],
         ],
     ],
     'modules' => [

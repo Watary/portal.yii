@@ -47,36 +47,24 @@ class ConversationMessagesController extends Controller
         }
 
         $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
-        $model = new ConversationMessages();
-        $countMessages = ConversationMessages::countConversationMessage($id_conversation);
-        $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where);
+        $countMessages = ConversationMessages::countConversationMessage($id_conversation, $where);
+        $lastMessage = ConversationMessages::findLastMessage($id_conversation, $where);
         $participant_now = ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId());
         $conversation = Conversation::findConversation($id_conversation);
+        $participant_list = ConversationParticipant::selectAllParticipantAndFriends($id_conversation);
 
-        if(!$lastIdMessage){
-            $lastIdMessage = 1;
-        }else{
-            $lastIdMessage = $lastIdMessage->id;
-        }
-
-        $model->date = time();
-        $model->id_owner = Yii::$app->user->getId();
-        $model->id_conversation = $id_conversation;
-
-        if($model->load(Yii::$app->request->post()) && $model->save()){
-            $model = new ConversationMessages();
-        }
+        $lastIdMessage = $lastMessage ? $lastMessage->id : 1;
 
         $this->updateLastSee($id_conversation, $lastIdMessage);
 
         return $this->render('index', [
-            'model' => $model,
             'id_conversation' => $id_conversation,
             'conversation_title' => $conversation->title,
             'conversation_model' => $conversation,
             'countMessages' => $countMessages,
             'lastIdMessage' => $lastIdMessage,
             'participant_now' => $participant_now,
+            'participant_list' => $participant_list,
         ]);
     }
 
@@ -93,7 +81,7 @@ class ConversationMessagesController extends Controller
             $resalt = '';
 
             $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
-            $model = ConversationMessages::findMessage($id_conversation, $data['startShow'], $data['countShow'], $where);
+            $model = ConversationMessages::findMessage($id_conversation, $data['startShow'], $where, $data['countShow']);
 
             foreach ($model as $item){
                 $resalt .= $this->constructMessage($item);
@@ -176,6 +164,8 @@ class ConversationMessagesController extends Controller
     {
         if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())) {
 
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
             $data = Yii::$app->request->post();
 
             $model = new ConversationMessages();
@@ -183,12 +173,12 @@ class ConversationMessagesController extends Controller
             $model->date = time();
             $model->id_owner = Yii::$app->user->getId();
             $model->id_conversation = $id_conversation;
-            $model->text = $data['text'];
+            //$model->text = substr(strip_tags($data['text'], '<br>'), 0,-4);
+            $model->text = strip_tags($data['text'], '<br>');
 
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             if ($model->save()) {
                 return [
-                    'message' => 'true',
+                    'message' => $model->text,
                 ];
             }else {
                 return [

@@ -7,6 +7,7 @@
  */
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\message */
@@ -20,18 +21,19 @@ use yii\widgets\ActiveForm;
     <script>
         var sendMessage = document.getElementById('message-text');
         sendMessage.onkeydown = handle;
+        focusElemen('#message-text');
 
         function handle(event) {
             if (event.which === 13 && !event.shiftKey) {
                 $.ajax({
-                    url: 'http://portal.yii/conversation-messages/create/<?= $id_conversation ?>',
+                    url: '<?= Url::toRoute('/conversation-messages/create/'.$id_conversation, true) ?>',
                     type: 'post',
                     data: {
-                        text: sendMessage.textContent,
+                        text: sendMessage.innerHTML,
                         _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
                     },
                     success: function (data) {
-                        //console.log(data.message);
+                        console.log(data.message);
                     }
                 });
                 event.preventDefault();

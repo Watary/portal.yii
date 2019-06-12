@@ -8,12 +8,13 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Conversation Messages';
+if(!$conversation_title){
+    $conversation_title = Yii::t('app', 'Not name');
+}
+
+$this->title = $conversation_title;
 $this->params['breadcrumbs'][] = $this->title;
 
-if(!$conversation_title){
-    $conversation_title = 'Not name';
-}
 ?>
 <style>
     .conversation-top{
@@ -46,13 +47,14 @@ if(!$conversation_title){
 
     <div class="dropdown pull-right">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            More ...
+            <?= Yii::t('app', 'More') ?> ...
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownButton">
-            <button onclick="deleteMessage()" type="button" class="dropdown-item">Delete messages</button>
-            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#rename_conversation">Rename conversation</button>
-            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#image_conversation">Image conversation</button>
-            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#leave_conversation">Leave this conversation</button>
+            <button onclick="deleteMessage()" type="button" class="dropdown-item"><?= Yii::t('app', 'Delete messages') ?></button>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#rename_conversation"><?= Yii::t('app', 'Rename conversation') ?></button>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#image_conversation"><?= Yii::t('app', 'Image conversation') ?></button>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#leave_conversation"><?= Yii::t('app', 'Leave this conversation') ?></button>
+            <!-- <button type="button" class="dropdown-item" data-toggle="modal" data-target="#participants">< ?= Yii::t('app', 'Participants') ?></button> -->
         </div>
     </div>
 
@@ -128,7 +130,7 @@ if(!$conversation_title){
         countMessages -= countShow;
 
         $.ajax({
-            url: 'http://portal.yii/conversation-messages/view/<?= $id_conversation ?>',
+            url: '<?= Url::toRoute('/conversation-messages/view/'.$id_conversation, true) ?>',
             type: 'post',
             data: {
                 startShow: startShow,
@@ -151,8 +153,7 @@ if(!$conversation_title){
 
     function showNewMessage() {
         $.ajax({
-            url: 'http://portal.yii/conversation-messages/view-new-message/<?= $id_conversation ?>',
-
+            url: '<?= Url::toRoute('/conversation-messages/view-new-message/'.$id_conversation, true) ?>',
             type: 'post',
             data: {
                 id_conversation: <?= $id_conversation ?>,
@@ -176,8 +177,10 @@ if(!$conversation_title){
         }
     };
 
-    setTimeout(showOldMessage, 500);
-    setTimeout(showOldMessage, 1);
+    //if(countMessages) {
+        setTimeout(showOldMessage, 500);
+        setTimeout(showOldMessage, 100);
+    //}
     setInterval(showNewMessage, 1000);
 </script>
 
@@ -241,17 +244,17 @@ if(!$conversation_title){
                 <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title">Rename conversation</h3>
+                <h3 class="modal-title"><?= Yii::t('app', 'Rename conversation')?></h3>
             </div>
 
             <div class="modal-body">
-                <label for="conversation-title">Conversation title:</label>
+                <label for="conversation-title"><?= Yii::t('app', 'Conversation title')?>:</label>
                 <div id="conversation-title" contenteditable="true" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;margin-bottom: 10px;"><?= $conversation_title ?></div>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="renameConversation()" type="button" class="btn btn-primary" data-dismiss="modal">Rename</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'Close')?></button>
+                <button onclick="renameConversation()" type="button" class="btn btn-primary" data-dismiss="modal"><?= Yii::t('app', 'Rename')?></button>
             </div>
         </div>
     </div>
@@ -266,13 +269,13 @@ if(!$conversation_title){
                 <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title">Image conversation</h3>
+                <h3 class="modal-title"><?= Yii::t('app', 'Image conversation')?></h3>
             </div>
 
             <div class="modal-body">
                 <div style="position:relative;">
                     <label for="image-conversation" class='btn btn-primary' href='javascript:;'>
-                        <span style="cursor: pointer">Choose File...</span>
+                        <span style="cursor: pointer"><?= Yii::t('app', 'Choose File')?>...</span>
                         <input id="image-conversation" type="file" style='display: none;cursor: pointer;position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
                     </label>
                     &nbsp;
@@ -281,8 +284,8 @@ if(!$conversation_title){
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="image-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'Close')?></button>
+                <button id="image-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal"><?= Yii::t('app', 'Save')?></button>
             </div>
         </div>
     </div>
@@ -316,7 +319,7 @@ $script =  <<< JS
         
         // AJAX запрос
         $.ajax({
-            url         : url,
+            url         : url_upload,
             type        : 'POST',
             data        : data,
             cache       : false,
@@ -331,7 +334,7 @@ $script =  <<< JS
     
     });
 JS;
-$this->registerJsVar('url',  Url::toRoute('/conversation-messages/upload/'.$id_conversation, true));
+$this->registerJsVar('url_upload',  Url::toRoute('/conversation-messages/upload/'.$id_conversation, true));
 $this->registerJs($script);
 ?>
 <!-- Modal "Image conversation" END -->
@@ -344,16 +347,16 @@ $this->registerJs($script);
                 <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title">Leave this conversation</h3>
+                <h3 class="modal-title"><?= Yii::t('app', 'Leave this conversation')?></h3>
             </div>
 
             <div class="modal-body">
-                Ви впевнені, що хочете покинути цю бесіду?
+                <?= Yii::t('app', 'Are you sure you want to leave this conversation?')?>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">NO</button>
-                <button id="leave-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal">YES</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'NO')?></button>
+                <button id="leave-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal"><?= Yii::t('app', 'YES')?></button>
             </div>
         </div>
     </div>
@@ -363,10 +366,10 @@ $this->registerJs($script);
 $script =  <<< JS
     $('#leave-conversation-button').on( 'click', function( event ){
         $.ajax({
-            url         : url,
+            url         : url_leave,
             type        : 'POST',
             data        : {
-                id: id,
+                id_conversation: id_conversation,
             },
             success: function (data) {
                 console.log(data.message);
@@ -377,8 +380,79 @@ $script =  <<< JS
     
     });
 JS;
-$this->registerJsVar('id',  $id_conversation);
-$this->registerJsVar('url',  Url::toRoute('/conversation-participant/leave', true));
+$this->registerJsVar('id_conversation',  $id_conversation);
+$this->registerJsVar('url_leave',  Url::toRoute('/conversation-participant/leave', true));
 $this->registerJs($script);
 ?>
 <!-- Modal "Leave conversation" END -->
+
+<!-- Modal "participants" BEGIN -->
+<div class="modal fade" id="participants" tabindex="-1" role="dialog" aria-labelledby="Participants" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title"><?= Yii::t('app', 'Participants')?></h3>
+            </div>
+
+            <div class="modal-body">
+                <label for="conversation-title"><?= Yii::t('app', 'Conversation title:') ?></label>
+                <div id="conversation-title" contenteditable="true" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;margin-bottom: 10px;"></div>
+
+                <ul class="list-group">
+                    <?php foreach ($participant_list as $item) { ?>
+                        <li class="list-group-item" onclick="selectFriend(this, <?= $item['id'] ?>)">
+                            <img src="<?= $item['avatar'] ?>" class="img-circle" alt="<?= $item['username'] ?>" style="max-width: 50px">
+                            <?= $item['username'] ?>
+                        </li>
+                    <?php } ?>
+                </ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'Close')?></button>
+                <button id="save-participant-button" type="button" class="btn btn-primary" data-dismiss="modal"><?= Yii::t('app', 'Save')?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var selectParticipantList = {};
+
+    function selectFriend(element, id){
+        if(selectParticipantList[id]){
+            element.classList.remove("select-message");
+            delete selectParticipantList[id];
+        }else{
+            element.classList.add("select-message");
+            selectParticipantList[id] = true;
+        }
+    }
+</script>
+<?php
+$script =  <<< JS
+     $('#save-participant-button').on( 'click', function( event ){
+         console.log(selectParticipantList);
+        /*$.ajax({
+            url         : url_participant,
+            type        : 'POST',
+            data        : {
+                id_conversation: id,
+            },
+            success: function (data) {
+                console.log(data.message);
+                $('#leave_conversation').modal('hide');
+                $('#message-text').remove();
+            }    
+        });*/
+    
+    });
+JS;
+$this->registerJsVar('id_conversation',  $id_conversation);
+$this->registerJsVar('url_participant',  Url::toRoute('/conversation-participant/participant_save', true));
+$this->registerJs($script);
+?>
+<!-- Modal "participants" END -->

@@ -120,4 +120,13 @@ return array (
       '@yii/bootstrap4' => $vendorDir . '/yiisoft/yii2-bootstrap4/src',
     ),
   ),
+  'codemix/yii2-localeurls' => 
+  array (
+    'name' => 'codemix/yii2-localeurls',
+    'version' => '1.7.1.0',
+    'alias' => 
+    array (
+      '@codemix/localeurls' => $vendorDir . '/codemix/yii2-localeurls',
+    ),
+  ),
 );

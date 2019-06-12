@@ -21,6 +21,7 @@ return array(
     'kartik\\datetime\\' => array($vendorDir . '/kartik-v/yii2-widget-datetimepicker/src'),
     'kartik\\base\\' => array($vendorDir . '/kartik-v/yii2-krajee-base/src'),
     'dmstr\\' => array($vendorDir . '/dmstr/yii2-adminlte-asset'),
+    'codemix\\localeurls\\' => array($vendorDir . '/codemix/yii2-localeurls'),
     'cebe\\markdown\\' => array($vendorDir . '/cebe/markdown'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),

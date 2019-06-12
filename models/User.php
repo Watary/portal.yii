@@ -86,6 +86,10 @@ class User extends UserModel
         return $this->hasMany(Friend::className(), ['id_user' => 'id']);
     }
 
+    public function getConversationParticipants(){
+        return $this->hasMany(ConversationParticipant::className(), ['id_user' => 'id']);
+    }
+
     public function getAvatar(){
         if ($this->avatar) {
             return Url::home(true) . $this->avatar;

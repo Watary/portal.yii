@@ -29,18 +29,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
                                 <div class="list-group">
                                     <?php if(!$user['own']){ ?>
-                                        <?= $user['friend'] ? Html::a('Remove friends', '/profile/remove-friend/' . $user['id'], ['class' => 'list-group-item text-center']) : Html::a('Add to friends', '/profile/add-friend/' .  $user['id'], ['class' => 'list-group-item text-center']) ?>
-                                        <?= Html::a('Write message', '/messages/' . $user['id'], ['class' => 'list-group-item text-center']) ?>
+                                        <?= $user['friend'] ? Html::a(Yii::t('app', 'Remove friends'), ['/profile/remove-friend/' . $user['id']], ['class' => 'list-group-item text-center']) : Html::a(Yii::t('app', 'Add to friends'), ['/profile/add-friend/' .  $user['id']], ['class' => 'list-group-item text-center']) ?>
+                                        <?= Html::a(Yii::t('app', 'Write message'), ['/messages/' . $user['id']], ['class' => 'list-group-item text-center']) ?>
                                     <?php } ?>
 
                                     <?php if($user['id'] == Yii::$app->user->getId() || Yii::$app->user->can('Administrator')){ ?>
-                                        <?= Html::a('Update', ['update', 'id' => $user["id"]], ['class' => 'list-group-item text-center']) ?>
+                                        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $user["id"]], ['class' => 'list-group-item text-center']) ?>
                                     <?php } ?>
 
-                                    <?= Html::a('Friends <span class="badge pull-right">' .  $user['count_friends'] .'</span>', '/profile/friends/' . $user['id'], ['class' => 'list-group-item']) ?>
+                                    <?= Html::a(Yii::t('app', 'Friends').' <span class="badge pull-right">' .  $user['count_friends'] .'</span>', ['/profile/friends/' . $user['id']], ['class' => 'list-group-item']) ?>
 
                                     <?php if($user['own']){ ?>
-                                        <?= Html::a('Messages <span class="badge pull-right">'.$user['not_read_message'].'</span>', '/conversation', ['class' => 'list-group-item']) ?>
+                                        <?= Html::a(Yii::t('app', 'Messages').' <span class="badge pull-right">'.$user['not_read_message'].'</span>', ['/conversation'], ['class' => 'list-group-item']) ?>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -52,8 +52,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <div class="col-sm-8">
             <ul class="list-group">
-                <li class="list-group-item">Created at: <?= date('d-m-Y', $user['created_at']) ?></li>
-                <li class="list-group-item">Email: <a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></li>
+                <li class="list-group-item"><?= Yii::t('app', 'Created at:') ?> <?= date('d-m-Y', $user['created_at']) ?></li>
+                <li class="list-group-item"><?= Yii::t('app', 'Email:') ?> <a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></li>
             </ul>
         </div>
 
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-12">
                 <div class="panel panel-default panel_profile_friends">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Friends</h3>
+                        <h3 class="panel-title"><?= Yii::t('app', 'Friends') ?></h3>
                     </div>
                     <div class="panel-body">
                         <?php
@@ -74,11 +74,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             //if($count >= 7) break;
                             ?>
                             <div class="col-sm-2 col-md-1 col-lg-1 thumbnail">
-                                <a href="/profile/view/<?= $item->friends->id ?>">
+                                <a href="<?= Url::to(['/profile/view/'.$item->friends->id]) ?>">
                                     <img src="<?= $item->friends->getAvatar() ?>" class="img-circle" alt="<?= $item->friends->username ?>">
                                 </a>
-                                <a href="/profile/view/<?= $item->friends->id ?>" class="btn center-block"><?= $item->friends->username ?></a>
-                                <!-- <?= Html::a($item->friends->username, '/profile/view/' . $item->friends->id, ['class' => 'btn center-block']) ?> -->
+                                <?= Html::a($item->friends->username, ['/profile/view/' . $item->friends->id], ['class' => 'btn center-block']) ?>
                             </div>
                         <?php } ?>
                     </div>

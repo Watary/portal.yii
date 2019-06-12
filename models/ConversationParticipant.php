@@ -55,6 +55,10 @@ class ConversationParticipant extends \yii\db\ActiveRecord
         return $this->hasMany(ConversationMessages::className(), ['id_conversation' => 'id_conversation']);
     }
 
+    public function getUser(){
+        return $this->hasOne(User::className(), ['id' => 'id_user']);
+    }
+
     /**
      * Перевіряє чи бере користувач ($id_participant) учась в бесіді ($id_conversation) в даний час
      *
@@ -132,6 +136,19 @@ class ConversationParticipant extends \yii\db\ActiveRecord
     }
 
     /**
+     * Повертає всіх користувачів які беруть участь в бесіді ($id_conversation)
+     *
+     * @param $id_conversation
+     * @param int $count
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public static function findAllParticipant($id_conversation){
+        return ConversationParticipant::find()
+            ->where(['id_conversation' => $id_conversation])
+            ->all();
+    }
+
+    /**
      * @param $id_conversation
      * @param null $id_participant
      * @return array|null|\yii\db\ActiveRecord
@@ -145,5 +162,38 @@ class ConversationParticipant extends \yii\db\ActiveRecord
             ])
             ->orderBy(['id' => SORT_DESC])
             ->one();
+    }
+
+    /**
+     * @param $id_conversation
+     * @param null $id_participant
+     * @return array|null|\yii\db\ActiveRecord
+     */
+    public static function selectAllParticipantAndFriends($id_conversation){
+        $participant_list = [];
+        $participant_list_id = [];
+        $counter = 0;
+        $user = User::getUserBuId(Yii::$app->user->getId());
+        $friends = $user->friends;
+        $participant = ConversationParticipant::findAllParticipant($id_conversation);
+        foreach ($participant as $item) {
+            $participant_list[$counter]['id'] = $item->user->id;
+            $participant_list[$counter]['username'] = $item->user->username;
+            $participant_list[$counter]['avatar'] = $item->user->getAvatar();
+            $participant_list[$counter]['participant'] = true;
+            $participant_list_id[] = $item->user->id;
+            $counter++;
+        }
+        foreach ($friends as $item) {
+            if(in_array($item->friends->id, $participant_list_id)){
+                continue;
+            }
+            $participant_list[$counter]['id'] = $item->friends->id;
+            $participant_list[$counter]['username'] = $item->friends->username;
+            $participant_list[$counter]['avatar'] = $item->friends->getAvatar();
+            $participant_list[$counter]['participant'] = false;
+            $counter++;
+        }
+        return $participant_list;
     }
 }

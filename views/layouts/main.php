@@ -36,31 +36,31 @@ AppAsset::register($this);
     <?php
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
+        'brandUrl' => \yii\helpers\Url::to(['/'],true),
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
 
     $menuItems = [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Admin', 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            ['label' => 'Profile', 'url' => ['/profile']],
+            ['label' => Yii::t('menu', 'Home'), 'url' => ['/']],
+            ['label' => Yii::t('menu', 'Admin'), 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
+            ['label' => Yii::t('menu', 'About'), 'url' => ['/site/about']],
+            ['label' => Yii::t('menu', 'Contact'), 'url' => ['/site/contact']],
+            ['label' => Yii::t('menu', 'Profile'), 'url' => ['/profile']],
             Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
+                ['label' => Yii::t('menu', 'Login'), 'url' => ['/site/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    Yii::t('menu', 'Logout ({username})', ['username' => Yii::$app->user->identity->username]),
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()
                 . '</li>'
             ),
-            Yii::$app->user->isGuest ? (['label' => 'Signup', 'url' => ['/site/signup']]) : (''),
+            Yii::$app->user->isGuest ? (['label' => Yii::t('menu', 'Signup'), 'url' => ['/site/signup']]) : (''),
         ];
 
     //$menuItems = Helper::filter($menuItems);
@@ -83,7 +83,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">Pedorenko Sergey</p>
+        <p class="pull-left"><?= Yii::t('app', 'Pedorenko Sergey') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

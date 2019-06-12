@@ -132,9 +132,10 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $id_conversation
      * @return int|string
      */
-    public static function countConversationMessage($id_conversation){
+    public static function countConversationMessage($id_conversation, $where){
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation,])
+            ->andWhere($where)
             ->andWhere(['not like', 'remove', Yii::$app->user->getId()])
             ->count();
     }

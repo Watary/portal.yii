@@ -554,6 +554,49 @@
         "description": "BDD assertion library for PHPUnit"
     },
     {
+        "name": "codemix/yii2-localeurls",
+        "version": "1.7.1",
+        "version_normalized": "1.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/codemix/yii2-localeurls.git",
+            "reference": "f681040b9da5b35a8653041f98bd58c2dd84af07"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/codemix/yii2-localeurls/zipball/f681040b9da5b35a8653041f98bd58c2dd84af07",
+            "reference": "f681040b9da5b35a8653041f98bd58c2dd84af07",
+            "shasum": ""
+        },
+        "require": {
+            "yiisoft/yii2": "*"
+        },
+        "time": "2018-06-18T12:11:10+00:00",
+        "type": "yii2-extension",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "codemix\\localeurls\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Michael Härtl",
+                "email": "haertl.mike@gmail.com"
+            }
+        ],
+        "description": "Automatic locale/language management for URLs.",
+        "keywords": [
+            "i18n",
+            "locale",
+            "yii2"
+        ]
+    },
+    {
         "name": "dmstr/yii2-adminlte-asset",
         "version": "2.6.2",
         "version_normalized": "2.6.2.0",
