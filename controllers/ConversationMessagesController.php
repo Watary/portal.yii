@@ -7,13 +7,9 @@ use Yii;
 use app\models\ConversationMessages;
 use app\models\ConversationParticipant;
 use app\models\User;
-use yii\data\ActiveDataProvider;
-use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\models\UploadForm;
-use yii\web\UploadedFile;
 
 /**
  * ConversationMessagesController implements the CRUD actions for ConversationMessages model.
