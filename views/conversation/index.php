@@ -58,3 +58,81 @@ $this->params['breadcrumbs'][] =  $this->title;
         <?php } ?>
     </div>
 </div>
+
+<!-- Modal "Create conversation" -->
+<div class="modal fade" id="create_conversation" tabindex="-1" role="dialog" aria-labelledby="Create conversation" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title">Create conversation</h3>
+            </div>
+
+            <div class="modal-body">
+                <label for="conversation-title">Conversation title:</label>
+                <div id="conversation-title" contenteditable="true" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;margin-bottom: 10px;"></div>
+                <!-- <input id="image-conversation" type="file" multiple="multiple" accept=".txt,image/*" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px; margin-top: 10px;"> -->
+
+                <ul class="list-group">
+                    <?php foreach ($friends as $item) { ?>
+                        <li class="list-group-item" onclick="selectFriend(this, <?= $item->friends->id ?>)">
+                            <img src="<?= $item->friends->getAvatar() ?>" class="img-circle" alt="<?= $item->friends->username ?>" style="max-width: 50px">
+                            <?= $item->friends->username ?>
+                        </li>
+                    <?php } ?>
+                </ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="createConversation()" type="button" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var title = document.getElementById('conversation-title');
+    var selectList = {};
+    function createConversation(){
+        $.ajax({
+            url: 'http://portal.yii/conversation/create',
+            type: 'post',
+            data: {
+                title: title.textContent,
+                selectList: selectList,
+                _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
+            },
+            success: function (data) {
+                console.log(data.message);
+            }
+        });
+    }
+    function selectFriend(element, id){
+        if(selectList[id]){
+            element.classList.remove("select-message");
+            delete selectList[id];
+        }else{
+            element.classList.add("select-message");
+            selectList[id] = true;
+        }
+    }
+    function deleteMessage() {
+        $.ajax({
+            url: 'http://portal.yii/conversation-messages/remove',
+            type: 'post',
+            data: {
+                selectList: selectList,
+                _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
+            },
+            success: function (data) {
+                console.log(data.message);
+                for(var i = 0; i < data.message.length; i++){
+                    document.getElementById("conversation-messages-"+data.message[i]).classList.add("hidden");
+                }
+            }
+        });
+    }
+</script>

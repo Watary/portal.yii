@@ -16,6 +16,7 @@ $config = [
     'components' => [
         'request' => [
             'cookieValidationKey' => 'T9_pky-bCurEzugJw3XjR5zi4j32ekCz',
+            'class' => 'app\components\LangRequest'
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -43,10 +44,11 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
-            'class' => 'codemix\localeurls\UrlManager',
+            /*'class' => 'codemix\localeurls\UrlManager',
             'languages' => ['en', 'ua', 'ru'],
             'enableDefaultLanguageUrlCode' => false,
-            'enableLanguagePersistence' => false,
+            'enableLanguagePersistence' => false,*/
+            'class'=>'app\components\LangUrlManager',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [

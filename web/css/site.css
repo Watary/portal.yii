@@ -121,3 +121,39 @@ a.desc:after {
 .select-message{
     background-color: rgba(196, 213, 230, 0.71);
 }
+
+.lang-widget{
+    position: relative;
+    cursor: pointer;
+}
+.lang-widget .langs{
+    position: absolute;
+    bottom: 50px;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0.5s, bottom 0.5s;
+    visibility: hidden;
+    background-color: rgba(231, 231, 231, 0.81);
+    margin: 0;
+    padding: 0;
+    border: 1px solid #0f0f0f;
+    border-radius: 5px;
+}
+.lang-widget:hover .langs{
+    visibility: visible;
+    opacity: 1;
+    bottom: 0;
+}
+.lang-widget .langs .item-lang{
+    list-style-type: none;
+    margin: 0;
+}
+.lang-widget .langs .item-lang:hover{
+    background-color: rgba(0, 15, 87, 0.11);
+}
+.lang-widget .langs .item-lang a{
+    display: block;
+    color: #0f0f0f;
+    padding: 10px;
+    text-decoration: none;
+}
