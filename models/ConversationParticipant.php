@@ -131,6 +131,7 @@ class ConversationParticipant extends \yii\db\ActiveRecord
     public static function findSeveralParticipant($id_conversation, $count = 3){
         return ConversationParticipant::find()
             ->where(['id_conversation' => $id_conversation])
+            ->andWhere(['date_exit' => NULL])
             ->limit($count)
             ->all();
     }
@@ -165,6 +166,22 @@ class ConversationParticipant extends \yii\db\ActiveRecord
     }
 
     /**
+     * Повертає всіх користувачів які зараз беруть участь в бесіді ($id_conversation)
+     *
+     * @param $id_conversation
+     * @param int $count
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public static function findAllParticipantNow($id_conversation){
+        return ConversationParticipant::find()
+            ->where([
+                'id_conversation' => $id_conversation,
+                'date_exit' => NULL,
+            ])
+            ->all();
+    }
+
+    /**
      * @param $id_conversation
      * @param null $id_participant
      * @return array|null|\yii\db\ActiveRecord
@@ -175,8 +192,21 @@ class ConversationParticipant extends \yii\db\ActiveRecord
         $counter = 0;
         $user = User::getUserBuId(Yii::$app->user->getId());
         $friends = $user->friends;
-        $participant = ConversationParticipant::findAllParticipant($id_conversation);
+        $participant = ConversationParticipant::findAllParticipantNow($id_conversation);
+        $isParticipant = ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId());
+        $model_conversation = Conversation::findOne($id_conversation);
         foreach ($participant as $item) {
+            if($isParticipant){
+                if($item->invited != Yii::$app->user->getId() && $model_conversation->id_owner != Yii::$app->user->getId()){
+                    $participant_list[$counter]['participant-show'] = false;
+                }else{
+                    $participant_list[$counter]['participant-show'] = true;
+                }
+            }else{
+                $participant_list[$counter]['participant-show'] = false;
+            }
+
+
             $participant_list[$counter]['id'] = $item->user->id;
             $participant_list[$counter]['username'] = $item->user->username;
             $participant_list[$counter]['avatar'] = $item->user->getAvatar();
@@ -188,10 +218,30 @@ class ConversationParticipant extends \yii\db\ActiveRecord
             if(in_array($item->friends->id, $participant_list_id)){
                 continue;
             }
+
+            $model = ConversationParticipant::findLastPFC($id_conversation, $item->friends->id);
+
+            if($isParticipant) {
+                if ($model->exclude == $item->friends->id) {
+                    $participant_list[$counter]['participant-show'] = false;
+                } else {
+                    if ($model_conversation->id_owner == Yii::$app->user->getId()) {
+                        $participant_list[$counter]['participant-show'] = true;
+                    } else {
+                        if ($model->invited == Yii::$app->user->getId()) {
+                            $participant_list[$counter]['participant-show'] = true;
+                        } else {
+                            $participant_list[$counter]['participant-show'] = false;
+                        }
+                    }
+                }
+            }else{
+                $participant_list[$counter]['participant-show'] = false;
+            }
+
             $participant_list[$counter]['id'] = $item->friends->id;
             $participant_list[$counter]['username'] = $item->friends->username;
             $participant_list[$counter]['avatar'] = $item->friends->getAvatar();
-            $participant_list[$counter]['participant'] = false;
             $counter++;
         }
         return $participant_list;

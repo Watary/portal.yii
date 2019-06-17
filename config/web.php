@@ -90,6 +90,14 @@ $config = [
                         'app'       => 'menu.php',
                     ],
                 ],
+                'admin' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/translations',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app'       => 'menu.php',
+                    ],
+                ],
             ],
         ],
     ],

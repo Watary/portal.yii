@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Conversation;
 use Yii;
 use app\models\ConversationParticipant;
+use app\models\ConversationMessages;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -115,13 +117,13 @@ class ConversationParticipantController extends Controller
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $data = Yii::$app->request->post();
 
-            if(!ConversationParticipant::isParticipantNow($data['id'], Yii::$app->user->getId())){
+            if(!ConversationParticipant::isParticipantNow($data['id_conversation'], Yii::$app->user->getId())){
                 return [
                     'message' => 'not participant',
                 ];
             }
 
-            $model = ConversationParticipant::findLastPFC($data['id'], Yii::$app->user->getId());
+            $model = ConversationParticipant::findLastPFC($data['id_conversation'], Yii::$app->user->getId());
 
             if(!$model->date_exit){
                 $model->date_exit = time();
@@ -129,6 +131,112 @@ class ConversationParticipantController extends Controller
                 if ($model->save()) {
                     return [
                         'message' => 'Yes',
+                    ];
+                }
+            }
+
+            return [
+                'message' => 'No',
+            ];
+        }
+    }
+    public function actionReturn(){
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $data = Yii::$app->request->post();
+
+            if(ConversationParticipant::isParticipantNow($data['id_conversation'], Yii::$app->user->getId())){
+                return [
+                    'message' => 'You participant',
+                ];
+            }
+
+            $model_LastPFC = ConversationParticipant::findLastPFC($data['id_conversation']);
+
+            $model = new ConversationParticipant;
+
+            $model->id_conversation = $data['id_conversation'];
+            $model->id_user = Yii::$app->user->getId();
+            $model->id_last_see = ConversationMessages::getIdLastMessage();
+            $model->date_entry = time();
+            $model->invited = $model_LastPFC->invited;
+
+            if ($model->save()) {
+                return [
+                    'message' => 'Yes',
+                ];
+            }
+
+            return [
+                'message' => 'No',
+            ];
+        }
+    }
+
+    public function actionARParticipant(){
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $data = Yii::$app->request->post();
+            $id_conversation = $data['id_conversation'];
+            $id_participant = $data['id_participant'];
+
+            if(!ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())){
+                return [
+                    'message' => 'Yor not participant',
+                ];
+            }
+
+            $model = ConversationParticipant::findLastPFC($id_conversation, $id_participant);
+            $model_conversation = Conversation::findOne($id_conversation);
+
+            if(!ConversationParticipant::isParticipantNow($id_conversation, $id_participant)){
+                if($id_participant == $model->exclude){
+                    return [
+                        'message' => 'Yor not can this doing',
+                    ];
+                }
+
+                if($model_conversation && $model_conversation->id_owner != Yii::$app->user->getId()){
+                    if($model_conversation->id_owner == $model->exclude){
+                        return [
+                            'message' => 'Yor not can this doing',
+                        ];
+                    }
+                }
+
+                $model_new = new ConversationParticipant;
+
+                $model_new->id_conversation = $id_conversation;
+                $model_new->id_user = $id_participant;
+                $model_new->id_last_see = ConversationMessages::getIdLastMessage();
+                $model_new->date_entry = time();
+                $model_new->invited = Yii::$app->user->getId();
+
+                if ($model_new->save()) {
+                    return [
+                        'message' => 'Yes',
+                        'action' => 'Add',
+                        'id' => $id_participant,
+                    ];
+                }
+            }
+
+            if($model->invited != Yii::$app->user->getId() && $model_conversation->id_owner != Yii::$app->user->getId()){
+                return [
+                    'message' => 'Yor not can this doing',
+                ];
+            }
+
+            if(!$model->date_exit){
+                $model->date_exit = time();
+                $model->exclude = Yii::$app->user->getId();
+                if ($model->save()) {
+                    return [
+                        'message' => 'Yes',
+                        'action' => 'Remove',
+                        'id' => $id_participant,
                     ];
                 }
             }

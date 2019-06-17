@@ -4,6 +4,7 @@ namespace app\modules\admin\controllers;
 
 use Yii;
 use app\models\User;
+use app\models\Lang;
 use yii\web\Controller;
 
 /**
@@ -23,6 +24,8 @@ class DefaultController extends Controller
 
         return $this->render('index', [
             'user' => $user,
+            'countUsers' =>  User::getCount(),
+            'countLanguages' =>  Lang::getCount(),
         ]);
     }
 }

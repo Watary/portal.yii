@@ -7,6 +7,13 @@ use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $id_conversation */
+/* @var $conversation_title */
+/* @var $conversation_model */
+/* @var $countMessages */
+/* @var $lastIdMessage */
+/* @var $participant_now */
+/* @var $participant_list */
 
 if(!$conversation_title){
     $conversation_title = Yii::t('app', 'Not name');
@@ -51,10 +58,16 @@ $this->params['breadcrumbs'][] = $this->title;
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownButton">
             <button onclick="deleteMessage()" type="button" class="dropdown-item"><?= Yii::t('app', 'Delete messages') ?></button>
-            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#rename_conversation"><?= Yii::t('app', 'Rename conversation') ?></button>
-            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#image_conversation"><?= Yii::t('app', 'Image conversation') ?></button>
-            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#leave_conversation"><?= Yii::t('app', 'Leave this conversation') ?></button>
-            <!-- <button type="button" class="dropdown-item" data-toggle="modal" data-target="#participants">< ?= Yii::t('app', 'Participants') ?></button> -->
+            <?php if($conversation_model->id_owner == Yii::$app->user->getId()){ ?>
+                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#rename_conversation"><?= Yii::t('app', 'Rename conversation') ?></button>
+                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#image_conversation"><?= Yii::t('app', 'Image conversation') ?></button>
+            <?php } ?>
+            <?php if($participant_now){ ?>
+                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#leave_conversation"><?= Yii::t('app', 'Leave this conversation') ?></button>
+            <?php }else{ ?>
+                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#return_to_conversation"><?= Yii::t('app', 'Return to this conversation') ?></button>
+            <?php } ?>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#participants"><?= Yii::t('app', 'Participants') ?></button>
         </div>
     </div>
 
@@ -214,28 +227,8 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         });
     }
-
-    function renameConversation(){
-        var title = document.getElementById('conversation-title');
-        var show_title = document.getElementById('show-title');
-
-        $.ajax({
-            url: '<?= Url::toRoute('/messages/rename', true) ?>',
-            type: 'post',
-            data: {
-                title: title.textContent,
-                id_conversation: <?= $id_conversation ?>,
-                _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
-            },
-            success: function (data) {
-                //console.log(data.message);
-                show_title.innerHTML = data.message;
-                $('#rename_conversation').modal('hide');
-            }
-        });
-    }
 </script>
-
+<?php if($conversation_model->id_owner == Yii::$app->user->getId()){ ?>
 <!-- Modal "Rename conversation" BEGIN -->
 <div class="modal fade" id="rename_conversation" tabindex="-1" role="dialog" aria-labelledby="Rename conversation" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -259,6 +252,27 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<script>
+    function renameConversation(){
+        var title = document.getElementById('conversation-title');
+        var show_title = document.getElementById('show-title');
+
+        $.ajax({
+            url: '<?= Url::toRoute('/messages/rename', true) ?>',
+            type: 'post',
+            data: {
+                title: title.textContent,
+                id_conversation: <?= $id_conversation ?>,
+                _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
+            },
+            success: function (data) {
+                //console.log(data.message);
+                show_title.innerHTML = data.message;
+                $('#rename_conversation').modal('hide');
+            }
+        });
+    }
+</script>
 <!-- Modal "Rename conversation" END -->
 
 <!-- Modal "Image conversation" BEGIN -->
@@ -338,6 +352,7 @@ $this->registerJsVar('url_upload',  Url::toRoute('/conversation-messages/upload/
 $this->registerJs($script);
 ?>
 <!-- Modal "Image conversation" END -->
+<?php } ?>
 
 <!-- Modal "Leave conversation" BEGIN -->
 <div class="modal fade" id="leave_conversation" tabindex="-1" role="dialog" aria-labelledby="Leave this conversation" aria-hidden="true">
@@ -375,6 +390,7 @@ $script =  <<< JS
                 console.log(data.message);
                 $('#leave_conversation').modal('hide');
                 $('#message-text').remove();
+                location.reload(); 
             }    
         });
     
@@ -385,6 +401,53 @@ $this->registerJsVar('url_leave',  Url::toRoute('/conversation-participant/leave
 $this->registerJs($script);
 ?>
 <!-- Modal "Leave conversation" END -->
+
+<!-- Modal "Return to conversation" BEGIN -->
+<div class="modal fade" id="return_to_conversation" tabindex="-1" role="dialog" aria-labelledby="Return to this conversation" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title"><?= Yii::t('app', 'Return to this conversation')?></h3>
+            </div>
+
+            <div class="modal-body">
+                <?= Yii::t('app', 'Are you sure you want return to this conversation?')?>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'NO')?></button>
+                <button id="return-conversation-button" type="button" class="btn btn-primary" data-dismiss="modal"><?= Yii::t('app', 'YES')?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+$script =  <<< JS
+    $('#return-conversation-button').on( 'click', function( event ){
+        $.ajax({
+            url         : url_return,
+            type        : 'POST',
+            data        : {
+                id_conversation: id_conversation,
+            },
+            success: function (data) {
+                console.log(data.message);
+                $('#return_conversation').modal('hide');
+                location.reload(); 
+            }    
+        });
+    
+    });
+JS;
+$this->registerJsVar('id_conversation',  $id_conversation);
+$this->registerJsVar('url_return',  Url::toRoute('/conversation-participant/return', true));
+$this->registerJs($script);
+?>
+<!-- Modal "Return to  conversation" END -->
 
 <!-- Modal "participants" BEGIN -->
 <div class="modal fade" id="participants" tabindex="-1" role="dialog" aria-labelledby="Participants" aria-hidden="true">
@@ -398,14 +461,14 @@ $this->registerJs($script);
             </div>
 
             <div class="modal-body">
-                <label for="conversation-title"><?= Yii::t('app', 'Conversation title:') ?></label>
-                <div id="conversation-title" contenteditable="true" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;margin-bottom: 10px;"></div>
-
                 <ul class="list-group">
                     <?php foreach ($participant_list as $item) { ?>
-                        <li class="list-group-item" onclick="selectFriend(this, <?= $item['id'] ?>)">
-                            <img src="<?= $item['avatar'] ?>" class="img-circle" alt="<?= $item['username'] ?>" style="max-width: 50px">
-                            <?= $item['username'] ?>
+                        <li id="participant-<?= $item['id'] ?>" class="list-group-item <?= $item['participant'] ? 'list-group-item-success' : ''?>">
+                            <a href="<?= Url::toRoute('/profile/view/'.$item['id'], true) ?>">
+                                <img src="<?= $item['avatar'] ?>" class="img-circle" alt="<?= $item['username'] ?>" style="max-width: 50px">
+                                <?= $item['username'] ?>
+                            </a>
+                            <button <?= $item['participant-show'] ? '' : 'disabled' ?> id="participant-button-<?= $item['id'] ?>" onclick="participantButton(<?= $id_conversation ?>, <?= $item['id'] ?>)" type="button" class="btn <?= $item['participant'] ? 'btn-danger' : 'btn-success'?> pull-right"><?= $item['participant'] ? '-' : '+'?></button>
                         </li>
                     <?php } ?>
                 </ul>
@@ -413,7 +476,6 @@ $this->registerJs($script);
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'Close')?></button>
-                <button id="save-participant-button" type="button" class="btn btn-primary" data-dismiss="modal"><?= Yii::t('app', 'Save')?></button>
             </div>
         </div>
     </div>
@@ -431,28 +493,31 @@ $this->registerJs($script);
             selectParticipantList[id] = true;
         }
     }
-</script>
-<?php
-$script =  <<< JS
-     $('#save-participant-button').on( 'click', function( event ){
-         console.log(selectParticipantList);
-        /*$.ajax({
-            url         : url_participant,
-            type        : 'POST',
-            data        : {
-                id_conversation: id,
+    function participantButton(id_conversation, id_participant){
+        $.ajax({
+            url: '<?= Url::toRoute('/conversation-participant/a-r-participant', true) ?>',
+            type: 'post',
+            data: {
+                'id_conversation': id_conversation,
+                'id_participant': id_participant,
+                _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
             },
             success: function (data) {
-                console.log(data.message);
-                $('#leave_conversation').modal('hide');
-                $('#message-text').remove();
-            }    
-        });*/
-    
-    });
-JS;
-$this->registerJsVar('id_conversation',  $id_conversation);
-$this->registerJsVar('url_participant',  Url::toRoute('/conversation-participant/participant_save', true));
-$this->registerJs($script);
-?>
+                console.log(data.action);
+
+                if(data.action === 'Add'){
+                    document.getElementById('participant-button-'+data.id).classList.remove("btn-success");
+                    document.getElementById('participant-button-'+data.id).classList.add("btn-danger");
+                    document.getElementById('participant-'+data.id).classList.add("list-group-item-success");
+                    document.getElementById('participant-button-'+data.id).innerHTML = '-';
+                }else if(data.action === 'Remove'){
+                    document.getElementById('participant-button-'+data.id).classList.remove("btn-danger");
+                    document.getElementById('participant-button-'+data.id).classList.add("btn-success");
+                    document.getElementById('participant-'+data.id).classList.remove("list-group-item-success");
+                    document.getElementById('participant-button-'+data.id).innerHTML = '+';
+                }
+            }
+        });
+    }
+</script>
 <!-- Modal "participants" END -->

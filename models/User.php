@@ -48,7 +48,7 @@ class User extends UserModel
         ];
     }
 
-    public function getCount(){
+    public static function getCount(){
         return User::find()->count();
     }
 

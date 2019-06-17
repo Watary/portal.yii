@@ -97,20 +97,19 @@ class ConversationMessagesController extends Controller
     public function actionRename()
     {
         $data = Yii::$app->request->post();
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($data['id_conversation'], Yii::$app->user->getId())) {
             $model = Conversation::findConversation($data['id_conversation']);
+            $model->title = $data['title'];
 
             if($model->id_owner == Yii::$app->user->getId()) {
-                $model->title = $data['title'];
-
-                if($model->save()) {
-                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                    return [
-                        'message' => $model->title,
-                    ];
-                }
+                $model->save();
             }
+
+            return [
+                'message' => $model->title,
+            ];
         }
     }
 
@@ -125,12 +124,17 @@ class ConversationMessagesController extends Controller
         if (Yii::$app->request->isAjax && ConversationParticipant::isParticipantNow($id_conversation, Yii::$app->user->getId())) {
             $data = Yii::$app->request->post();
             $resalt = '';
+            $where_findNewMessage = '';
 
             $where = $this->getWhereDate($id_conversation, Yii::$app->user->getId());
 
             $lastIdMessage = ConversationParticipant::findLastPFC($id_conversation);
 
-            $model = ConversationMessages::findNewMessage($id_conversation, $lastIdMessage->id_last_see);
+            if($lastIdMessage->date_exit){
+                $where_findNewMessage = 'date < '.$lastIdMessage->date_exit;
+            }
+
+            $model = ConversationMessages::findNewMessage($id_conversation, $lastIdMessage->id_last_see, $where_findNewMessage);
 
             $lastIdMessage = ConversationMessages::findLastMessage($id_conversation, $where)->id;
 
@@ -316,6 +320,12 @@ class ConversationMessagesController extends Controller
 
         if (Yii::$app->request->isPost) {
             $data = Yii::$app->request->post();
+            $model = Conversation::findConversation($id);
+
+            if($model->id_owner != Yii::$app->user->getId()) {
+                return ['error' => 'Ошибка загрузки файлов.'];
+            }
+
             if( isset( $data['image_upload'] ) ){
 
                 $uploaddir = './uploads/conversations';

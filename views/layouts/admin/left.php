@@ -33,6 +33,7 @@
                     ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
                     ['label' => 'Home', 'icon' => 'fas fa-home', 'url' => ['/admin']],
                     ['label' => 'Users', 'icon' => 'fas fa-users', 'url' => ['/admin/user']],
+                    ['label' => Yii::t('admin', 'Languages'), 'icon' => 'fas fa-language', 'url' => ['/admin/language']],
                     [
                         'label' => 'RBAC',
                         'icon' => 'fas fa-users',

@@ -119,10 +119,28 @@ class ConversationMessages extends \yii\db\ActiveRecord
      * @param $lastIdMessage
      * @return array|\yii\db\ActiveRecord[]
      */
-    public static function findNewMessage($id_conversation, $lastIdMessage){
+    public static function findNewMessage($id_conversation, $lastIdMessage, $where = ''){
+        $model_participant = ConversationParticipant::findLastPFC($id_conversation, Yii::$app->user->getId());
+        $model_lastMessage = ConversationMessages::findLastMessage($id_conversation, Yii::$app->user->getId());
+        $whereDate = '';
+
+        if ($model_participant->date_exit != NULL){
+            $whereDate = 'date < '.$model_participant->date_exit;
+            $model_whereDate = ConversationParticipant::find()
+                ->where(['id_conversation' => $id_conversation])
+                ->andWhere(['id_user' => Yii::$app->user->getId()])
+                ->andWhere(['<>', 'id_last_see', $model_participant->id_last_see])
+                ->orderBy(['id' => SORT_DESC])
+                ->one();
+            if($model_whereDate){
+                $whereDate = 'date < '.$model_whereDate->date_exit;
+            }
+        }
         return ConversationMessages::find()
             ->where(['id_conversation' => $id_conversation,])
             ->andWhere('id > '.$lastIdMessage)
+            ->andWhere($where)
+            ->andWhere($whereDate)
             ->all();
     }
 
@@ -157,16 +175,31 @@ class ConversationMessages extends \yii\db\ActiveRecord
 
 
 
-    public static function countNotReadMessages($id_conversation, $where, $id_user = NULL){
+    public static function countNotReadMessages($id_conversation, $where = '', $id_user = NULL){
         if(!$id_user){
             $id_user = Yii::$app->user->getId();
         }
 
         $model_participant = ConversationParticipant::findLastPFC($id_conversation, $id_user);
         $participant = ConversationParticipant::findOne($model_participant->id);
+        $whereDate = '';
+
+        if ($model_participant->date_exit != NULL){
+            $whereDate = 'date < '.$model_participant->date_exit;
+            $model_whereDate = ConversationParticipant::find()
+                ->where(['id_conversation' => $id_conversation])
+                ->andWhere(['id_user' => $id_user])
+                ->andWhere(['<>', 'id_last_see', $model_participant->id_last_see])
+                ->orderBy(['id' => SORT_DESC])
+                ->one();
+            if($model_whereDate){
+                $whereDate = 'date < '.$model_whereDate->date_exit;
+            }
+        }
         $count_messages = $participant->getMessages()
             ->where('id > '.$model_participant->id_last_see)
             ->andWhere($where)
+            ->andWhere($whereDate)
             ->count();
 
         return $count_messages;
@@ -188,7 +221,7 @@ class ConversationMessages extends \yii\db\ActiveRecord
 
         foreach ($listConversation as $key => $item){
             $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
-            $whereParticipant = [];
+            /*$whereParticipant = [];
 
             if($listConversation[$item[0]['id_conversation']]['conversation']->title == NULL){
                 $participant = ConversationParticipant::findSeveralParticipant($item[0]['id_conversation']);
@@ -197,9 +230,9 @@ class ConversationMessages extends \yii\db\ActiveRecord
                 foreach ($participant as $key_in => $item_in){
                     $whereParticipant[] = ['id' => $item_in->id_user];
                 }
-            }
+            }*/
 
-            $count_message += ConversationMessages::countNotReadMessages($item[0]['id_conversation'], $whereParticipant);
+            $count_message += ConversationMessages::countNotReadMessages($item[0]['id_conversation']);
 
         }
 
@@ -218,5 +251,20 @@ class ConversationMessages extends \yii\db\ActiveRecord
         }
 
         return $listConversation;
+    }
+
+
+    /**
+     * Повертає ідентифікатор останнього повідомлення в заданій ($id_conversation) бесіді, і з додатковивми умовами ($where)
+     *
+     * @param $id_conversation
+     * @param $where
+     * @return array|null|\yii\db\ActiveRecord
+     */
+    public static function getIdLastMessage(){
+        $model = ConversationMessages::find()
+            ->orderBy(['id' => SORT_DESC])
+            ->one();
+        return $model->id;
     }
 }

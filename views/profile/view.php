@@ -8,7 +8,7 @@ use yii\helpers\Url;
 /* @var $model app\models\User */
 
 $this->title = $user['username'];
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => Yii::$app->user->identity->getId()];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Users'), 'url' => Yii::$app->user->identity->getId()];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

@@ -49,10 +49,6 @@ AppAsset::register($this);
             ['label' => Yii::t('menu', 'Admin'), 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
             ['label' => Yii::t('menu', 'About'), 'url' => ['/site/about']],
             ['label' => Yii::t('menu', 'Contact'), 'url' => ['/site/contact']],
-            /*['label' => Yii::$app->language, 'url' => ['product/index'], 'items' => [
-                ['label' => 'Українська', 'url' => ['', 'language' => 'ua']],
-                ['label' => 'English', 'url' => ['', 'language' => 'en']],
-            ]],*/
             ['label' => Yii::t('menu', 'Profile'), 'url' => ['/profile']],
             Yii::$app->user->isGuest ? (
                 ['label' => Yii::t('menu', 'Login'), 'url' => ['/site/login']]

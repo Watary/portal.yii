@@ -78,7 +78,7 @@ class ConversationController extends Controller
                 $listConversation[$item[0]['id_conversation']]['conversation']->title = rtrim($title,",");
             }
 
-            $listConversation[$item[0]['id_conversation']]['count_not_read'] = ConversationMessages::countNotReadMessages($item[0]['id_conversation'], $whereParticipant);
+            $listConversation[$item[0]['id_conversation']]['count_not_read'] = ConversationMessages::countNotReadMessages($item[0]['id_conversation']);
 
         }
 

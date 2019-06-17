@@ -34,6 +34,7 @@ return [
         'Messages' => 'Повідомлення',
         'Created at:' => 'Створено:',
         'Email:' => 'Електронна адреса:',
+        'Users' => 'Користувачі',
     // Profile end
 
     //Conversations begin
@@ -49,9 +50,11 @@ return [
         'Rename conversation' => 'Перейменувати бесіду',
         'Image conversation' => 'Змінити зображення',
         'Leave this conversation' => 'Покинути бесіду',
+        'Return to this conversation' => 'Повернутися до цієї бесіди',
         'Participants' => 'Учасники бесіди',
         'Conversation title' => 'Назва бесіди',
         'Are you sure you want to leave this conversation?' => 'Ви впевнені, що хочете покинути цю бесіду?',
+        'Are you sure you want return to this conversation?' => 'Ви впевнені, що хочете повернутися до цієї бесіди?',
     //Conversations message end
 
     //Footer begin
