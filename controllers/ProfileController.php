@@ -133,12 +133,6 @@ class ProfileController extends Controller
         return $this->redirect('/profile/view/' . $id);
     }
 
-    public function actionWriteMessage($id = NULL)
-    {
-        echo 'write-message';
-        return $this->redirect('/profile/view/' . $id);
-    }
-
     public function actionIsOnline(){
         if (Yii::$app->request->isAjax) {
 

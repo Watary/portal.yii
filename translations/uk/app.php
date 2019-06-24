@@ -41,6 +41,7 @@ return [
         'Conversations' => 'Бесіди',
         'Conversation title:' => 'Заголовок бесіди',
         'Create conversation' => 'Створити бесіду',
+        'No messages' => 'Немає повідомлень',
     //Conversations end
 
     //Conversations message begin
@@ -55,6 +56,9 @@ return [
         'Conversation title' => 'Назва бесіди',
         'Are you sure you want to leave this conversation?' => 'Ви впевнені, що хочете покинути цю бесіду?',
         'Are you sure you want return to this conversation?' => 'Ви впевнені, що хочете повернутися до цієї бесіди?',
+        'Remove this conversation' => 'Видалити бесіду',
+        'Are you sure you want to remove this conversation?' => 'Ви впевнені, що хочете видалити цю бесіду?',
+        '' => '',
     //Conversations message end
 
     //Footer begin

@@ -32,34 +32,40 @@ $this->params['breadcrumbs'][] =  $this->title;
         <?php foreach ($listConversation as $key => $item){
             $url_conversation = Url::toRoute(['/messages/'.$item[0]['id_conversation']]);
             ?>
-            <a href="<?= $url_conversation ?>">
-                <div class="col-sm-12 conversation clearfix">
-                    <div class="col-sm-1">
-                        <?php if($item['conversation']->image){ ?>
-                            <img src="<?= Url::to($item['conversation']->image, true) ?>" style="width: 100%;max-width: 100px;margin: 0 auto;display: block">
-                        <?php }else{ ?>
-                            <i class="fa fa-users" style="width: 100%;font-size: 45px;text-align: center"></i>
-                        <?php } ?>
-                    </div>
-                    <div class="col-sm-11">
-                        <div>
-                            <span style="font-weight: bold">
-                                <?= $item['conversation']->title ?>
-                                <?php if($item['count_not_read']){ ?>
-                                    <span class="badge"><?= $item['count_not_read'] ?></span>
-                                <?php } ?>
-                            </span>
-                            <span class="pull-right"><?= date("d.m.Y H:i:s",(integer)$item['message']->date) ?></span>
+                <div id="conversation-<?= $item['conversation']->id ?>" class="col-sm-12 conversation clearfix" style="padding: 0">
+                    <a href="<?= $url_conversation ?>" class="clearfix" style="display: block; padding: 5px;">
+                        <div class="col-sm-1">
+                            <?php if($item['conversation']->image){ ?>
+                                <img src="<?= Url::to($item['conversation']->image, true) ?>" style="width: 100%;max-width: 100px;margin: 0 auto;display: block">
+                            <?php }else{ ?>
+                                <i class="fa fa-users" style="width: 100%;font-size: 45px;text-align: center"></i>
+                            <?php } ?>
                         </div>
-                        <div><?= $item['message']->text ?></div>
-                    </div>
+                        <div class="col-sm-11">
+                            <div>
+                                <span style="font-weight: bold">
+                                    <?= $item['conversation']->title ?>
+                                    <?php if($item['count_not_read']){ ?>
+                                        <span class="badge"><?= $item['count_not_read'] ?></span>
+                                    <?php } ?>
+                                </span>
+                                <span class="pull-right badge badge-pill badge-light"><?= date("d.m.Y | H:i:s",(integer)$item['date']) ?></span>
+                            </div>
+                            <div>
+                                <?php if($item['message']->text){ ?>
+                                    <?= $item['message']->text ?>
+                                <?php }else{ ?>
+                                    <span class="badge badge-pill badge-info"><?= Yii::t('app', 'No messages') ?></span>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-            </a>
         <?php } ?>
     </div>
 </div>
 
-<!-- Modal "Create conversation" -->
+<!-- Modal "Create conversation" BEGIN -->
 <div class="modal fade" id="create_conversation" tabindex="-1" role="dialog" aria-labelledby="Create conversation" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -73,7 +79,6 @@ $this->params['breadcrumbs'][] =  $this->title;
             <div class="modal-body">
                 <label for="conversation-title">Conversation title:</label>
                 <div id="conversation-title" contenteditable="true" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px;margin-bottom: 10px;"></div>
-                <!-- <input id="image-conversation" type="file" multiple="multiple" accept=".txt,image/*" style="border: 1px solid #919dbb; border-radius: 5px; min-height: 35px; width: 100%; box-shadow: 0px 0px 15px -7px #021751 inset;padding: 5px; margin-top: 10px;"> -->
 
                 <ul class="list-group">
                     <?php foreach ($friends as $item) { ?>
@@ -96,6 +101,7 @@ $this->params['breadcrumbs'][] =  $this->title;
 <script>
     var title = document.getElementById('conversation-title');
     var selectList = {};
+
     function createConversation(){
         $.ajax({
             url: 'http://portal.yii/conversation/create',
@@ -110,6 +116,7 @@ $this->params['breadcrumbs'][] =  $this->title;
             }
         });
     }
+
     function selectFriend(element, id){
         if(selectList[id]){
             element.classList.remove("select-message");
@@ -119,20 +126,5 @@ $this->params['breadcrumbs'][] =  $this->title;
             selectList[id] = true;
         }
     }
-    function deleteMessage() {
-        $.ajax({
-            url: 'http://portal.yii/conversation-messages/remove',
-            type: 'post',
-            data: {
-                selectList: selectList,
-                _csrf: '<?=Yii::$app->request->getCsrfToken()?>'
-            },
-            success: function (data) {
-                console.log(data.message);
-                for(var i = 0; i < data.message.length; i++){
-                    document.getElementById("conversation-messages-"+data.message[i]).classList.add("hidden");
-                }
-            }
-        });
-    }
 </script>
+<!-- Modal "Create conversation" END -->

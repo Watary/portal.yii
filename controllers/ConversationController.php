@@ -15,6 +15,7 @@ use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use yii\web\UploadedFile;
+use yii\helpers\Url;
 
 /**
  * ConversationController implements the CRUD actions for Conversation model.
@@ -45,6 +46,7 @@ class ConversationController extends Controller
         $model = ConversationParticipant::findAllConversationsForUser(Yii::$app->user->getId());
         $listConversation = [];
         $lastMessage = [];
+        $array_id = [];
 
         foreach ($model as $key => $item){
             $listConversation[$item->id_conversation][] = [
@@ -56,9 +58,16 @@ class ConversationController extends Controller
         }
 
         foreach ($listConversation as $key => $item){
+            if(!Conversation::findConversation($item[0]['id_conversation'])){
+                unset($listConversation[$item[0]['id_conversation']]);
+                continue;
+            }
+
+            $array_id[] = $item[0]['id_conversation'];
+
+            $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
             $lastMessage[] = ConversationMessages::findLastMessage($item[0]['id_conversation'], ConversationMessages::getWhereDate($item));
             $listConversation[$item[0]['id_conversation']]['message'] = ConversationMessages::findLastMessage($item[0]['id_conversation'], ConversationMessages::getWhereDate($item));
-            $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
             $whereParticipant = [];
 
             if($listConversation[$item[0]['id_conversation']]['conversation']->title == NULL){
@@ -80,6 +89,21 @@ class ConversationController extends Controller
 
             $listConversation[$item[0]['id_conversation']]['count_not_read'] = ConversationMessages::countNotReadMessages($item[0]['id_conversation']);
 
+            if($listConversation[$item[0]['id_conversation']]['message']->date){
+                $listConversation[$item[0]['id_conversation']]['date'] = $listConversation[$item[0]['id_conversation']]['message']->date;
+            }else{
+                $listConversation[$item[0]['id_conversation']]['date'] = $listConversation[$item[0]['id_conversation']]['conversation']->date_create;
+            }
+        }
+
+        for($i = 0; $i < count($array_id); $i++){
+            for($j = $i; $j < count($array_id); $j++){
+                if($listConversation[$array_id[$i]]['date'] < $listConversation[$array_id[$j]]['date']){
+                    $val = $listConversation[$array_id[$j]];
+                    $listConversation[$array_id[$j]] = $listConversation[$array_id[$i]];
+                    $listConversation[$array_id[$i]] = $val;
+                }
+            }
         }
 
         $user = User::getUserBuId(Yii::$app->user->getId());
@@ -90,6 +114,43 @@ class ConversationController extends Controller
             'friends' => $friends,
         ]);
     }
+
+    /*public function actionIndex()
+    {
+        $model = ConversationParticipant::findAllConversationsForUser(Yii::$app->user->getId());
+        $listConversation = [];
+        $lastMessage = [];
+        $array_id = [];
+
+        foreach ($model as $key => $item){
+            $listConversation[$item->id_conversation][] = [
+                'id_conversation' => $item->id_conversation,
+                'id_last_see' => $item->id_last_see,
+                'date_entry' => $item->date_entry,
+                'date_exit' => $item->date_exit
+            ];
+        }
+
+        $whereConversation = ['or'];
+
+        foreach ($listConversation as $key => $item){
+            $array_id[] = $item[0]['id_conversation'];
+            $whereConversation[] = ['conversation.id' => $item[0]['id_conversation']];
+        }
+
+        echo '<pre>';
+        print_r(Conversation::findListConversation(''));
+        echo '</pre>';
+        exit;
+
+        $user = User::getUserBuId(Yii::$app->user->getId());
+        $friends = $user->friends;
+
+        return $this->render('index', [
+            'listConversation' => $listConversation,
+            'friends' => $friends,
+        ]);
+    }*/
 
     /**
      * Displays a single Conversation model.
@@ -219,6 +280,22 @@ class ConversationController extends Controller
         }
 
         //return $this->render('upload', ['model' => $model]);
+    }
+
+
+    public function actionRemove($id_conversation){
+        $data['id_conversation'] = $id_conversation;
+
+        $model = Conversation::find()->where(['id' => $data['id_conversation']])->andWhere(['not like', 'remove', Yii::$app->user->getId()])->one();
+        $model->remove = $model->remove . ' ' . Yii::$app->user->getId();
+        if($model->update()){
+            return $this->redirect(Url::toRoute('/conversation', true));
+            /*return [
+                'message' => 'Yes',
+            ];*/
+        }else{
+            return $this->redirect(Yii::$app->request->referrer);
+        }
     }
 
 }

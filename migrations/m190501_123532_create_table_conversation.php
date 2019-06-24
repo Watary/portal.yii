@@ -1,5 +1,6 @@
 <?php
 
+use yii\db\Schema;
 use yii\db\Migration;
 
 /**
@@ -16,6 +17,9 @@ class m190501_123532_create_table_conversation extends Migration
             'id'                =>  $this->primaryKey(),
             'id_owner'          =>  $this->integer(),
             'dialog'            =>  $this->boolean()->defaultValue(false),
+            'date_update'       =>  Schema::TYPE_INTEGER . ' NOT NULL',
+            'date_create'       =>  Schema::TYPE_INTEGER . ' NOT NULL',
+            'remove'            =>  $this->text()->notNull()->defaultValue(''),
         ]);
     }
 

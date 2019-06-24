@@ -68,6 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <button type="button" class="dropdown-item" data-toggle="modal" data-target="#return_to_conversation"><?= Yii::t('app', 'Return to this conversation') ?></button>
             <?php } ?>
             <button type="button" class="dropdown-item" data-toggle="modal" data-target="#participants"><?= Yii::t('app', 'Participants') ?></button>
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#remove_conversation"><?= Yii::t('app', 'Remove this conversation') ?></button>
         </div>
     </div>
 
@@ -521,3 +522,27 @@ $this->registerJs($script);
     }
 </script>
 <!-- Modal "participants" END -->
+
+<!-- Modal "Leave conversation" BEGIN -->
+<div class="modal fade" id="remove_conversation" tabindex="-1" role="dialog" aria-labelledby="Remove this conversation" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title"><?= Yii::t('app', 'Remove this conversation')?></h3>
+            </div>
+
+            <div class="modal-body">
+                <?= Yii::t('app', 'Are you sure you want to remove this conversation?')?>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= Yii::t('app', 'NO')?></button>
+                <a href="<?= Url::toRoute('/conversation/remove/'.$id_conversation, true) ?>" class="btn btn-primary"><?= Yii::t('app', 'YES')?></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal "Leave conversation" END -->

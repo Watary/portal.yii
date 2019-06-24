@@ -59,6 +59,7 @@ $config = [
                 'conversation-messages/view-new-message/<id_conversation:\d+>' => 'conversation-messages/view-new-message',
                 'conversation-messages/upload/<id:\d+>' => 'conversation-messages/upload',
                 'conversation/upload/<id:\d+>' => 'conversation/upload',
+                'conversation/remove/<id_conversation:\d+>' => 'conversation/remove',
                 'profile/add-friend/<id:\d+>' => 'profile/add-friend',
                 'profile/remove-friend/<id:\d+>' => 'profile/remove-friend',
                 'profile/write-message/<id:\d+>' => 'profile/write-message',
