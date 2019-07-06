@@ -3,6 +3,7 @@
 return [
 
     // General elements begin
+    'Admin panel' => 'Панель адміністратора',
     'General statistic' => 'Статистика сайту',
     'More info' => 'Детальніше',
     // General elements end

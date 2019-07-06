@@ -26,8 +26,9 @@ class Friend extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_user', 'id_friend', 'date'], 'required'],
-            [['id_user', 'id_friend', 'active', 'date'], 'integer'],
+            [['id_user', 'id_friend'], 'required'],
+            [['id_user', 'id_friend', 'date'], 'integer'],
+            [['active'], 'boolean'],
         ];
     }
 
@@ -50,26 +51,28 @@ class Friend extends \yii\db\ActiveRecord
 
         if($this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) return;
 
-        if($friend = $this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) {
-
+        if($friend = $this->isFriends(Yii::$app->getUser()->identity->getId(), $friend_id)) {
             $friend->active = true;
             $this->active = true;
             $friend->save();
-            var_dump($friend_id);die();
         }
+
         $this->id_friend = $friend_id;
         $this->id_user = Yii::$app->getUser()->identity->getId();
         $this->date = time();
+
         return $this->save();
     }
 
     public function removeFriend($friend_id)
     {
         if(!$user = $this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) return;
+
         if($friend = $this->isFriends(Yii::$app->getUser()->identity->getId(), $friend_id)) {
-            $friend->active = 0;
+            $friend->active = false;
             $friend->save();
         }
+
         return $user->delete();
     }
 

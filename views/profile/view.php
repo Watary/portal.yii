@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><?= $user['username'] ?> <span id="user-online-show" class="text-danger pull-right">֍</span></h3>
+                        <h3 class="panel-title"><?= $user['username'] ?> <span id="user-online-show" class="text-light pull-right">֍</span></h3>
                     </div>
                     <div class="panel-body">
                         <div class="card">
@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <?php if($user['count_friends']){ ?>
-            <div class="col-12">
+            <div class="col-md-12">
                 <div class="panel panel-default panel_profile_friends">
                     <div class="panel-heading">
                         <h3 class="panel-title"><?= Yii::t('app', 'Friends') ?></h3>

@@ -546,3 +546,11 @@ $this->registerJs($script);
     </div>
 </div>
 <!-- Modal "Leave conversation" END -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('footer').style.setProperty('display', 'none');
+        document.getElementById('wrap-main').style.setProperty('margin', '0');
+        document.getElementById('wrap-main').style.setProperty('padding', '0');
+    });
+</script>

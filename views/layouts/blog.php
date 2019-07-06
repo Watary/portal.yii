@@ -4,11 +4,14 @@
 /* @var $content string */
 
 use app\widgets\Alert;
+use app\widgets\LanguageDropdown;
+use app\widgets\LanguageSelect;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
+use mdm\admin\components\Helper;
 
 if(!Yii::$app->user->isGuest) {
     Yii::$app->user->identity->updateOnline();
@@ -75,7 +78,23 @@ AppAsset::register($this);
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
-        <?= $content ?>
+        <div class="row">
+            <div class="col-sm-8 col-md-9">
+                <?= $content ?>
+            </div>
+
+            <div class="col-sm-4 col-md-3">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active">
+                        Cras justo odio
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+                    <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+                    <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+                    <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">Vestibulum at eros</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

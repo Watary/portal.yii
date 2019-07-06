@@ -35,6 +35,7 @@ return [
         'Created at:' => 'Створено:',
         'Email:' => 'Електронна адреса:',
         'Users' => 'Користувачі',
+        'This user not have friends!' => 'Цей користувач не має друзів!',
     // Profile end
 
     //Conversations begin
@@ -61,8 +62,19 @@ return [
         '' => '',
     //Conversations message end
 
+    //Сontact us begin
+        'Thank you for contacting us. We will respond to you as soon as possible.' => 'Дякуємо, що зв\'язалися з нами. Ми відповімо Вам якнайшвидше.',
+        'If you have questions, please fill out the following form to contact us. Thank you.' => 'Якщо у вас є запитання, будь ласка, заповніть наступну форму, щоб зв\'язатися з нами. Дякую.',
+        'Name' => 'Ім\'я',
+        'Email' => 'Електронна адрема',
+        'Subject' => 'Заголовок',
+        'Body' => 'Повідомлення',
+        'Verification code' => 'Код верефікації',
+    //Сontact us end
+
     //Footer begin
-        'Pedorenko Sergey' => 'Педоренко Сергій'
+        'Pedorenko Sergey' => 'Педоренко Сергій',
+        'Сontact us' => 'Зв\'язок з нами',
     //Footer end
 
 ];

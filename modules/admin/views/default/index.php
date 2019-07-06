@@ -1,7 +1,6 @@
-<?php use yii\helpers\Url; ?>
+<?php use yii\helpers\Url;
+$this->title = Yii::t('admin', 'Admin panel')?>
 <div class="admin-default-index">
-    <h1>Admin panel</h1>
-
     <div class="row">
         <div class="col-md-12">
             <div class="box box-default">

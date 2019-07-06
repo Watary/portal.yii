@@ -128,8 +128,18 @@ class ProfileController extends Controller
     {
         if($id) {
             $model = new Friend();
-            $model->removeFriend($id);
+            if($model->removeFriend($id)) {
+                if (Yii::$app->request->isAjax) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return [
+                        'message' => 'Yes',
+                    ];
+                }
+            }
         }
+
+
+
         return $this->redirect('/profile/view/' . $id);
     }
 
@@ -145,6 +155,15 @@ class ProfileController extends Controller
         }
 
         return false;
+    }
+
+    public function actionFriends($id){
+        $model = User::getUserBuId($id);
+
+        return $this->render('friends', [
+            'user' => $model,
+            'friends' => $model->friends,
+            ]);
     }
 
     /**

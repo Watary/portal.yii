@@ -44,10 +44,6 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
-            /*'class' => 'codemix\localeurls\UrlManager',
-            'languages' => ['en', 'ua', 'ru'],
-            'enableDefaultLanguageUrlCode' => false,
-            'enableLanguagePersistence' => false,*/
             'class'=>'app\components\LangUrlManager',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
@@ -67,6 +63,7 @@ $config = [
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:(\w|-)+>' => '<module>/<controller>/<action>',
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                'logout' => 'site/logout',
             ],
         ],
         'authManager' => [
@@ -117,7 +114,12 @@ $config = [
             ],
             'layout' => 'left-menu',
             'mainLayout' => '@app/views/layouts/admin/main.php',
-        ]
+        ],
+        'blog' => [
+
+            'class' => 'app\modules\blog\Module',
+
+        ],
     ],
     'as access' => [
         'class' => 'mdm\admin\components\AccessControl',
