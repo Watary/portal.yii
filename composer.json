@@ -23,7 +23,10 @@
         "kartik-v/yii2-widget-datetimepicker": "*",
         "kop/yii2-scroll-pager": "dev-master",
         "yiisoft/yii2-bootstrap4": "^2.0",
-        "codemix/yii2-localeurls": "^1.7"
+        "codemix/yii2-localeurls": "^1.7",
+        "mihaildev/yii2-ckeditor": "*",
+        "mihaildev/yii2-elfinder": "*",
+        "kartik-v/yii2-widget-select2": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

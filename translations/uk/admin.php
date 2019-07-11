@@ -18,5 +18,12 @@ return [
     'Add language' => 'Додати мову',
     // Languages end
 
+    // Blog begin
+    'Blog' => 'Блог',
+    'Articles' => 'Статті',
+    'Categories' => 'Категорії',
+    'Tags' => 'Теги',
+    // Blog end
+
     '' => '',
 ];

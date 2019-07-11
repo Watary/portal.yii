@@ -35,43 +35,8 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
 
 <div id="wrap-main" class="wrap">
-    <?php
-    NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => \yii\helpers\Url::to(['/'],true),
-        'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
-        ],
-    ]);
 
-    $menuItems = [
-            ['label' => Yii::t('menu', 'Home'), 'url' => ['/']],
-            ['label' => Yii::t('menu', 'Admin'), 'url' => ['/admin'], 'visible' => Yii::$app->user->can('Administrator')],
-            ['label' => Yii::t('menu', 'About'), 'url' => ['/site/about']],
-            ['label' => Yii::t('menu', 'Profile'), 'url' => ['/profile']],
-            Yii::$app->user->isGuest ? (
-                ['label' => Yii::t('menu', 'Login'), 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    Yii::t('menu', 'Logout ({username})', ['username' => Yii::$app->user->identity->username]),
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            ),
-            Yii::$app->user->isGuest ? (['label' => Yii::t('menu', 'Signup'), 'url' => ['/site/signup']]) : (''),
-        ];
-
-    //$menuItems = Helper::filter($menuItems);
-
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => $menuItems,
-    ]);
-    NavBar::end();
-    ?>
+    <?= $this->render('top-menu.php') ?>
 
     <div class="container">
         <?= Breadcrumbs::widget([
@@ -85,13 +50,23 @@ AppAsset::register($this);
 
             <div class="col-sm-4 col-md-3">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action active">
-                        Cras justo odio
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                    <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
-                    <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-                    <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">Vestibulum at eros</a>
+                    <span class="list-group-item list-group-item-action header">
+                        Categories
+                    </span>
+                    <a href="#" class="list-group-item list-group-item-action">WEB development</a>
+                    <a href="#" class="list-group-item list-group-item-action">WEB design</a>
+                    <a href="#" class="list-group-item list-group-item-action">PHP development</a>
+                    <a href="#" class="list-group-item list-group-item-action">Yii2 framework</a>
+                </div>
+
+                <div class="list-group">
+                    <span class="list-group-item list-group-item-action header">
+                        Last articles
+                    </span>
+                    <a href="#" class="list-group-item list-group-item-action">WEB development</a>
+                    <a href="#" class="list-group-item list-group-item-action">WEB design</a>
+                    <a href="#" class="list-group-item list-group-item-action">PHP development</a>
+                    <a href="#" class="list-group-item list-group-item-action">Yii2 framework</a>
                 </div>
             </div>
         </div>

@@ -32,11 +32,13 @@ class m190705_070029_create_tables_for_blog extends Migration
             'title'                 =>  $this->string(255)->notNull(),
             'text'                  =>  $this->text()->notNull(),
             'image'                 =>  $this->text()->defaultValue(NULL),
+            'alias'                 =>  $this->string(255)->notNull(),
             'count_show_all'        =>  $this->integer()->notNull()->defaultValue(0),
             'count_show'            =>  $this->integer()->notNull()->defaultValue(0),
+            'count_comments'        =>  $this->integer()->notNull()->defaultValue(0),
             'mark'                  =>  $this->double()->defaultValue(NULL),
-            'created_at'            =>  $this->timestamp()->notNull(),
-            'updated_at'            =>  $this->timestamp(),
+            'created_at'            =>  $this->integer(11)->notNull(),
+            'updated_at'            =>  $this->integer(11),
         ]);
 
         $this->createTable('blog_articles_show', [
@@ -56,9 +58,10 @@ class m190705_070029_create_tables_for_blog extends Migration
             'id_owner'              =>  $this->integer()->notNull(),
             'id_parent'             =>  $this->integer(),
             'title'                 =>  $this->string(255)->notNull(),
+            'alias'                 =>  $this->string(255)->notNull(),
             'description'           =>  $this->text(),
-            'created_at'            =>  $this->timestamp()->notNull(),
-            'updated_at'            =>  $this->timestamp(),
+            'created_at'            =>  $this->integer(11)->notNull(),
+            'updated_at'            =>  $this->integer(11),
         ]);
 
         $this->createTable('blog_comments', [
@@ -67,17 +70,18 @@ class m190705_070029_create_tables_for_blog extends Migration
             'id_articles'           =>  $this->integer()->notNull(),
             'id_comment'            =>  $this->integer(),
             'text'                  =>  $this->text()->notNull(),
-            'created_at'            =>  $this->timestamp()->notNull(),
-            'updated_at'            =>  $this->timestamp(),
+            'created_at'            =>  $this->integer(11)->notNull(),
+            'updated_at'            =>  $this->integer(11),
         ]);
 
         $this->createTable('blog_tags', [
             'id'                    =>  $this->primaryKey(),
             'id_owner'              =>  $this->integer()->notNull(),
             'title'                 =>  $this->string(255)->notNull(),
+            'alias'                 =>  $this->string(255)->notNull(),
             'description'           =>  $this->text(),
-            'created_at'            =>  $this->timestamp()->notNull(),
-            'updated_ad'            =>  $this->timestamp(),
+            'created_at'            =>  $this->integer(11)->notNull(),
+            'updated_ad'            =>  $this->integer(11),
         ]);
     }
 
