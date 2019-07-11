@@ -39,6 +39,11 @@ $config = [
                     'name'   => ['category' => 'my','message' => 'Some Name'], // Yii::t($category, $message)
                     'access' => ['read' => '*', 'write' => 'UserFilesAccess'] // * - для всех, иначе проверка доступа в даааном примере все могут видет а редактировать могут пользователи только с правами UserFilesAccess
                 ]*/
+                [
+                    'name'   => ['category' => 'app','message' => 'Design'], // Yii::t($category, $message)
+                    'path'  => 'image/design',
+                    'access' => ['read' => 'permissionAdministrator', 'write' => 'permissionAdministrator'] // * - для всех, иначе проверка доступа в даааном примере все могут видет а редактировать могут пользователи только с правами UserFilesAccess
+                ]
             ],
             'watermark' => [
                 'source'         => __DIR__.'/logo.png', // Path to Water mark image

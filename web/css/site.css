@@ -223,3 +223,51 @@ a.desc:after {
 .footer-lists{
     padding: 10px 0 30px;
 }
+
+.rating{
+    margin-top: 10px;
+    text-align: center;
+    }
+    .rating .rating-box{
+        position:relative;
+        display: inline-block;
+        margin: 0 auto;
+            }
+        .rating .rating-box .background-box{
+            background: rgba(0, 0, 0, 0.07);
+            height: 23px;
+            width: 100%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            }
+        .rating .rating-box .slider-box{
+            background: #FFC627;
+            height: 23px;
+            width: 86%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            }
+        .rating .rating-box .slider-select-box{
+            background: #ff8b39;
+            height: 23px;
+            width: 0%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            }
+        .rating .image-box{
+            width: 230px;
+            height: 23px;
+            margin: 0 auto;
+            position: relative;
+            }
+            .rating .image-box .image{
+                width: 23px;
+                height: 23px;
+                background-position: center;
+                background-size: cover;
+                display: inline-block;
+                padding: 0;
+            }

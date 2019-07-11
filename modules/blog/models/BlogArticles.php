@@ -25,6 +25,7 @@ use app\models\User;
  * @property object $author
  * @property object $category
  * @property object $articletag
+ * @property object $articlemark
  */
 class BlogArticles extends \yii\db\ActiveRecord
 {
@@ -105,6 +106,10 @@ class BlogArticles extends \yii\db\ActiveRecord
 
     public function getArticleshow(){
         return $this->hasMany(BlogArticlesShow::className(), ['id_article' => 'id']);
+    }
+
+    public function getArticlemark(){
+        return $this->hasMany(BlogArticleMark::className(), ['id_article' => 'id']);
     }
 
     public static function getCount()

@@ -2,6 +2,7 @@
 
 namespace app\modules\blog\controllers;
 
+use app\modules\blog\models\BlogArticleMark;
 use app\modules\blog\models\BlogArticlesShow;
 use app\modules\blog\models\BlogCategories;
 use app\modules\blog\models\BlogTags;
@@ -63,6 +64,7 @@ class ArticlesController extends Controller
 
         return $this->render('view', [
             'model' => $model,
+            'isMark' => BlogArticleMark::issetMark($model->id, Yii::$app->user->getId())
         ]);
     }
 
@@ -174,6 +176,45 @@ class ArticlesController extends Controller
         }
 
         return false;
+    }
+
+    public function actionSetMark(){
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            if($data['mark'] > 10 || $data['mark'] < 1) return ['message' => false];
+
+            if(BlogArticleMark::issetMark($data['article'], Yii::$app->user->getId())) return ['message' => 'Mark isset'];
+
+            $model_mark = new BlogArticleMark();
+            $model_mark->id_article = $data['article'];
+            $model_mark->id_user = Yii::$app->user->getId();
+            $model_mark->mark = $data['mark'];
+            $model_mark->save();
+
+            $model_article = $this->findModel($data['article']);
+
+            $old_marks = $model_article->articlemark;
+            $mark_sum = 0;
+            $mark_count = 0;
+
+            foreach ($old_marks as $item){
+                $mark_sum += $item->mark;
+                $mark_count++;
+            }
+
+            $model_article->mark = $mark_sum / $mark_count;
+            $model_article->save();
+
+            return [
+                'message' => $mark_sum / $mark_count,
+            ];
+        }
+
+        return [
+            'message' => false,
+        ];
     }
 
     private function setTags($model){
