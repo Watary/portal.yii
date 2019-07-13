@@ -7,24 +7,14 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\blog\models\BlogArticles */
 
+$this->params['article-id']  =$model->id;
+
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Blog article', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="blog-articles-view">
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
     <div class="blog">
         <article class="blog-article" style="">
             <?php if($model->image){ ?>
@@ -33,7 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="article-body">
                 <span class="article-info">
                     <span><i class="fas fa-user"></i> <a href="<"><?= $model->author->username ?></a></span>
-                    <span><i class="fas fa-server"></i> <a href="<?= Url::to(['/blog/categories/view/'.$model->category->alias]) ?>"><?= $model->category->title ?></a></span>
+                    <span><i class="fas fa-server"></i>
+                        <?php if($model->category->title){ ?>
+                            <a href="<?= Url::to(['/blog/categories/view/'.$model->category->alias]) ?>"><?= $model->category->title ?></a>
+                        <?php }else{ ?>
+                            <a href="<?= Url::to(['/blog/categories/view/uncategorized']) ?>">Uncategorized</a>
+                        <?php } ?>
+                    </span>
                     <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:m', $model->created_at) ?></span>
                     <?php if($model->articletag){ ?>
                         <span>
@@ -64,7 +60,6 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </article>
     </div>
-
 </div>
 
 <?php if(!$isMark && !Yii::$app->user->isGuest){ ?>

@@ -116,4 +116,8 @@ class BlogArticles extends \yii\db\ActiveRecord
     {
         return BlogArticles::find()->count();
     }
+
+    public static function issetAlias($alias, $articles){
+        return BlogArticles::find()->andWhere(['<>','id', $articles])->andWhere(['alias' => $alias])->count();
+    }
 }

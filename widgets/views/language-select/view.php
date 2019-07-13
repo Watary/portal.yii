@@ -1,9 +1,14 @@
 <?php
 use yii\helpers\Html;
+
+/**
+ * @var $current
+ * @var $langs
+ */
 ?>
 <div class="lang-widget pull-right">
     <span class="current-lang">
-        <?= $current->name;?>
+        <?= $current->name ?>
     </span>
     <ul class="langs">
         <?php foreach ($langs as $lang):?>

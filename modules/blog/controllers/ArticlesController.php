@@ -108,6 +108,7 @@ class ArticlesController extends Controller
             $date_post = Yii::$app->request->post();
 
             BlogTags::saveTags($date_post['BlogArticles']['tags'], $model->id);
+            $model->alias = $this->generateAlias($model->alias, $model->id);
 
             if($model->save()) {
                 return $this->redirect('view/' . $model->alias);
@@ -153,22 +154,12 @@ class ArticlesController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-
     public function actionGenerateUrl(){
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request->post();
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-            $rus=array('А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Ъ','Ы','Ь','Э','Ю','Я','а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я',' ','і','ї',',');
-            $lat=array('a','b','v','g','d','e','e','gh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','y','y','y','e','yu','ya','a','b','v','g','d','e','e','gh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','y','y','y','e','yu','ya',' ','i','i','');
-
-            $url = $data['url'];
-
-            $url= preg_replace("/  +/"," ",$url);
-
-            $url = str_replace($rus, $lat, $url);
-
-            $url = str_replace(' ', '-', trim(strtolower($url)));
+            $url = $this->generateAlias($data['url'], $data['article']);
 
             return [
                 'message' => $url,
@@ -252,5 +243,35 @@ class ArticlesController extends Controller
         $model->save();
 
         return true;
+    }
+
+    private function issetAlias($alias, $articles){
+
+        for(;;) {
+            if (BlogArticles::issetAlias($alias, $articles)) {
+                $alias .= '-new';
+            }else{
+                break;
+            }
+        }
+
+        return $alias;
+    }
+
+    private function generateAlias($alias, $articles){
+        $rus=array('А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Ъ','Ы','Ь','Э','Ю','Я','а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я',' ','і','ї',',');
+        $lat=array('a','b','v','g','d','e','e','gh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','y','y','y','e','yu','ya','a','b','v','g','d','e','e','gh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','y','y','y','e','yu','ya',' ','i','i','');
+
+        $alias= preg_replace("/  +/"," ",$alias);
+
+        $alias = str_replace($rus, $lat, $alias);
+
+        $alias = str_replace(' ', '-', trim(strtolower($alias)));
+
+        $alias = str_replace([':',';','.',',','<','>','?','#','%'], "", $alias);
+
+        $alias = $this->issetAlias($alias, $articles);
+
+        return $alias;
     }
 }

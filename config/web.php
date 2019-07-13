@@ -108,8 +108,8 @@ $config = [
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:(\w|-)+>' => '<module>/<controller>/<action>',
 
-                '<module:\w+>/<controller:\w+>/<action:(\w|-)+>/<alias:(\w|-)+>' => '<module>/<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:(\w|-)+>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module:\w+>/<controller:\w+>/<action:(\w|-)+>/<alias:(\w|-)+>' => '<module>/<controller>/<action>',
 
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
                 'logout' => 'site/logout',
@@ -142,7 +142,7 @@ $config = [
                     'basePath' => '@app/translations',
                     'sourceLanguage' => 'en-US',
                     'fileMap' => [
-                        'app'       => 'menu.php',
+                        'app'       => 'admin.php',
                     ],
                 ],
             ],

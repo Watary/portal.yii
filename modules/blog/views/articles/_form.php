@@ -87,6 +87,7 @@ $script =  <<< JS
             type        : 'POST',
             data        : {
                 url:  title,
+                article:  article,
             },
             success: function (data) {
                 console.log(data.message);
@@ -97,5 +98,6 @@ $script =  <<< JS
     });
 JS;
 $this->registerJsVar('generate_url',  Url::toRoute('/blog/articles/generate-url', true));
+$this->registerJsVar('article',  $model->id);
 $this->registerJs($script);
 ?>

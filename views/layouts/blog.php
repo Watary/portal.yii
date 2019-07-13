@@ -49,25 +49,11 @@ AppAsset::register($this);
             </div>
 
             <div class="col-sm-4 col-md-3">
-                <div class="list-group">
-                    <span class="list-group-item list-group-item-action header">
-                        Categories
-                    </span>
-                    <a href="#" class="list-group-item list-group-item-action">WEB development</a>
-                    <a href="#" class="list-group-item list-group-item-action">WEB design</a>
-                    <a href="#" class="list-group-item list-group-item-action">PHP development</a>
-                    <a href="#" class="list-group-item list-group-item-action">Yii2 framework</a>
-                </div>
+                <?= \app\widgets\BlogCategories::widget() ?>
 
-                <div class="list-group">
-                    <span class="list-group-item list-group-item-action header">
-                        Last articles
-                    </span>
-                    <a href="#" class="list-group-item list-group-item-action">WEB development</a>
-                    <a href="#" class="list-group-item list-group-item-action">WEB design</a>
-                    <a href="#" class="list-group-item list-group-item-action">PHP development</a>
-                    <a href="#" class="list-group-item list-group-item-action">Yii2 framework</a>
-                </div>
+                <?= \app\widgets\BlogTags::widget() ?>
+
+                <?= \app\widgets\BlogAdministration::widget(['article' => $this->params['article-id']]) ?>
             </div>
         </div>
     </div>
