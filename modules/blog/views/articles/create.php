@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\modules\blog\models\BlogArticles */
 
 $this->title = 'Create Blog Articles';
-$this->params['breadcrumbs'][] = ['label' => 'Blog Articles', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Blog Articles', 'url' => ['/blog']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="blog-articles-create">
@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model' => $model,
         'items_categories' => $items_categories,
+        'items_tags' => $items_tags,
     ]) ?>
 
 </div>

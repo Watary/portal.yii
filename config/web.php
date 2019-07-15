@@ -104,6 +104,9 @@ $config = [
                 'profile/remove-friend/<id:\d+>' => 'profile/remove-friend',
                 'profile/write-message/<id:\d+>' => 'profile/write-message',
 
+                'blog/<page:\d+>' => 'blog',
+                'blog/article/<alias:(\w|-)+>' => 'blog/articles/view',
+
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:(\w|-)+>' => '<module>/<controller>/<action>',

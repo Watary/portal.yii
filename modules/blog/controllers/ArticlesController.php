@@ -37,8 +37,10 @@ class ArticlesController extends Controller
      * Lists all BlogArticles models.
      * @return mixed
      */
-    public function actionIndex()
+    /*public function actionIndex($alias)
     {
+        //return $this->actionView($alias);
+
         $dataProvider = new ActiveDataProvider([
             'query' => BlogArticles::find(),
         ]);
@@ -46,7 +48,7 @@ class ArticlesController extends Controller
         return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
-    }
+    }*/
 
     /**
      * Displays a single BlogArticles model.
@@ -82,7 +84,7 @@ class ArticlesController extends Controller
             $model->id_author = Yii::$app->user->getId();
 
             if($model->save()){
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect('/blog/article/' . $model->alias);
             }
         }
 
@@ -111,7 +113,7 @@ class ArticlesController extends Controller
             $model->alias = $this->generateAlias($model->alias, $model->id);
 
             if($model->save()) {
-                return $this->redirect('view/' . $model->alias);
+                return $this->redirect('/blog/article/' . $model->alias);
             }
         }
 
@@ -135,7 +137,7 @@ class ArticlesController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['/blog']);
     }
 
     /**
@@ -182,6 +184,7 @@ class ArticlesController extends Controller
             $model_mark->id_article = $data['article'];
             $model_mark->id_user = Yii::$app->user->getId();
             $model_mark->mark = $data['mark'];
+
             $model_mark->save();
 
             $model_article = $this->findModel($data['article']);

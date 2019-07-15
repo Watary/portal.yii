@@ -13,6 +13,7 @@ use app\models\User;
  * @property int $id_author
  * @property string $title
  * @property string $text
+ * @property string $excerpt
  * @property string $image
  * @property string $alias
  * @property int $count_show_all
@@ -48,7 +49,7 @@ class BlogArticles extends \yii\db\ActiveRecord
         return [
             [['id_category', 'id_author', 'count_show_all', 'count_show', 'count_comments'], 'integer'],
             [['id_author', 'title', 'text', 'alias'], 'required'],
-            [['text', 'image'], 'string'],
+            [['text', 'excerpt', 'image'], 'string'],
             [['mark'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['title', 'alias'], 'string', 'max' => 255],
@@ -66,6 +67,7 @@ class BlogArticles extends \yii\db\ActiveRecord
             'id_author' => 'Author',
             'title' => 'Title',
             'text' => 'Text',
+            'excerpt' => 'Excerpt',
             'image' => 'Image',
             'alias' => 'Alias',
             'count_show_all' => 'Count show all',
@@ -119,5 +121,16 @@ class BlogArticles extends \yii\db\ActiveRecord
 
     public static function issetAlias($alias, $articles){
         return BlogArticles::find()->andWhere(['<>','id', $articles])->andWhere(['alias' => $alias])->count();
+    }
+
+    public static function findAllArticles(){
+        return BlogArticles::find()->all();
+    }
+
+    public static function findArticlesPage($offset = 1, $limit = 5){
+        return BlogArticles::find()
+            ->limit($limit)
+            ->offset($offset)
+            ->all();
     }
 }

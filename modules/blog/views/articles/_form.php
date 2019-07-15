@@ -70,6 +70,13 @@ use kartik\select2\Select2;
         ]),
     ]) ?>
 
+    <?= $form->field($model, 'excerpt')->widget(CKEditor::className(),[
+        'editorOptions' => ElFinder::ckeditorOptions('elfinder',[
+            'preset' => 'basic', //разработанны стандартные настройки basic, standard, full данную возможность не обязательно использовать
+            'height' => '300px'
+        ]),
+    ]) ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-default btn-block btn-lg']) ?>
     </div>

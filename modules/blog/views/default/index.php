@@ -1,43 +1,69 @@
+<?php
+
+use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/**
+ * @var array $articles
+ * @var int $page
+ * @var int $count_pages
+ **/
+$this->params['breadcrumbs'][] = ['label' => 'Blog articles'];
+?>
 <div class="blog">
-    <?php for($i = 0; $i < 5; $i++){ ?>
-        <div class="blog-article" style="">
-            <div class="image" style="background-image: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg')">1</div>
+    <?php foreach ($articles as $article) {?>
+        <article class="blog-article" style="">
+            <?php if($article->image){ ?>
+                <div class="image" style="background-image: url('<?= $article->image ?>')"></div>
+            <?php } ?>
             <div class="article-body">
-                <span class="article-info">
-                    <span>Author: <a href="#">Alexander Pierce</a></span>
-                    <span>Category: <a href="#">WEB development</a></span>
-                    <span><i class="far fa-calendar-alt"></i> 06-07-2019 17:19</span>
-                    <span>Tags: <a href="#">new</a>, <a href="#">post</a>, <a href="#">for</a></span>
-                    <span class="badge badge-secondary"><i class="far fa-comment-dots"></i> 70</span>
-                    <span class="badge badge-secondary"><i class="fas fa-eye"></i> 500</span>
-                    <span class="badge badge-secondary"><i class="fas fa-eye"></i> 1000</span>
-                </span>
-                <h3 class="article-title">Card title</h3>
-                <p class="article-text">Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <span class="article-info">
+                        <span><i class="fas fa-user"></i> <a href="<"><?= $article->author->username ?></a></span>
+                        <span><i class="fas fa-server"></i>
+                            <?php if($article->category->title){ ?>
+                                <a href="<?= Url::to(['/blog/categories/view/'.$article->category->alias]) ?>"><?= $article->category->title ?></a>
+                            <?php }else{ ?>
+                                <a href="<?= Url::to(['/blog/categories/view/uncategorized']) ?>">Uncategorized</a>
+                            <?php } ?>
+                        </span>
+                        <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:m', $article->created_at) ?></span>
+                        <?php if($article->articletag){ ?>
+                            <span>
+                                <i class="fas fa-tags"></i>
+                                <?php foreach ($article->articletag as $item) { ?>
+                                    <a href="<?= Url::to(['/blog/tags/view/'.$item->tag->alias]) ?>"><?= $item->tag->title ?></a>
+                                <?php } ?>
+                            </span>
+                        <?php } ?>
+                        <span class="badge badge-secondary"><i class="far fa-comment-dots"></i> <?= $article->count_comments ?></span>
+                        <span class="badge badge-secondary"><i class="fas fa-eye"></i> <?= $article->count_show ?></span>
+                        <span class="badge badge-secondary"><i class="fas fa-eye"></i> <?= $article->count_show_all ?></span>
+                    </span>
+
+                <div class="rating">
+                    <div class="rating-box">
+                        <div class="background-box"> </div>
+                        <div id="slider-box" class="slider-box" style="width: <?= $article->mark*10 ?>%"> </div>
+                        <div id="slider-select-box" class="slider-select-box"> </div>
+                        <div class="image-box">
+                            <?php for($i = 1; $i <= 10; $i++){ ?><div id="star-<?= $i ?>" class="image" style="background-image: url('<?= '/image/design/star.png' ?>')"></div><?php } ?>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="article-title"><?= $article->title ?></h2>
+                <p class="article-text"><?= $article->excerpt ?></p>
             </div>
-            <a href="#" class="btn btn-lg btn-block">Show more</a>
-        </div>
+            <a href="<?= Url::to(['/blog/article/'.$article->alias]) ?>" class="btn btn-lg btn-block">Show more</a>
+        </article>
     <?php } ?>
 </div>
 
-<nav aria-label="Page navigation example" style="text-align: center">
-    <ul class="pagination blog-pagination">
-        <li class="page-item">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
-        </li>
-
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item disabled"><span class="page-link">...</span></li>
-        <li class="page-item"><a class="page-link" href="#">34</a></li>
-        <li class="page-item"><a class="page-link" href="#">35</a></li>
-        <li class="page-item active"><span class="page-link">36</span></li>
-        <li class="page-item"><a class="page-link" href="#">37</a></li>
-        <li class="page-item"><a class="page-link" href="#">38</a></li>
-        <li class="page-item disabled"><span class="page-link">...</span></li>
-        <li class="page-item"><a class="page-link" href="#">76</a></li>
-
-        <li class="page-item">
-            <a class="page-link" href="#">&raquo;</a>
-        </li>
-    </ul>
-</nav>
+<?php if($count_pages > 1) {
+        echo $this->render('/pagination/pagination',[
+            'count_pages' => $count_pages,
+            'page' => $page,
+            'url' => 'blog/',
+        ]);
+    }
+?>

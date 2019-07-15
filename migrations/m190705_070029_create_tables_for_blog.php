@@ -31,6 +31,7 @@ class m190705_070029_create_tables_for_blog extends Migration
             'id_author'             =>  $this->integer()->notNull(),
             'title'                 =>  $this->string(255)->notNull(),
             'text'                  =>  $this->text()->notNull(),
+            'excerpt'               =>  $this->text()->defaultValue(NULL),
             'image'                 =>  $this->text()->defaultValue(NULL),
             'alias'                 =>  $this->string(255)->notNull(),
             'count_show_all'        =>  $this->integer()->notNull()->defaultValue(0),

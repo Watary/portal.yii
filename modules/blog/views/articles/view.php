@@ -10,7 +10,7 @@ use yii\widgets\DetailView;
 $this->params['article-id']  =$model->id;
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Blog article', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Blog article', 'url' => ['/blog']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="blog">
         <article class="blog-article" style="">
             <?php if($model->image){ ?>
-            <div class="image" style="background-image: url('<?= Url::to([$model->image]) ?>')"></div>
+            <div class="image" style="background-image: url('<?= $model->image ?>')"></div>
             <?php } ?>
             <div class="article-body">
                 <span class="article-info">
@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div id="slider-box" class="slider-box" style="width: <?= $model->mark*10 ?>%"> </div>
                         <div id="slider-select-box" class="slider-select-box"> </div>
                         <div class="image-box">
-                            <?php for($i = 1; $i <= 10; $i++){ ?><div id="star-<?= $i ?>" <?php if(!$isMark && !Yii::$app->user->isGuest){ ?>onclick="setMark(<?= $i ?>)" onmouseout="document.getElementById('slider-select-box').style.width = '0%'" onmousemove="document.getElementById('slider-select-box').style.width = '<?= $i*10 ?>%'"<?php } ?> class="image" style="background-image: url('<?= Url::to(['/image/design/star.png']) ?>')"></div><?php } ?>
+                            <?php for($i = 1; $i <= 10; $i++){ ?><div id="star-<?= $i ?>" <?php if(!$isMark && !Yii::$app->user->isGuest){ ?>onclick="setMark(<?= $i ?>)" onmouseout="document.getElementById('slider-select-box').style.width = '0%'" onmousemove="document.getElementById('slider-select-box').style.width = '<?= $i*10 ?>%'"<?php } ?> class="image" style="background-image: url('<?= '/image/design/star.png' ?>')"></div><?php } ?>
                         </div>
                     </div>
                 </div>
