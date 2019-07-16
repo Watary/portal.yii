@@ -271,3 +271,7 @@ a.desc:after {
                 display: inline-block;
                 padding: 0;
             }
+
+.blog-categories-widget a.select{
+    background: rgba(65, 65, 65, 0.2);
+}

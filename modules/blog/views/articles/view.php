@@ -7,10 +7,22 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\blog\models\BlogArticles */
 
-$this->params['article-id']  =$model->id;
+$this->params['article-id'] = $model->id;
+
+
+if($model->category->alias) {
+    $this->params['category-alias'] = $model->category->alias;
+    $breadcrumbs_title =  $model->category->title;
+    $breadcrumbs_url =  $model->category->alias;
+}else{
+    $this->params['category-alias'] = 'uncategorized';
+    $breadcrumbs_title =  'Uncategorized';
+    $breadcrumbs_url =  'uncategorized';
+}
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Blog article', 'url' => ['/blog']];
+$this->params['breadcrumbs'][] = ['label' => 'Blog', 'url' => ['/blog']];
+$this->params['breadcrumbs'][] = ['label' => $breadcrumbs_title, 'url' => ['/blog/'.$breadcrumbs_url]];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -25,9 +37,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span><i class="fas fa-user"></i> <a href="<"><?= $model->author->username ?></a></span>
                     <span><i class="fas fa-server"></i>
                         <?php if($model->category->title){ ?>
-                            <a href="<?= Url::to(['/blog/categories/view/'.$model->category->alias]) ?>"><?= $model->category->title ?></a>
+                            <a href="<?= Url::to(['/blog/category/'.$model->category->alias]) ?>"><?= $model->category->title ?></a>
                         <?php }else{ ?>
-                            <a href="<?= Url::to(['/blog/categories/view/uncategorized']) ?>">Uncategorized</a>
+                            <a href="<?= Url::to(['/blog/category/uncategorized']) ?>">Uncategorized</a>
                         <?php } ?>
                     </span>
                     <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:m', $model->created_at) ?></span>

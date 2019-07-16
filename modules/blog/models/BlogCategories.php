@@ -11,6 +11,7 @@ use Yii;
  * @property int $id_owner
  * @property int $id_parent
  * @property string $title
+ * @property string $alias
  * @property string $description
  * @property int $created_at
  * @property int $updated_at
@@ -54,6 +55,10 @@ class BlogCategories extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getArticles(){
+        return $this->hasMany(BlogArticles::className(), ['id_category' => 'id']);
+    }
+
     public static function findListCategories(){
         $categories = BlogCategories::find()->all();
 
@@ -65,8 +70,6 @@ class BlogCategories extends \yii\db\ActiveRecord
 
         return $items_categories;
     }
-
-
 
     public static function getCount()
     {

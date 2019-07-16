@@ -1,14 +1,22 @@
 <?php
 
+use yii\helpers\Html;
+use yii\widgets\DetailView;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/**
- * @var array $articles
- * @var int $page
- * @var int $count_pages
- **/
-$this->params['breadcrumbs'][] = ['label' => 'Blog articles'];
+/* @var $model app\modules\blog\models\BlogCategories */
+
+$this->title = $model->title;
+$this->params['breadcrumbs'][] = ['label' => 'Blog', 'url' => ['/blog']];
+$this->params['breadcrumbs'][] = $this->title;
+
+if($model->alias) {
+    $this->params['category-alias'] = $model->alias;
+}else{
+    $this->params['category-alias'] = 'uncategorized';
+}
+\yii\web\YiiAsset::register($this);
 ?>
 <div class="blog">
     <?php foreach ($articles as $article) {?>
@@ -21,9 +29,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Blog articles'];
                         <span><i class="fas fa-user"></i> <a href="<?= Url::to(['/profile/'.$article->author->id]) ?>"><?= $article->author->username ?></a></span>
                         <span><i class="fas fa-server"></i>
                             <?php if($article->category->title){ ?>
-                                <a href="<?= Url::to(['/blog/category/'.$article->category->alias]) ?>"><?= $article->category->title ?></a>
+                                <a href="<?= Url::to(['/blog/categories/view/'.$article->category->alias]) ?>"><?= $article->category->title ?></a>
                             <?php }else{ ?>
-                                <a href="<?= Url::to(['/blog/category/uncategorized']) ?>">Uncategorized</a>
+                                <a href="<?= Url::to(['/blog/categories/view/uncategorized']) ?>">Uncategorized</a>
                             <?php } ?>
                         </span>
                         <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:m', $article->created_at) ?></span>
@@ -60,10 +68,10 @@ $this->params['breadcrumbs'][] = ['label' => 'Blog articles'];
 </div>
 
 <?php if($count_pages > 1) {
-        echo $this->render('/pagination/pagination',[
-            'count_pages' => $count_pages,
-            'page' => $page,
-            'url' => 'blog/',
-        ]);
-    }
+    echo $this->render('/pagination/pagination',[
+        'count_pages' => $count_pages,
+        'page' => $page,
+        'url' => 'blog/category/'.$model->alias,
+    ]);
+}
 ?>

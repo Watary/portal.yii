@@ -119,6 +119,11 @@ class BlogArticles extends \yii\db\ActiveRecord
         return BlogArticles::find()->count();
     }
 
+    public static function getCountInCategory($category)
+    {
+        return BlogArticles::find()->where(['id_category' => $category])->count();
+    }
+
     public static function issetAlias($alias, $articles){
         return BlogArticles::find()->andWhere(['<>','id', $articles])->andWhere(['alias' => $alias])->count();
     }
@@ -131,6 +136,22 @@ class BlogArticles extends \yii\db\ActiveRecord
         return BlogArticles::find()
             ->limit($limit)
             ->offset($offset)
+            ->orderBy(['id' => SORT_DESC])
             ->all();
+    }
+
+    public static function findArticlesCategoryPage($offset = 1, $limit = 5, $category){
+        return BlogArticles::find()
+            ->limit($limit)
+            ->where(['id_category' => $category])
+            ->offset($offset)
+            ->orderBy(['id' => SORT_DESC])
+            ->all();
+    }
+
+    public static function countArticlesUncategorized(){
+        return BlogArticles::find()
+            ->where(['id_category' => NULL])
+            ->count();
     }
 }

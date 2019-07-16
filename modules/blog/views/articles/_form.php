@@ -18,7 +18,7 @@ use kartik\select2\Select2;
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-default btn-block btn-lg']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-default btn-block btn-lg']) ?>
     </div>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>

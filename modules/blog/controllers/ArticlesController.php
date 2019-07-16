@@ -8,7 +8,7 @@ use app\modules\blog\models\BlogCategories;
 use app\modules\blog\models\BlogTags;
 use Yii;
 use app\modules\blog\models\BlogArticles;
-use yii\data\ActiveDataProvider;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -113,7 +113,7 @@ class ArticlesController extends Controller
             $model->alias = $this->generateAlias($model->alias, $model->id);
 
             if($model->save()) {
-                return $this->redirect('/blog/article/' . $model->alias);
+                return $this->redirect(Url::to(['/blog/article/' . $model->alias], true));
             }
         }
 

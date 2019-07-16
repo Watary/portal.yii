@@ -6,11 +6,10 @@ use yii\helpers\Url;
  * @var int $count_pages
  * @var string $url
  */
-
 if(!$url) {
     $url = Yii::$app->request->absoluteUrl;
 
-    while ($url[(strlen($url) - 1)] != "/") {
+    while ($url[(strlen($url))] != "/") {
         $url = substr($url, 0, -1);
     }
 }else{
@@ -29,6 +28,7 @@ if($count_pages - $page <= 4){
     $end = $page + 2;
 }
 ?>
+
 <nav aria-label="Page navigation example" style="text-align: center">
     <ul class="pagination blog-pagination">
         <?php if ($page != 1){ ?>

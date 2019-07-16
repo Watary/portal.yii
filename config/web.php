@@ -106,6 +106,8 @@ $config = [
 
                 'blog/<page:\d+>' => 'blog',
                 'blog/article/<alias:(\w|-)+>' => 'blog/articles/view',
+                'blog/category/<alias:(\w|-)+>' => 'blog/categories/view',
+                'blog/category/<alias:(\w|-)+>/<page:\d+>' => 'blog/categories/view',
 
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
