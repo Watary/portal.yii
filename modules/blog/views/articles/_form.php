@@ -78,7 +78,7 @@ use kartik\select2\Select2;
     ]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-default btn-block btn-lg']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-default btn-block btn-lg']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

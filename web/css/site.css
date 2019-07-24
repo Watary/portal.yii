@@ -157,6 +157,10 @@ a.desc:after {
     text-decoration: none;
 }
 
+.blog .category-description{
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 15px;
+}
 .blog-pagination .page-item a{
     color: #444;
 }

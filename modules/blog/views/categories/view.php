@@ -11,14 +11,16 @@ $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Blog', 'url' => ['/blog']];
 $this->params['breadcrumbs'][] = $this->title;
 
-if($model->alias) {
-    $this->params['category-alias'] = $model->alias;
-}else{
-    $this->params['category-alias'] = 'uncategorized';
-}
+$this->params['category-alias'] = $model->alias ? $model->alias : 'uncategorized';
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="blog">
+    <h1><?= $this->title  ?></h1>
+
+    <div class="category-description">
+        <?= $model->description  ?>
+    </div>
+
     <?php foreach ($articles as $article) {?>
         <article class="blog-article" style="">
             <?php if($article->image){ ?>

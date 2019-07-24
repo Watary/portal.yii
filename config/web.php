@@ -104,10 +104,19 @@ $config = [
                 'profile/remove-friend/<id:\d+>' => 'profile/remove-friend',
                 'profile/write-message/<id:\d+>' => 'profile/write-message',
 
-                'blog/<page:\d+>' => 'blog',
-                'blog/article/<alias:(\w|-)+>' => 'blog/articles/view',
-                'blog/category/<alias:(\w|-)+>' => 'blog/categories/view',
-                'blog/category/<alias:(\w|-)+>/<page:\d+>' => 'blog/categories/view',
+                // Blog BEGIN
+                    'blog/<page:\d+>' => 'blog',
+
+                    'blog/article/<alias:(\w|-)+>' => 'blog/articles/view',
+
+                    'blog/category/create' => 'blog/categories/create',
+                    'blog/category/generate-url' => 'blog/categories/generate-url',
+                    'blog/category/<alias:(\w|-)+>' => 'blog/categories/view',
+                    'blog/category/<alias:(\w|-)+>/<page:\d+>' => 'blog/categories/view',
+
+                    'blog/tag/<alias:(\w|-)+>' => 'blog/tags/view',
+                    'blog/tag/<alias:(\w|-)+>/<page:\d+>' => 'blog/tags/view',
+                // Blog END
 
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',

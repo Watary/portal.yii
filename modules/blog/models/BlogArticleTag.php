@@ -53,4 +53,9 @@ class BlogArticleTag extends \yii\db\ActiveRecord
     public static function findAllTagsFotArticle($id_article){
         return BlogArticleTag::find()->where(['id_article' => $id_article])->all();
     }
+
+    public static function getCountInTag($tag)
+    {
+        return BlogArticleTag::find()->where(['id_tag' => $tag])->count();
+    }
 }

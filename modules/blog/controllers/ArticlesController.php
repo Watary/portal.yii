@@ -82,6 +82,7 @@ class ArticlesController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $model->id_author = Yii::$app->user->getId();
+            $model->alias = $this->generateAlias($model->alias, $model->id);
 
             if($model->save()){
                 return $this->redirect('/blog/article/' . $model->alias);
@@ -108,6 +109,10 @@ class ArticlesController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $date_post = Yii::$app->request->post();
+
+            if(!$model->alias){
+                $model->alias = $model->title;
+            }
 
             BlogTags::saveTags($date_post['BlogArticles']['tags'], $model->id);
             $model->alias = $this->generateAlias($model->alias, $model->id);

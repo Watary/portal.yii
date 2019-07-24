@@ -34,8 +34,24 @@ class BlogCategories extends \yii\db\ActiveRecord
         return [
             [['id_owner', 'title', 'created_at'], 'required'],
             [['id_owner', 'id_parent', 'created_at', 'updated_at'], 'integer'],
-            [['description'], 'string'],
+            [['alias', 'description'], 'string'],
             [['title'], 'string', 'max' => 255],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
         ];
     }
 
@@ -47,7 +63,7 @@ class BlogCategories extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'id_owner' => 'Id Owner',
-            'id_parent' => 'Id Parent',
+            'id_parent' => 'Parent',
             'title' => 'Title',
             'description' => 'Description',
             'created_at' => 'Created At',
@@ -69,6 +85,10 @@ class BlogCategories extends \yii\db\ActiveRecord
         }
 
         return $items_categories;
+    }
+
+    public static function issetAlias($alias, $category){
+        return BlogCategories::find()->andWhere(['<>','id', $category])->andWhere(['alias' => $alias])->count();
     }
 
     public static function getCount()

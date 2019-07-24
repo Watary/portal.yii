@@ -20,6 +20,9 @@ if($model->category->alias) {
     $breadcrumbs_url =  'uncategorized';
 }
 
+
+$this->params['widget']['article'] = $model;
+
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Blog', 'url' => ['/blog']];
 $this->params['breadcrumbs'][] = ['label' => $breadcrumbs_title, 'url' => ['/blog/'.$breadcrumbs_url]];

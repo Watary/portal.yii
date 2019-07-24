@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\modules\blog\models\BlogArticles;
+use yii\helpers\Url;
 
 /**
  * CategoriesController implements the CRUD actions for BlogCategories model.
@@ -62,7 +63,7 @@ class CategoriesController extends Controller
             $model->id = NULL;
             $model->alias = 'uncategorized';
             $model->title = 'Uncategorized';
-            $model->description = 'Uncategorized';
+            $model->description = '';//'Uncategorized';
             $model->id_parent = NULL;
             //$model->id_owner = ;
             //$model->created_at = ;
@@ -102,12 +103,25 @@ class CategoriesController extends Controller
     {
         $model = new BlogCategories();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if(!$model->alias){
+                $model->alias = $model->title;
+            }
+
+            $model->id_owner = Yii::$app->user->getId();
+            $model->created_at = time();
+            $model->alias = $this->generateAlias($model->alias, $model->id);
+
+
+            if($model->save()) {
+                return $this->redirect(Url::to(['/blog/category/' . $model->alias], true));
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
+            'items_categories' => BlogCategories::findListCategories(),
         ]);
     }
 
@@ -123,7 +137,7 @@ class CategoriesController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(Url::to(['/blog/category/' . $model->alias], true));
         }
 
         return $this->render('update', [
@@ -145,6 +159,50 @@ class CategoriesController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionGenerateUrl(){
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            $url = $this->generateAlias($data['url'], $data['category']);
+
+            return [
+                'message' => $url,
+            ];
+        }
+
+        return false;
+    }
+
+    private function issetAlias($alias, $category){
+
+        for(;;) {
+            if (BlogCategories::issetAlias($alias, $category)) {
+                $alias .= '-new';
+            }else{
+                break;
+            }
+        }
+
+        return $alias;
+    }
+
+    private function generateAlias($alias, $category){
+        $rus=array('А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Ъ','Ы','Ь','Э','Ю','Я','а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я',' ','і','ї',',');
+        $lat=array('a','b','v','g','d','e','e','gh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','y','y','y','e','yu','ya','a','b','v','g','d','e','e','gh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','y','y','y','e','yu','ya',' ','i','i','');
+
+        $alias= preg_replace("/  +/"," ",$alias);
+
+        $alias = str_replace($rus, $lat, $alias);
+
+        $alias = str_replace(' ', '-', trim(strtolower($alias)));
+
+        $alias = str_replace([':',';','.',',','<','>','?','#','%'], "", $alias);
+
+        $alias = $this->issetAlias($alias, $category);
+
+        return $alias;
+    }
     /**
      * Finds the BlogCategories model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
