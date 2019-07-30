@@ -82,7 +82,7 @@ class BlogComments extends \yii\db\ActiveRecord
             ->all();
     }
 
-    public static function countComments(){
+    public static function getCount(){
         return BlogComments::find()
             ->count();
     }

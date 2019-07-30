@@ -4,6 +4,7 @@ namespace app\modules\admin\controllers;
 
 use app\modules\blog\models\BlogArticles;
 use app\modules\blog\models\BlogCategories;
+use app\modules\blog\models\BlogComments;
 use app\modules\blog\models\BlogTags;
 use Yii;
 use app\models\User;
@@ -32,6 +33,7 @@ class DefaultController extends Controller
             'countBlogArticles'     =>  BlogArticles::getCount(),
             'countBlogCategories'   =>  BlogCategories::getCount(),
             'countBlogTags'         =>  BlogTags::getCount(),
+            'countBlogComments'     =>  BlogComments::getCount(),
         ]);
     }
 }

@@ -223,6 +223,9 @@ a.desc:after {
     border-radius: 8px;
     position: relative;
     }
+    .comments a{
+        color: #373737;
+    }
     .comments .comment-doter{
         background: url('/image/design/bg-folding-dot-light.png') repeat-x 5px 0;
         height: 10px;

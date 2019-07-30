@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="list-group">
                                     <?php if(!$user['own']){ ?>
                                         <?= $user['friend'] ? Html::a(Yii::t('app', 'Remove friends'), ['/profile/remove-friend/' . $user['id']], ['class' => 'list-group-item text-center']) : Html::a(Yii::t('app', 'Add to friends'), ['/profile/add-friend/' .  $user['id']], ['class' => 'list-group-item text-center']) ?>
-                                        <?= Html::a(Yii::t('app', 'Write message'), ['/messages/' . $user['id']], ['class' => 'list-group-item text-center']) ?>
+                                        <?= Html::a(Yii::t('app', 'Write message'), ['/messages/' . $user['dialog-id']], ['class' => 'list-group-item text-center']) ?>
                                     <?php } ?>
 
                                     <?php if($user['id'] == Yii::$app->user->getId() || Yii::$app->user->can('Administrator')){ ?>

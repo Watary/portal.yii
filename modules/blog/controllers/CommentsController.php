@@ -6,6 +6,7 @@ use app\modules\blog\models\BlogArticles;
 use Yii;
 use app\modules\blog\models\BlogComments;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -191,7 +192,7 @@ class CommentsController extends Controller
                     <span class="comment-doter" style="width: '. ($level*20) .'px"></span>
                     <img src="/' . $comment->owner->avatar . '" style="max-width: 64px;max-height: 64px;margin-right: 15px;" class="mr-3" alt="...">
                     <div class="media-body">
-                        <h4 class="mt-0">' . $comment->owner->username . ' <span class="badge badge-secondary"> ' . date("d.m.Y H:i:s", (integer)$comment->created_at) . '</span> <button type="button" onclick="showFormComment(' . $comment->id . ')" class="badge badge-secondary">Відповісти</button></h4>
+                        <h4 class="mt-0"><a href="'.Url::to('profile/'.$comment->owner->id, true).'">' . $comment->owner->username . '</a> <span class="badge badge-secondary"> ' . date("d.m.Y H:i:s", (integer)$comment->created_at) . '</span> <button type="button" onclick="showFormComment(' . $comment->id . ')" class="badge badge-secondary">Відповісти</button></h4>
                         
                         ' . $comment->text . '
                     </div>

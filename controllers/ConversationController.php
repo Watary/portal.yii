@@ -199,7 +199,7 @@ class ConversationController extends Controller
         return $result;
     }
 
-    function addParticipant($participant_id, $conversation_id, $invited = NULL){
+    public static function addParticipant($participant_id, $conversation_id, $invited = NULL){
         $model_participant = new ConversationParticipant();
 
         $model_participant->id_conversation =$conversation_id;

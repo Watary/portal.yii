@@ -61,6 +61,29 @@ class ProfileController extends Controller
             $id = Yii::$app->getUser()->identity->getId();
         }
 
+        if($id != Yii::$app->getUser()->identity->getId()){
+            if($id < Yii::$app->getUser()->identity->getId()){
+                $dialog = $id . '-' . Yii::$app->getUser()->identity->getId();
+            }else{
+                $dialog = Yii::$app->getUser()->identity->getId() . '-' . $id;
+            }
+
+            $model_dialog = Conversation::find()->where(['dialog' => $dialog])->one();
+
+
+            if(!$model_dialog){
+                $model_dialog = new Conversation();
+                $model_dialog->dialog = $dialog;
+                $model_dialog->id_owner = Yii::$app->getUser()->identity->getId();
+                if($model_dialog->save()){
+                    ConversationController::addParticipant($id, $model_dialog->id);
+                    ConversationController::addParticipant(Yii::$app->getUser()->identity->getId(), $model_dialog->id);
+                }
+            }
+
+            $user['dialog-id'] = $model_dialog->id;
+        }
+
         $this->isOwn($id);
         $this->isFriend($id);
 
@@ -81,6 +104,8 @@ class ProfileController extends Controller
         $user['avatar'] = $model->getAvatar();
         $user['online'] = $model->isOnline($model['id']);
         $user['not_read_message'] = ConversationMessages::notReadMessages();
+
+        if($model_dialog->id) $user['dialog-id'] = $model_dialog->id;
 
         return $this->render('view', [
             'user' => $user,

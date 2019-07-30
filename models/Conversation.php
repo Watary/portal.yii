@@ -28,7 +28,7 @@ class Conversation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_owner', 'dialog'], 'integer'],
+            [['id_owner'], 'integer'],
         ];
     }
 
