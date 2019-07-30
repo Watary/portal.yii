@@ -17,25 +17,5 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Blog Articles', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'id_category',
-            'id_author',
-            'title',
-            'text:ntext',
-            //'image:ntext',
-            //'alias',
-            //'count_show_all',
-            //'count_show',
-            //'mark',
-            //'created_at',
-            //'updated_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
 </div>

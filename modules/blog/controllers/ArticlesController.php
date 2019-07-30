@@ -27,7 +27,7 @@ class ArticlesController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['POST', 'GET'],
                 ],
             ],
         ];
@@ -80,11 +80,13 @@ class ArticlesController extends Controller
         $model = new BlogArticles();
 
         if ($model->load(Yii::$app->request->post())) {
+            $date_post = Yii::$app->request->post();
 
             $model->id_author = Yii::$app->user->getId();
             $model->alias = $this->generateAlias($model->alias, $model->id);
 
             if($model->save()){
+                BlogTags::saveTags($date_post['BlogArticles']['tags'], $model->id);
                 return $this->redirect('/blog/article/' . $model->alias);
             }
         }
@@ -132,10 +134,9 @@ class ArticlesController extends Controller
     }
 
     /**
-     * Deletes an existing BlogArticles model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * Delete an existing BlogArticles model.
+     * If delete is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
-     * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete($id)

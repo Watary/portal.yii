@@ -160,7 +160,8 @@ a.desc:after {
 .blog .category-description{
     color: rgba(0, 0, 0, 0.7);
     font-size: 15px;
-}
+    margin-bottom: 10px;
+    }
 .blog-pagination .page-item a{
     color: #444;
 }
@@ -215,6 +216,40 @@ a.desc:after {
             background: rgba(35, 35, 35, 0.7);
             color: #fff;
             }
+
+.comments{
+    padding: 10px;
+    border: 1px solid rgba(105, 105, 105, 0.5);
+    border-radius: 8px;
+    position: relative;
+    }
+    .comments .comment-doter{
+        background: url('/image/design/bg-folding-dot-light.png') repeat-x 5px 0;
+        height: 10px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        visibility: hidden;
+        }
+        .media-comments:hover .comment-doter{
+            visibility: visible;
+        }
+    .comments .media-comments  {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: start;
+        align-items: flex-start;
+        border-bottom: 1px solid rgba(105, 105, 105, 0.5);
+        margin-bottom: 7px;
+        position: relative;
+    }
+    #comments-list .media-comments:nth-last-child(2){
+        border: none;
+    }
+    .comments .media-comments .media-body {
+        -ms-flex: 1;
+        flex: 1;
+    }
 
 .list-group .header{
     text-align: center;

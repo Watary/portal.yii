@@ -1,42 +1,36 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\blog\models\BlogTags */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Blog Tags', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Blog', 'url' => ['/blog']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="blog-tags-view">
+<div class="blog">
+    <h1><?= $this->title  ?></h1>
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="category-description">
+        <?= $model->description  ?>
+    </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
+    <?php foreach ($articles as $article) { ?>
+        <?= $this->render('/article',[
+            'article' => $article->article['0'],
         ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'id_owner',
-            'title',
-            'alias',
-            'description:ntext',
-            'created_at',
-            'updated_at',
-        ],
-    ]) ?>
-
+    <?php } ?>
 </div>
+
+<?php if($count_pages > 1) {
+    echo $this->render('/pagination/pagination',[
+        'count_pages' => $count_pages,
+        'page' => $page,
+        'url' => 'blog/category/'.$model->alias,
+    ]);
+}
+?>

@@ -14,7 +14,7 @@ use yii\helpers\Url;
         </span>
         <span class="list-group-item list-group-item-action">
             <?php foreach ($tags as $tag){ ?>
-                <a href="<?= Url::to(['/blog/tags/view/'.$tag->alias]) ?>" class=""><span class="badge badge-secondary"><?= $tag->title ?></span></a>
+                <a href="<?= Url::to(['/blog/tag/'.$tag->alias]) ?>" class=""><span class="badge badge-secondary"><?= $tag->title ?></span></a>
             <?php } ?>
         </span>
     </div>

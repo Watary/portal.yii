@@ -114,6 +114,10 @@ class BlogArticles extends \yii\db\ActiveRecord
         return $this->hasMany(BlogArticleMark::className(), ['id_article' => 'id']);
     }
 
+    public function getComments(){
+        return $this->hasMany(BlogComments::className(), ['id_articles' => 'id']);
+    }
+
     public static function getCount()
     {
         return BlogArticles::find()->count();
@@ -140,7 +144,7 @@ class BlogArticles extends \yii\db\ActiveRecord
             ->all();
     }
 
-    public static function findArticlesCategoryPage($offset = 1, $limit = 5, $category){
+    public static function findArticlesCategoryPage($category, $offset = 1, $limit = 5){
         return BlogArticles::find()
             ->limit($limit)
             ->where(['id_category' => $category])

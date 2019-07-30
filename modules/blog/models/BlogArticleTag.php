@@ -50,6 +50,10 @@ class BlogArticleTag extends \yii\db\ActiveRecord
         return $this->hasOne(BlogTags::className(), ['id' => 'id_tag']);
     }
 
+    public function getArticle(){
+        return $this->hasMany(BlogArticles::className(), ['id' => 'id_article']);
+    }
+
     public static function findAllTagsFotArticle($id_article){
         return BlogArticleTag::find()->where(['id_article' => $id_article])->all();
     }
@@ -57,5 +61,14 @@ class BlogArticleTag extends \yii\db\ActiveRecord
     public static function getCountInTag($tag)
     {
         return BlogArticleTag::find()->where(['id_tag' => $tag])->count();
+    }
+
+    public static function findArticlesTagPage($tag, $offset = 1, $limit = 5){
+        return BlogArticleTag::find()
+            ->limit($limit)
+            ->where(['id_tag' => $tag])
+            ->offset($offset)
+            ->orderBy(['id' => SORT_DESC])
+            ->all();
     }
 }

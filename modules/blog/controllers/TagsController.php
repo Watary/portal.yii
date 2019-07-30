@@ -72,7 +72,7 @@ class TagsController extends Controller
             $page = 1;
         }
 
-        $articles = BlogArticles::findArticlesCategoryPage(($page-1)*$this->count_show_for_page, $this->count_show_for_page, $model->id);
+        $articles = BlogArticleTag::findArticlesTagPage($model->id, ($page-1)*$this->count_show_for_page, $this->count_show_for_page);
 
         return $this->render('view', [
             'model' => $model,

@@ -25,7 +25,7 @@ $this->params['widget']['article'] = $model;
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Blog', 'url' => ['/blog']];
-$this->params['breadcrumbs'][] = ['label' => $breadcrumbs_title, 'url' => ['/blog/'.$breadcrumbs_url]];
+$this->params['breadcrumbs'][] = ['label' => $breadcrumbs_title, 'url' => ['/blog/category/'.$breadcrumbs_url]];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php } ?>
             <div class="article-body">
                 <span class="article-info">
-                    <span><i class="fas fa-user"></i> <a href="<"><?= $model->author->username ?></a></span>
+                    <span><i class="fas fa-user"></i> <a href="<?= Url::to(['/profile/'.$model->author->id]) ?>"><?= $model->author->username ?></a></span>
                     <span><i class="fas fa-server"></i>
                         <?php if($model->category->title){ ?>
                             <a href="<?= Url::to(['/blog/category/'.$model->category->alias]) ?>"><?= $model->category->title ?></a>
@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span>
                             <i class="fas fa-tags"></i>
                             <?php foreach ($model->articletag as $item) { ?>
-                                <a href="<?= Url::to(['/blog/tags/view/'.$item->tag->alias]) ?>"><?= $item->tag->title ?></a>
+                                <a href="<?= Url::to(['/blog/tag/'.$item->tag->alias]) ?>"><?= $item->tag->title ?></a>
                             <?php } ?>
                         </span>
                     <?php } ?>
@@ -75,25 +75,33 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </article>
     </div>
+
+    <?= $this->render('_form_comments', [
+        'id_articles' => $model->id,
+    ]) ?>
+
+    <div id="form-comments-answer-hidden" class="hidden">
+        <?= $this->render('_form_comments_answer', [
+            'id_articles' => $model->id,
+        ]) ?>
+    </div>
+
+    <?= $this->render('comment_ajax', [
+        'comments' => $model->comments,
+        'id_article' => $model->id,
+    ]) ?>
+
 </div>
 
 <?php if(!$isMark && !Yii::$app->user->isGuest){ ?>
 <script>
-    function setMark(mark){
-        $.ajax({
-            url         : '<?= Url::toRoute('/blog/articles/set-mark', true) ?>',
-            type        : 'POST',
-            data        : {
-                mark: mark,
-                article: <?= $model->id ?>,
-            },
-            success: function (data) {
-                console.log(data.message);
-                document.getElementById('slider-box').style.width = data.message*10+'%';
-                document.getElementById('slider-select-box').style.opacity = 0;
+    var id_article = <?= $model->id ?>;
+    var cop = document.getElementById("blog-comments-answer-form");
 
-            }
-        });
+    function showFormComment(comment){
+        document.getElementById("article-comments-answer").id_comment.value=comment;
+        document.getElementById("comments-answer-text").value  = '';
+        document.getElementById("answer-"+comment).appendChild(cop);
     }
 </script>
 <?php } ?>
