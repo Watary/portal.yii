@@ -18,8 +18,8 @@ use app\widgets\LanguageSelect;
         </div>
 
         <div class="row">
-            <p class="col-sm-6">&#169; <?= Yii::t('app', 'Pedorenko Sergey') ?></p>
-            <?= LanguageSelect::widget() ?>
+            <div class="col-sm-6">&#169; <?= Yii::t('app', 'Pedorenko Sergey') ?></div>
+            <div class="col-sm-6"><?= LanguageSelect::widget() ?></div>
         </div>
     </div>
 </footer>

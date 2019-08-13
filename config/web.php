@@ -91,18 +91,22 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'messages/rename' => 'conversation-messages/rename',
-                'messages/<id_conversation:\d+>' => 'conversation-messages/index',
-                'conversation-messages/view/<id_conversation:\d+>' => 'conversation-messages/view',
-                'conversation-messages/create/<id_conversation:\d+>' => 'conversation-messages/create',
-                'conversation-messages/view-new-message/<id_conversation:\d+>' => 'conversation-messages/view-new-message',
-                'conversation-messages/upload/<id:\d+>' => 'conversation-messages/upload',
-                'conversation/upload/<id:\d+>' => 'conversation/upload',
-                'conversation/remove/<id_conversation:\d+>' => 'conversation/remove',
+                // Conversation BEGIN
+                    'messages/rename' => 'conversation-messages/rename',
+                    'messages/<id_conversation:\d+>' => 'conversation-messages/index',
+                    'conversation-messages/view/<id_conversation:\d+>' => 'conversation-messages/view',
+                    'conversation-messages/create/<id_conversation:\d+>' => 'conversation-messages/create',
+                    'conversation-messages/view-new-message/<id_conversation:\d+>' => 'conversation-messages/view-new-message',
+                    'conversation-messages/upload/<id:\d+>' => 'conversation-messages/upload',
+                    'conversation/upload/<id:\d+>' => 'conversation/upload',
+                    'conversation/remove/<id_conversation:\d+>' => 'conversation/remove',
+                // Conversation END
 
-                'profile/add-friend/<id:\d+>' => 'profile/add-friend',
-                'profile/remove-friend/<id:\d+>' => 'profile/remove-friend',
-                'profile/write-message/<id:\d+>' => 'profile/write-message',
+                // Profile BEGIN
+                    'profile/add-friend/<id:\d+>' => 'profile/add-friend',
+                    'profile/remove-friend/<id:\d+>' => 'profile/remove-friend',
+                    'profile/write-message/<id:\d+>' => 'profile/write-message',
+                // Profile END
 
                 // Blog BEGIN
                     'blog/<page:\d+>' => 'blog',
@@ -117,6 +121,14 @@ $config = [
                     'blog/tag/<alias:(\w|-)+>' => 'blog/tags/view',
                     'blog/tag/<alias:(\w|-)+>/<page:\d+>' => 'blog/tags/view',
                 // Blog END
+
+                // Forum BEGIN
+                    /*'forum/forum/<alias:(\w|-)+>' => 'forum/',
+                    'forum/forum/<id:(\d|-)+>' => 'forum/',*/
+                    'forum' => 'forum/forum',
+                    'forum/create' => 'forum/forum/create',
+                    'forum/create/<id:\d+>' => 'forum/forum/create',
+                // Forum END
 
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
@@ -180,6 +192,9 @@ $config = [
         ],
         'blog' => [
             'class' => 'app\modules\blog\Module',
+        ],
+        'forum' => [
+            'class' => 'app\modules\forum\Module',
         ],
     ],
     'as access' => [

@@ -101,7 +101,7 @@ $this->title = Yii::t('admin', 'Admin panel')?>
                                 <p><?= Yii::t('admin', 'Comments') ?></p>
                             </div>
                             <div class="icon">
-                                <i class="fa fa-tags"></i>
+                                <i class="fa fa-comment"></i>
                             </div>
                             <a href="<?= Url::to('blog/comments') ?>" class="small-box-footer"><?= Yii::t('admin', 'More info') ?> <i class="fa fa-arrow-circle-right"></i></a>
                         </div>

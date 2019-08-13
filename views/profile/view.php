@@ -11,81 +11,78 @@ $this->title = $user['username'];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><?= $user['username'] ?> <span id="user-online-show" class="text-light pull-right">֍</span></h3>
+            </div>
+            <div class="panel-body">
+                <div class="card">
+                    <img src="<?= $user['avatar'] ?>" alt="avatar" class="card-img-top" style="width: 100%;">
+                    <div class="card-body">
+                        <h1 class="card-title text-center"><?= $user['first_name'] ?> <?= $user['last_name'] ?></h1>
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="row">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><?= $user['username'] ?> <span id="user-online-show" class="text-light pull-right">֍</span></h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="card">
-                            <img src="<?= $user['avatar'] ?>" alt="avatar" class="card-img-top" style="width: 100%;">
-                            <div class="card-body">
-                                <h1 class="card-title text-center"><?= $user['first_name'] ?> <?= $user['last_name'] ?></h1>
+                        <div class="list-group">
+                            <?php if(!$user['own']){ ?>
+                                <?= $user['friend'] ? Html::a(Yii::t('app', 'Remove friends'), ['/profile/remove-friend/' . $user['id']], ['class' => 'list-group-item text-center']) : Html::a(Yii::t('app', 'Add to friends'), ['/profile/add-friend/' .  $user['id']], ['class' => 'list-group-item text-center']) ?>
+                                <?= Html::a(Yii::t('app', 'Write message'), ['/messages/' . $user['dialog-id']], ['class' => 'list-group-item text-center']) ?>
+                            <?php } ?>
 
-                                <div class="list-group">
-                                    <?php if(!$user['own']){ ?>
-                                        <?= $user['friend'] ? Html::a(Yii::t('app', 'Remove friends'), ['/profile/remove-friend/' . $user['id']], ['class' => 'list-group-item text-center']) : Html::a(Yii::t('app', 'Add to friends'), ['/profile/add-friend/' .  $user['id']], ['class' => 'list-group-item text-center']) ?>
-                                        <?= Html::a(Yii::t('app', 'Write message'), ['/messages/' . $user['dialog-id']], ['class' => 'list-group-item text-center']) ?>
-                                    <?php } ?>
+                            <?php if($user['id'] == Yii::$app->user->getId() || Yii::$app->user->can('Administrator')){ ?>
+                                <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $user["id"]], ['class' => 'list-group-item text-center']) ?>
+                            <?php } ?>
 
-                                    <?php if($user['id'] == Yii::$app->user->getId() || Yii::$app->user->can('Administrator')){ ?>
-                                        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $user["id"]], ['class' => 'list-group-item text-center']) ?>
-                                    <?php } ?>
+                            <?= Html::a(Yii::t('app', 'Friends').' <span class="badge pull-right">' .  $user['count_friends'] .'</span>', ['/profile/friends/' . $user['id']], ['class' => 'list-group-item']) ?>
 
-                                    <?= Html::a(Yii::t('app', 'Friends').' <span class="badge pull-right">' .  $user['count_friends'] .'</span>', ['/profile/friends/' . $user['id']], ['class' => 'list-group-item']) ?>
-
-                                    <?php if($user['own']){ ?>
-                                        <?= Html::a(Yii::t('app', 'Messages').' <span class="badge pull-right">'.$user['not_read_message'].'</span>', ['/conversation'], ['class' => 'list-group-item']) ?>
-                                    <?php } ?>
-                                </div>
-                            </div>
+                            <?php if($user['own']){ ?>
+                                <?= Html::a(Yii::t('app', 'Messages').' <span class="badge pull-right">'.$user['not_read_message'].'</span>', ['/conversation'], ['class' => 'list-group-item']) ?>
+                                <?php if($user['count_new_friends']){ ?>
+                                    <?= Html::a(Yii::t('app', 'New friends').' <span class="badge pull-right">'.$user['count_new_friends'].'</span>', ['new-friends'], ['class' => 'list-group-item'], true) ?>
+                                <?php } ?>
+                                <?php if($user['count_subscribers']){ ?>
+                                    <?= Html::a(Yii::t('app', 'Subscribers').' <span class="badge pull-right">'.$user['count_subscribers'].'</span>', ['subscribers'], ['class' => 'list-group-item']) ?>
+                                <?php } ?>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-sm-8">
-            <ul class="list-group">
-                <li class="list-group-item"><?= Yii::t('app', 'Created at:') ?> <?= date('d-m-Y', $user['created_at']) ?></li>
-                <li class="list-group-item"><?= Yii::t('app', 'Email:') ?> <a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></li>
-            </ul>
-        </div>
-
     </div>
 
-    <div class="row">
-        <?php if($user['count_friends']){ ?>
-            <div class="col-md-12">
-                <div class="panel panel-default panel_profile_friends">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><?= Yii::t('app', 'Friends') ?></h3>
-                    </div>
-                    <div class="panel-body">
-                        <?php
-                        $count = 0;
-                        foreach ($user['friends'] as $item) {
-                            $count++;
-                            //if($count >= 7) break;
-                            ?>
-                            <div class="col-sm-2 col-md-1 col-lg-1 thumbnail">
-                                <a href="<?= Url::to(['/profile/view/'.$item->friends->id]) ?>">
-                                    <img src="<?= $item->friends->getAvatar() ?>" class="img-circle" alt="<?= $item->friends->username ?>">
-                                </a>
-                                <?= Html::a($item->friends->username, ['/profile/view/' . $item->friends->id], ['class' => 'btn center-block']) ?>
-                            </div>
-                        <?php } ?>
-                    </div>
-                </div>
-            </div>
-        <?php } ?>
+    <div class="col-sm-8">
+        <ul class="list-group">
+            <li class="list-group-item"><?= Yii::t('app', 'Created at:') ?> <?= date('d-m-Y', $user['created_at']) ?></li>
+            <li class="list-group-item"><?= Yii::t('app', 'Email:') ?> <a href="mailto:<?= $user['email'] ?>"><?= $user['email'] ?></a></li>
+        </ul>
     </div>
-
 </div>
+
+<?php if($user['count_friends']){ ?>
+    <div class="col-md-12">
+        <div class="panel panel-default panel_profile_friends row">
+            <div class="panel-heading">
+                <h3 class="panel-title"><?= Yii::t('app', 'Friends') ?></h3>
+            </div>
+            <div class="panel-body">
+                <?php
+                $count = 0;
+                foreach ($user['friends'] as $item) {
+                    $count++;
+                    //if($count >= 7) break;
+                    ?>
+                    <div class="col-sm-2 col-md-1 col-lg-1 thumbnail">
+                        <a href="<?= Url::to(['/profile/view/'.$item->friends->id]) ?>">
+                            <img src="<?= $item->friends->getAvatar() ?>" class="img-circle" alt="<?= $item->friends->username ?>">
+                        </a>
+                        <?= Html::a($item->friends->username, ['/profile/view/' . $item->friends->id], ['class' => 'btn center-block']) ?>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+<?php } ?>
 
 <?php
 $script =  <<< JS

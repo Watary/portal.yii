@@ -101,6 +101,8 @@ class ProfileController extends Controller
         $user['own'] = $this->own;
         $user['friend'] = $this->friend;
         $user['count_friends'] = Friend::countFriends($user['id']);
+        $user['count_new_friends'] = Friend::countNewFriends($user['id']);
+        $user['count_subscribers'] = Friend::countSubscribers($user['id']);
         $user['avatar'] = $model->getAvatar();
         $user['online'] = $model->isOnline($model['id']);
         $user['not_read_message'] = ConversationMessages::notReadMessages();
@@ -163,8 +165,6 @@ class ProfileController extends Controller
             }
         }
 
-
-
         return $this->redirect('/profile/view/' . $id);
     }
 
@@ -182,13 +182,73 @@ class ProfileController extends Controller
         return false;
     }
 
-    public function actionFriends($id){
+    public function actionFriends($id = NULL){
+        if(!$id){
+            $id = Yii::$app->user->getId();
+        }
+
         $model = User::getUserBuId($id);
 
         return $this->render('friends', [
             'user' => $model,
             'friends' => $model->friends,
             ]);
+    }
+
+    public function actionNewFriends(){
+        $model = User::getUserBuId(Yii::$app->user->getId());
+        $friends = Friend::findFriendRequest($model->id);
+
+        return $this->render('new-friends', [
+            'user' => $model,
+            'friends' => $friends,
+        ]);
+    }
+
+    public function actionSubscribers(){
+        $model = User::getUserBuId(Yii::$app->user->getId());
+        $friends = Friend::findSubscribers($model->id);
+
+        return $this->render('subscribers', [
+            'user' => $model,
+            'friends' => $friends,
+        ]);
+    }
+
+    public function actionAjaxAddFriend(){
+        if (Yii::$app->request->isAjax) {
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $data = Yii::$app->request->post();
+
+            if(!$this->isFriend(Yii::$app->user->getId())) {
+                $model = new Friend();
+                $model->addFriend($data['id']);
+            }
+
+            return [
+                'message' => 'Yes',
+            ];
+        }
+
+        return false;
+    }
+
+    public function actionAjaxRemoveFriend(){
+        if (Yii::$app->request->isAjax) {
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            $data = Yii::$app->request->post();
+
+            $model = new Friend();
+            $model->removeAjaxFriend($data['id']);
+
+            return [
+                'message' => 'Yes',
+            ];
+        }
+
+        return false;
     }
 
     /**
@@ -219,7 +279,7 @@ class ProfileController extends Controller
     {
         $model = new Friend();
         if ($model->isFriends($id, Yii::$app->getUser()->identity->id)){
-            $this->friend = true;
+            $this->friend = 1;
         }
         return;
     }

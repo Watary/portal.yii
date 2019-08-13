@@ -27,8 +27,7 @@ class Friend extends \yii\db\ActiveRecord
     {
         return [
             [['id_user', 'id_friend'], 'required'],
-            [['id_user', 'id_friend', 'date'], 'integer'],
-            [['active'], 'boolean'],
+            [['id_user', 'id_friend', 'date', 'active'], 'integer'],
         ];
     }
 
@@ -52,8 +51,8 @@ class Friend extends \yii\db\ActiveRecord
         if($this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) return;
 
         if($friend = $this->isFriends(Yii::$app->getUser()->identity->getId(), $friend_id)) {
-            $friend->active = true;
-            $this->active = true;
+            $friend->active = 1;
+            $this->active = 1;
             $friend->save();
         }
 
@@ -69,11 +68,19 @@ class Friend extends \yii\db\ActiveRecord
         if(!$user = $this->isFriends($friend_id, Yii::$app->getUser()->identity->getId())) return;
 
         if($friend = $this->isFriends(Yii::$app->getUser()->identity->getId(), $friend_id)) {
-            $friend->active = false;
+            $friend->active = 2;
             $friend->save();
         }
 
         return $user->delete();
+    }
+
+    public function removeAjaxFriend($friend_id)
+    {
+        if($friend = $this->isFriends(Yii::$app->getUser()->identity->getId(), $friend_id)) {
+            $friend->active = 2;
+            $friend->save();
+        }
     }
 
     public static function listFriends($id = NULL)
@@ -97,8 +104,38 @@ class Friend extends \yii\db\ActiveRecord
             ->count();
     }
 
+    public static function countNewFriends($id = NULL)
+    {
+        if (!$id) $id = Yii::$app->getUser()->identity->getId();
+        return Friend::find()
+            ->where([
+                'id_friend' => $id,
+            ])
+            ->andWhere([
+                'active' => 0,
+            ])
+            ->count();
+    }
+
+    public static function countSubscribers($id = NULL)
+    {
+        if (!$id) $id = Yii::$app->getUser()->identity->getId();
+        return Friend::find()
+            ->where([
+                'id_friend' => $id,
+            ])
+            ->andWhere([
+                'active' => 2,
+            ])
+            ->count();
+    }
+
     public function getFriends(){
         return $this->hasOne(User::className(), ['id' => 'id_friend']);
+    }
+
+    public function getUser(){
+        return $this->hasOne(User::className(), ['id' => 'id_user']);
     }
 
     public function isFriends($id_friend, $id_user = NULL)
@@ -110,5 +147,27 @@ class Friend extends \yii\db\ActiveRecord
                 'id_friend' => $id_friend,
             ])
             ->one();
+    }
+
+    public static function findFriendRequest($id){
+        return Friend::find()
+            ->where([
+                'id_friend' => $id,
+            ])
+            ->andWhere([
+                'active' => 0,
+            ])
+            ->all();
+    }
+
+    public static function findSubscribers($id){
+        return Friend::find()
+            ->where([
+                'id_friend' => $id,
+            ])
+            ->andWhere([
+                'active' => 2,
+            ])
+            ->all();
     }
 }
