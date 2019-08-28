@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <a href="<?= Url::to(['/blog/category/uncategorized']) ?>">Uncategorized</a>
                         <?php } ?>
                     </span>
-                    <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:m', $model->created_at) ?></span>
+                    <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:i', $model->created_at) ?></span>
                     <?php if($model->articletag){ ?>
                         <span>
                             <i class="fas fa-tags"></i>

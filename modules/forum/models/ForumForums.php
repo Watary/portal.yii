@@ -13,6 +13,7 @@ use Yii;
  * @property string $description
  * @property string $alias
  * @property int $id_owner
+ * @property int $last_post
  * @property int $close
  * @property int $hot
  * @property int $count_forums
@@ -86,6 +87,18 @@ class ForumForums extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getTopic(){
+        return $this->hasMany(ForumTopics::className(), ['id_parent' => 'id'])->where(['deleted_at' => NULL]);
+    }
+
+    public function getParent(){
+        return $this->hasOne(ForumForums::className(), ['id' => 'id_parent']);
+    }
+
+    public function getLastpost(){
+        return $this->hasOne(ForumPosts::className(), ['id' => 'last_post'])->where(['deleted_at' => NULL]);
+    }
+
     public static function findListForums(){
         $forums = ForumForums::find()->all();
 
@@ -99,12 +112,47 @@ class ForumForums extends \yii\db\ActiveRecord
         return ForumForums::constructListInForums($items_forums, NULL);
     }
 
+    public static function findForums($id = NULL){
+        return ForumForums::find()->where(['id_parent' => $id])->andWhere(['deleted_at' => NULL])->orderBy(['hot' => SORT_DESC])->all();
+    }
+
     public static function incrementCountForumsOfParent($parent){
         $model = ForumForums::findOne($parent);
         $model->count_forums++;
         if($model->save()){
             if($model->id_parent) {
                 return ForumForums::incrementCountForumsOfParent($model->id_parent);
+            }
+        }
+    }
+
+    public static function incrementCountTopicOfParent($parent){
+        $model = ForumForums::findOne($parent);
+        $model->count_topics++;
+        if($model->save()){
+            if($model->id_parent) {
+                return ForumForums::incrementCountTopicOfParent($model->id_parent);
+            }
+        }
+    }
+
+    public static function incrementCountPostOfParent($parent, $last_post){
+        $model = ForumForums::findOne($parent);
+        $model->count_posts++;
+        $model->last_post = $last_post;
+        if($model->save()){
+            if($model->id_parent) {
+                return ForumForums::incrementCountPostOfParent($model->id_parent, $last_post);
+            }
+        }
+    }
+
+    public static function decrementCountPostOfParent($parent, $last_post){
+        $model = ForumForums::findOne($parent);
+        $model->count_posts--;
+        if($model->save()){
+            if($model->id_parent) {
+                return ForumForums::decrementCountPostOfParent($model->id_parent, $last_post);
             }
         }
     }
@@ -127,5 +175,10 @@ class ForumForums extends \yii\db\ActiveRecord
         }
 
         return $return;
+    }
+
+    public static function getCount(){
+        return ForumForums::find()
+            ->count();
     }
 }

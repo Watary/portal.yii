@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -9,34 +10,26 @@ use yii\grid\GridView;
 $this->title = 'Forum';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="forum-forums-index">
+<div class="forum-forums-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?><?= Html::a('Create Forum', ['create'], ['class' => 'btn btn-default pull-right']) ?></h1>
 
-    <p>
-        <?= Html::a('Create Forum Forums', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => [
-            'id',
-            'id_parent',
-            'title',
-            'description:ntext',
-            //'alias',
-            //'id_owner',
-            //'close',
-            //'hot',
-            //'count_forums',
-            //'count_topics',
-            //'count_posts',
-            //'id_deleted',
-            //'deleted_at',
-            //'created_at',
-            //'updated_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+    <div class="list-forums">
+        <div class="head">Forums</div>
+        <div class="list">
+            <?php foreach ($list_forums as $item){ ?>
+                <div class="media-forum" id="forum-'<?= $item->id ?>">
+                    <img src="/uploads/avatar/avatar_1.jpg" class="mr-3" alt="...">
+                    <div class="media-body">
+                        <h4 class="mt-0"><a href="<?= Url::to('forum/'.$item->id, true) ?>"><?= $item->title ?></a></h4>
+                    </div>
+                    <div><?= $item->count_forums ?></div>
+                    -
+                    <div><?= $item->count_topics ?></div>
+                    -
+                    <div><?= $item->count_posts ?></div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
 </div>

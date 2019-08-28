@@ -15,7 +15,7 @@ use yii\helpers\Url;
                         <a href="<?= Url::to(['/blog/category/uncategorized']) ?>">Uncategorized</a>
                     <?php } ?>
                 </span>
-                <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:m', $article->created_at) ?></span>
+                <span><i class="far fa-calendar-alt"></i> <?= date('d-m-Y | H:i', $article->created_at) ?></span>
                 <?php if($article->articletag){ ?>
                     <span>
                         <i class="fas fa-tags"></i>

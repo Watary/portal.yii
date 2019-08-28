@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -8,43 +9,81 @@ use yii\widgets\DetailView;
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Forum', 'url' => ['/forum']];
+for($i = 0; $i < count($breadcrumb_list)-1; $i++){
+    $this->params['breadcrumbs'][] = ['label' => $breadcrumb_list[$i]['title'], 'url' => ['/forum/'.$breadcrumb_list[$i]['id']]];
+}
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="forum-forums-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1 class="clearfix">
+        <?= Html::encode($this->title) ?>
+        <span class="pull-right">
+            <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
+            <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+                'class' => 'btn btn-default',
+                'data' => [
+                    'confirm' => 'Are you sure you want to delete this item?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+            <?php if($model->close != 1){ ?>
+                <?= Html::a(Yii::t('app', 'Create forum'), ['create/'.$model->id], ['class' => 'btn btn-default']) ?>
+                <?= Html::a(Yii::t('app', 'Create topic'), ['topic/create/'.$model->id], ['class' => 'btn btn-default']) ?>
+            <?php } ?>
+        </span>
+    </h1>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <?php if($list_forums){ ?>
+    <div class="list-forums">
+        <div class="head"><?= Yii::t('app', 'Forums') ?></div>
+        <div class="list">
+            <?php foreach ($list_forums as $item){ ?>
+                <div class="media-forum" id="forum-'<?= $item->id ?>">
+                    <img src="/image/design/notepad.png" class="mr-3" alt="...">
+                    <div class="media-body">
+                        <h4 class="mt-0"><a href="<?= Url::to('forum/'.$item->id, true) ?>"><?= $item->title ?></a></h4>
+                    </div>
+                    <div class="forum-statistic"><?= $item->count_forums ?> - <?= $item->count_topics ?> - <?= $item->count_posts ?></div>
+                    <?php if($item->lastpost){ ?>
+                        <div class="forum-last-post">
+                            <?= date('d-m-Y | H:i:s', $item->lastpost->created_at) ?><br>
+                            <?= $item->lastpost->parent->title ?><br>
+                            <?= $item->lastpost->owner->username ?>
+                        </div>
+                    <?php }else{ ?>
+                        <div class="forum-last-post"> </div>
+                    <?php } ?>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+    <?php } ?>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'id_parent',
-            'title',
-            'description:ntext',
-            'alias',
-            'id_owner',
-            'close',
-            'hot',
-            'count_forums',
-            'count_topics',
-            'count_posts',
-            'id_deleted',
-            'deleted_at',
-            'created_at',
-            'updated_at',
-        ],
-    ]) ?>
+    <?php if($list_topics){ ?>
+    <div class="list-forums">
+        <div class="head"><?= Yii::t('app', 'Topics') ?></div>
+        <div class="list">
+            <?php foreach ($list_topics as $item){ ?>
+                <div class="media-forum" id="forum-'<?= $item->id ?>">
+                    <img src="/image/design/forum-topic.png" class="mr-3" alt="...">
+                    <div class="media-body">
+                        <h4 class="mt-0"><a href="<?= Url::to('forum/topic/'.$item->id, true) ?>"><?= $item->title ?></a></h4>
+                    </div>
+                    <div class="forum-statistic"><?= $item->count_posts ?></div>
+                    <?php if($item->lastpost){ ?>
+                        <div class="forum-last-post">
+                            <?= date('d-m-Y | H:i:s', $item->lastpost->created_at) ?><br>
+                            <?= $item->lastpost->owner->username ?>
+                        </div>
+                    <?php }else{ ?>
+                        <div class="forum-last-post"> </div>
+                    <?php } ?>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+    <?php } ?>
 
 </div>

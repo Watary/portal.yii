@@ -123,11 +123,15 @@ $config = [
                 // Blog END
 
                 // Forum BEGIN
-                    /*'forum/forum/<alias:(\w|-)+>' => 'forum/',
-                    'forum/forum/<id:(\d|-)+>' => 'forum/',*/
                     'forum' => 'forum/forum',
+                    'forum/<id:\d+>' => 'forum/forum/view',
                     'forum/create' => 'forum/forum/create',
                     'forum/create/<id:\d+>' => 'forum/forum/create',
+                    'forum/update/<id:\d+>' => 'forum/forum/update',
+
+                    'forum/topic/<id:\d+>' => 'forum/topic/view',
+
+                    'forum/post/create/<id_parent:\d+>' => 'forum/post/create',
                 // Forum END
 
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',

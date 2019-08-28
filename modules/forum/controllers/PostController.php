@@ -4,16 +4,16 @@ namespace app\modules\forum\controllers;
 
 use app\modules\forum\models\ForumTopics;
 use Yii;
-use app\modules\forum\models\ForumForums;
+use app\modules\forum\models\ForumPosts;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * ForumController implements the CRUD actions for ForumForums model.
+ * PostController implements the CRUD actions for ForumPosts model.
  */
-class ForumController extends Controller
+class PostController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -31,23 +31,22 @@ class ForumController extends Controller
     }
 
     /**
-     * Lists all ForumForums models.
+     * Lists all ForumPosts models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => ForumForums::find(),
+            'query' => ForumPosts::find(),
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'list_forums' => ForumForums::findForums(),
         ]);
     }
 
     /**
-     * Displays a single ForumForums model.
+     * Displays a single ForumPosts model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -56,41 +55,34 @@ class ForumController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'list_forums' => ForumForums::findForums($id),
-            'list_topics' => ForumTopics::findTopics($id),
-            'breadcrumb_list' => ForumController::breadcrumbList($id),
         ]);
     }
 
     /**
-     * Creates a new ForumForums model.
+     * Creates a new ForumPosts model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($id = NULL)
+    public function actionCreate($id_parent)
     {
-        $model = new ForumForums();
+        $model = new ForumPosts();
 
         if ($model->load(Yii::$app->request->post())) {
-
+            $model->id_parent = $id_parent;
             $model->id_owner = Yii::$app->user->getId();
-
-            if( $model->save()) {
-                ForumForums::incrementCountForumsOfParent($model->id_parent);
-                return $this->redirect(['view', 'id' => $model->id]);
+            if($model->save()) {
+                ForumTopics::incrementCountPostOfParent($id_parent, $model->id);
+                return $this->redirect(['topic/'.$id_parent]);
             }
         }
 
-        $model->id_parent = $id;
-
         return $this->render('create', [
             'model' => $model,
-            'items_forums' => ForumForums::findListForums(),
         ]);
     }
 
     /**
-     * Updates an existing ForumForums model.
+     * Updates an existing ForumPosts model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -100,18 +92,20 @@ class ForumController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->id_last_edit = Yii::$app->user->getId();
+            if($model->save()){
+                return $this->redirect(['topic/'.$model->id_parent]);
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
-            'items_forums' => ForumForums::findListForums(),
         ]);
     }
 
     /**
-     * Deletes an existing ForumForums model.
+     * Deletes an existing ForumPosts model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -119,41 +113,34 @@ class ForumController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        //$this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        $model = $this->findModel($id);
+
+        $model->id_deleted = Yii::$app->user->getId();
+        $model->deleted_at = time();
+        if($model->save()){
+            ForumTopics::decrementCountPostOfParent($model->id_parent, $model->id);
+            return $this->redirect(['topic/'.$model->id_parent]);
+        }
+
+        return false;
     }
 
     /**
-     * Finds the ForumForums model based on its primary key value.
+     * Finds the ForumPosts model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return ForumForums the loaded model
+     * @return ForumPosts the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ForumForums::findOne($id)) !== null) {
+        if (($model = ForumPosts::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function breadcrumbList($id){
-        $model = ForumForums::findOne($id);
-
-        $index = 0;
-
-        if($model->id_parent != NULL){
-            $list = ForumController::breadcrumbList($model->id_parent);
-
-            $index = count($list);
-        }
-
-        $list[$index]['id'] = $model->id;
-        $list[$index]['title'] = $model->title;
-
-        return $list;
-    }
 }

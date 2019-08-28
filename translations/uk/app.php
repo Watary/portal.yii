@@ -80,4 +80,15 @@ return [
         'Сontact us' => 'Зв\'язок з нами',
     //Footer end
 
+    // Forum BEGIN
+        'Forums' => 'Форуми',
+        'Forum' => 'Форум',
+        'Topics' => 'Теми',
+        'Topic' => 'Тема',
+        'Create topic' => 'Створити тему',
+        'Create forum' => 'Створити форум',
+        'Create post' => 'Ствоити пост',
+        'Add post' => 'Додати пост',
+    // Forum END
+
 ];
