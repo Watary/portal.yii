@@ -9,6 +9,8 @@ use app\modules\blog\models\BlogTags;
 use app\modules\forum\models\ForumForums;
 use app\modules\forum\models\ForumPosts;
 use app\modules\forum\models\ForumTopics;
+use app\modules\galleries\models\GalleryGalleries;
+use app\modules\galleries\models\GalleryImages;
 use Yii;
 use app\models\User;
 use app\models\Lang;
@@ -42,6 +44,9 @@ class DefaultController extends Controller
             'countForumForums'      =>  ForumForums::getCount(),
             'countForumTopics'      =>  ForumTopics::getCount(),
             'countForumPosts'       =>  ForumPosts::getCount(),
+
+            'countGalleryGalleries' =>  GalleryGalleries::getCount(),
+            'countGalleryImages'    =>  GalleryImages::getCount(),
         ]);
     }
 }

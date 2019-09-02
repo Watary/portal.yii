@@ -20,6 +20,7 @@ return array(
     'mihaildev\\elfinder\\' => array($vendorDir . '/mihaildev/yii2-elfinder'),
     'mihaildev\\ckeditor\\' => array($vendorDir . '/mihaildev/yii2-ckeditor'),
     'mdm\\admin\\' => array($vendorDir . '/mdmsoft/yii2-admin'),
+    'kv4nt\\owlcarousel\\' => array($vendorDir . '/kv4nt/yii2-owl-carousel2'),
     'kop\\y2sp\\' => array($vendorDir . '/kop/yii2-scroll-pager'),
     'kartik\\select2\\' => array($vendorDir . '/kartik-v/yii2-widget-select2/src'),
     'kartik\\datetime\\' => array($vendorDir . '/kartik-v/yii2-widget-datetimepicker/src'),

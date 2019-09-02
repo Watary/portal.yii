@@ -165,4 +165,13 @@ return array (
       '@kartik/select2' => $vendorDir . '/kartik-v/yii2-widget-select2/src',
     ),
   ),
+  'kv4nt/yii2-owl-carousel2' => 
+  array (
+    'name' => 'kv4nt/yii2-owl-carousel2',
+    'version' => '1.0.1.0',
+    'alias' => 
+    array (
+      '@kv4nt/owlcarousel' => $vendorDir . '/kv4nt/yii2-owl-carousel2',
+    ),
+  ),
 );

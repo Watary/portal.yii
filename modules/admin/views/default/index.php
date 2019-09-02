@@ -179,4 +179,47 @@ $this->title = Yii::t('admin', 'Admin panel');
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><?= Yii::t('admin', 'Gallery') ?></h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body" style="">
+                    <div class="col-lg-3 col-xs-6">
+                        <div class="small-box bg-aqua">
+                            <div class="inner">
+                                <h3> <?= $countGalleryGalleries ?> </h3>
+                                <p><?= Yii::t('admin', 'Galleries') ?></p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-th-large"></i>
+                            </div>
+                            <a href="<?= Url::to('admin/galleries') ?>" class="small-box-footer"><?= Yii::t('admin', 'More info') ?> <i class="fa fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-xs-6">
+                        <div class="small-box bg-aqua">
+                            <div class="inner">
+                                <h3> <?= $countGalleryImages ?> </h3>
+                                <p><?= Yii::t('admin', 'Images') ?></p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-image"></i>
+                            </div>
+                            <a href="<?= Url::to('forum/topic') ?>" class="small-box-footer"><?= Yii::t('admin', 'More info') ?> <i class="fa fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

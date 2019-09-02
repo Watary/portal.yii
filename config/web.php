@@ -134,6 +134,10 @@ $config = [
                     'forum/post/create/<id_parent:\d+>' => 'forum/post/create',
                 // Forum END
 
+                // Gallery BEGIN
+                    'galleries/gallery/<alias:(\w|-)+>' => 'galleries/gallery/index',
+                // Gallery END
+
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:(\w|-)+>' => '<module>/<controller>/<action>',
@@ -199,6 +203,9 @@ $config = [
         ],
         'forum' => [
             'class' => 'app\modules\forum\Module',
+        ],
+        'galleries' => [
+            'class' => 'app\modules\galleries\Module',
         ],
     ],
     'as access' => [

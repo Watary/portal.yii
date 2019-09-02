@@ -45,6 +45,7 @@ class ComposerStaticInit0a5bc65eb40d17a8539495e41eaeaf7c
         ),
         'k' => 
         array (
+            'kv4nt\\owlcarousel\\' => 18,
             'kop\\y2sp\\' => 9,
             'kartik\\select2\\' => 15,
             'kartik\\datetime\\' => 16,
@@ -159,6 +160,10 @@ class ComposerStaticInit0a5bc65eb40d17a8539495e41eaeaf7c
         'mdm\\admin\\' => 
         array (
             0 => __DIR__ . '/..' . '/mdmsoft/yii2-admin',
+        ),
+        'kv4nt\\owlcarousel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kv4nt/yii2-owl-carousel2',
         ),
         'kop\\y2sp\\' => 
         array (

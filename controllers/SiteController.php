@@ -143,4 +143,24 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+
+    /**
+     * Displays OwlCarousel2 page.
+     *
+     * @return string
+     */
+    public function actionOwlCarousel()
+    {
+        return $this->render('owl-carousel');
+    }
+
+    /**
+     * Displays about page.
+     *
+     * @return string
+     */
+    public function actionNanoGallery()
+    {
+        return $this->render('nano-gallery');
+    }
 }
