@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'alias',
             [
                 'attribute' => 'id_owner',
+                'label'=>'Owner',
                 'format' => 'raw',
                 'value' => function($data){
                     return $data->owner->username;
@@ -38,6 +39,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'updated_at:datetime',
 
             ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label'=>'Actions',
+                'format' => 'raw',
+                'value' => function($data){
+                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', ['galleries/update/'.$data->alias]);
+                }
+
+            ],
         ],
     ]); ?>
 </div>

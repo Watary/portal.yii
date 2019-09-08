@@ -8,6 +8,7 @@ use kartik\select2\Select2;
 $this->registerCss('.select2-selection__rendered{line-height: 1.9}');
 $this->registerCssFile('/css/bootstrap-colorpicker.css');
 $this->registerJsFile('https://adminlte.io/themes/AdminLTE/bower_components/select2/dist/js/select2.full.min.js', ['depends' => [yii\web\JqueryAsset::className()]]);
+$this->registerJsFile('/js/colorpicker.js', ['depends' => [yii\web\JqueryAsset::className()]]);
 
 $gallery_setting = json_decode($model->setting, true);
 if($gallery_setting['thumbnailHeight'] == 'auto'){
@@ -36,17 +37,16 @@ if($gallery_setting['thumbnailHeight'] == 'auto'){
         </div>
     </div>
 
-    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'description')->textarea(['rows' => 3]) ?>
 
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab_thumbnail" data-toggle="tab" aria-expanded="true">-Thumbnail</a></li>
-            <li class=""><a href="#tab_thumbnail_label" data-toggle="tab" aria-expanded="false">-Thumbnail label</a></li>
-            <li class=""><a href="#tab_navigation_filters" data-toggle="tab" aria-expanded="false">-Navigation / Filters</a></li>
-            <li class=""><a href="#tab_gallery" data-toggle="tab" aria-expanded="false">-Gallery</a></li>
-            <li class=""><a href="#tab_thumbnails_hover_effects" data-toggle="tab" aria-expanded="false">-Thumbnails hover effects</a></li>
-            <li class=""><a href="#tab_image_display" data-toggle="tab" aria-expanded="false">-Image display</a></li>
-            <li class=""><a href="#tab_hover_effects" data-toggle="tab" aria-expanded="false">-Hover effects</a></li>
+            <li class="active"><a href="#tab_thumbnail" data-toggle="tab" aria-expanded="true">Thumbnail</a></li>
+            <li class=""><a href="#tab_thumbnail_label" data-toggle="tab" aria-expanded="false">Thumbnail label</a></li>
+            <li class=""><a href="#tab_colors" data-toggle="tab" aria-expanded="false">Colors</a></li>
+            <li class=""><a href="#tab_navigation_filters" data-toggle="tab" aria-expanded="false">Navigation / Filters</a></li>
+            <li class=""><a href="#tab_gallery" data-toggle="tab" aria-expanded="false">Gallery</a></li>
+            <li class=""><a href="#tab_hover_effects" data-toggle="tab" aria-expanded="false">Hover effects</a></li>
 
             <li class="pull-right"><a href="#tab_result" data-toggle="tab" aria-expanded="false">Result</a></li>
         </ul>
@@ -88,8 +88,8 @@ if($gallery_setting['thumbnailHeight'] == 'auto'){
                             "randomScale" => "RandomScale",
                         ];
                         echo Select2::widget([
-                            'name' => 'display_transition',
-                            'value' => 'fadeIn',
+                            'name' => 'thumbnailDisplayTransition',
+                            'value' => $gallery_setting['thumbnailDisplayTransition'],
                             'data' => $data,
                         ]);
                         ?>
@@ -104,91 +104,759 @@ if($gallery_setting['thumbnailHeight'] == 'auto'){
 
                     <div class="col-md-3">
                         <label>Thumbnail width</label>
-                        <input name="thumbnailWidth" class="form-control" type="text" placeholder="300">
+                        <input name="thumbnailWidth" class="form-control" type="text" placeholder="300" value="<?= $gallery_setting['thumbnailWidth'] ? $gallery_setting['thumbnailWidth'] : '' ?>">
                     </div>
 
                     <div class="col-md-3">
                         <label>Border height</label>
-                        <input class="form-control" type="text" placeholder="3">
+                        <input name="thumbnailBorderHorizontal" class="form-control" type="text" placeholder="2 " value="<?= $gallery_setting['thumbnailBorderHorizontal'] ? $gallery_setting['thumbnailBorderHorizontal'] : '' ?>">
                     </div>
 
                     <div class="col-md-3">
                         <label>Border width</label>
-                        <input class="form-control" type="text" placeholder="3">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group col-md-6">
-                        <label>Border color:</label>
-
-                        <div class="input-group colorpicker-border">
-                            <input type="text" class="form-control" value="rgba(0, 0, 0, 1)">
-                            <div class="input-group-addon">
-                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        <label>Background color:</label>
-
-                        <div class="input-group colorpicker-background">
-                            <input type="text" class="form-control" value="rgba(0, 0, 0, 1)">
-                            <div class="input-group-addon">
-                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
-                            </div>
-                        </div>
+                        <input name="thumbnailBorderVertical" class="form-control" type="text" placeholder="2   " value="<?= $gallery_setting['thumbnailBorderVertical'] ? $gallery_setting['thumbnailBorderVertical'] : '' ?>">
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <div class="col-md-6">
                         <label>Display transition duration (ms)</label>
-                        <input class="form-control" type="text" placeholder="240">
+                        <input class="form-control" type="text" placeholder="240" name="thumbnailDisplayTransitionDuration" value="<?= $gallery_setting['thumbnailDisplayTransitionDuration'] ? $gallery_setting['thumbnailDisplayTransitionDuration'] : '' ?>">
                     </div>
 
                     <div class="col-md-6">
                         <label>Transition interval duration (ms)</label>
-                        <input class="form-control" type="text" placeholder="15">
+                        <input class="form-control" type="text" placeholder="15" name="thumbnailDisplayInterval" value="<?= $gallery_setting['thumbnailDisplayInterval'] ? $gallery_setting['thumbnailDisplayInterval'] : '' ?>">
                     </div>
                 </div>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_thumbnail_label">
-                The European languages are members of the same family. Their separate existence is a myth.
-                For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
-                in their grammar, their pronunciation and their most common words. Everyone realizes why a
-                new common language would be desirable: one could refuse to pay expensive translators. To
-                achieve this, it would be necessary to have uniform grammar, pronunciation and more common
-                words. If several languages coalesce, the grammar of the resulting language is more simple
-                and regular than that of the individual languages.
+                <label for="thumbnailLabel[display]">Display label</label>
+                <div class="checkbox-slider">
+                    <input type="checkbox" class="checkbox" name="thumbnailLabel[display]" id="thumbnailLabel[display]" <?= $gallery_setting['thumbnailLabel']['display'] == 'false' ? '' : 'checked' ?>>
+                    <div class="knobs"></div>
+                    <div class="layer"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="thumbnailLabel[titleFontSize]">Title font size</label>
+                        <input id="thumbnailLabel[titleFontSize]" name="thumbnailLabel[titleFontSize]" class="form-control" type="text" placeholder="1em" value="<?= $gallery_setting['thumbnailLabel']['titleFontSize'] ? $gallery_setting['thumbnailLabel']['titleFontSize'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="thumbnailLabel[descriptionFontSize]">Description font size</label>
+                        <input id="thumbnailLabel[descriptionFontSize]" name="thumbnailLabel[descriptionFontSize]" class="form-control" type="text" placeholder="0.8em" value="<?= $gallery_setting['thumbnailLabel']['descriptionFontSize'] ? $gallery_setting['thumbnailLabel']['descriptionFontSize'] : '' ?>">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>Label position</label>
+                        <?php
+                        $data = [
+                            "overImageOnBottom" => "overImageOnBottom",
+                            "overImageOnTop" => "overImageOnTop",
+                            "overImageOnMiddle" => "overImageOnMiddle",
+                            "onBottom" => "onBottom",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'thumbnailLabel[position]',
+                            'value' => $gallery_setting['thumbnailLabel']['position'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Label content alignement</label>
+                        <?php
+                        $data = [
+                            "center" => "Center",
+                            "right" => "Right",
+                            "left" => "Left",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'thumbnailLabel[align]',
+                            'value' => $gallery_setting['thumbnailLabel']['align'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="thumbnailLabel[titleMultiLine]">Title multiline:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailLabel[titleMultiLine]" id="thumbnailLabel[titleMultiLine]" <?= $gallery_setting['thumbnailLabel']['titleMultiLine'] == 'true' ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailLabel[displayDescription]">Display description:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailLabel[displayDescription]" id="thumbnailLabel[displayDescription]" <?= $gallery_setting['thumbnailLabel']['displayDescription'] == 'false' || !isset($gallery_setting['thumbnailLabel']['displayDescription']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailLabel[descriptionMultiLine]">Description multiline:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailLabel[descriptionMultiLine]" id="thumbnailLabel[descriptionMultiLine]" <?= $gallery_setting['thumbnailLabel']['descriptionMultiLine'] == 'true' ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailLabel[hideIcons]">Hide icons:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailLabel[hideIcons]" id="thumbnailLabel[hideIcons]" <?= $gallery_setting['thumbnailLabel']['hideIcons'] == 'false' ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_colors">
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <label>Title color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][titleColor]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['titleColor'] ? $gallery_setting['galleryTheme']['thumbnail']['titleColor'] : 'rgba(238,238,238,1)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Title background color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][titleBgColor]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['titleBgColor'] ? $gallery_setting['galleryTheme']['thumbnail']['titleBgColor'] : 'rgba(0,0,0,0)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Description color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][descriptionColor]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['descriptionColor'] ? $gallery_setting['galleryTheme']['thumbnail']['descriptionColor'] : 'rgba(204,204,204,1)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Description background color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][descriptionBgColor]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['descriptionBgColor'] ? $gallery_setting['galleryTheme']['thumbnail']['descriptionBgColor'] : 'rgba(0,0,0,0)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Border color:</label>
+
+                        <div class="input-group colorpicker-border">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][borderColor]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['borderColor'] ? $gallery_setting['galleryTheme']['thumbnail']['borderColor'] : 'rgba(0,0,0,1)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Background color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][background]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['background'] ? $gallery_setting['galleryTheme']['thumbnail']['background'] : 'rgba(68,68,68,1)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Label background color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][labelBackground]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['labelBackground'] ? $gallery_setting['galleryTheme']['thumbnail']['labelBackground'] : 'rgba(34,34,34,0)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Stack background color:</label>
+
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][stackBackground]" value="<?= $gallery_setting['galleryTheme']['thumbnail']['stackBackground'] ? $gallery_setting['galleryTheme']['thumbnail']['stackBackground'] : 'rgba(170,170,170,1)' ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="slide-container col-md-12">
+                        <label>Label opacity: <span id="galleryTheme[thumbnail][labelOpacity][value]"></span></label>
+                    </div>
+                    <div class="slide-container col-md-12">
+                        <input type="range" min="0" max="100" name="galleryTheme[thumbnail][labelOpacity]" value="<?= isset($gallery_setting['galleryTheme']['thumbnail']['labelOpacity']) ? $gallery_setting['galleryTheme']['thumbnail']['labelOpacity']*100 : '100' ?>" class="slider" id="galleryTheme[thumbnail][labelOpacity]">
+                    </div>
+                    <style>
+                        .slider {
+                            -webkit-appearance: none;
+                            width: 100%;
+                            height: 15px;
+                            border-radius: 5px;
+                            background: #cdd9de;
+                            outline: none;
+                            opacity: 0.7;
+                            -webkit-transition: .2s;
+                            transition: opacity .2s;
+                        }
+
+                        .slider::-webkit-slider-thumb {
+                            -webkit-appearance: none;
+                            appearance: none;
+                            width: 25px;
+                            height: 25px;
+                            border-radius: 50%;
+                            background: #0391d8;
+                            cursor: pointer;
+                        }
+
+                        .slider::-moz-range-thumb {
+                            width: 25px;
+                            height: 25px;
+                            border-radius: 50%;
+                            background: #0391d8;
+                            cursor: pointer;
+                        }
+                    </style>
+                    <script>
+                        var slider = document.getElementById("galleryTheme[thumbnail][labelOpacity]");
+                        var output = document.getElementById("galleryTheme[thumbnail][labelOpacity][value]");
+                        output.innerHTML = slider.value;
+
+                        slider.oninput = function() {
+                            output.innerHTML = this.value;
+                        }
+                    </script>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <?php
+                        if($gallery_setting['galleryTheme']['thumbnail']['titleShadow']){
+                            $shadow = explode(" ", $gallery_setting['galleryTheme']['thumbnail']['titleShadow']);
+                            $shadow_x = substr($shadow[0], 0, -2);
+                            $shadow_y = substr($shadow[1], 0, -2);
+                            $shadow_r = substr($shadow[2], 0, -2);
+                            $shadow_color = $shadow[3];
+                        }else{
+                            $shadow_x = '';
+                            $shadow_y = '';
+                            $shadow_r = '';
+                            $shadow_color = '';
+                        }
+                    ?>
+                    <div class="col-md-12">
+                        <label for="galleryTheme[thumbnail][titleShadow][enable]">Title shadow:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="galleryTheme[thumbnail][titleShadow][enable]" id="galleryTheme[thumbnail][titleShadow][enable]" <?= isset($gallery_setting['galleryTheme']['thumbnail']['titleShadow']) ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryTheme[thumbnail][titleShadow][x]">X axis shift (px):</label>
+                        <input id="galleryTheme[thumbnail][titleShadow][x]" name="galleryTheme[thumbnail][titleShadow][x]" class="form-control" type="text" value="<?= $shadow_x ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryTheme[thumbnail][titleShadow][y]">Y axis shift (px):</label>
+                        <input id="galleryTheme[thumbnail][titleShadow][y]" name="galleryTheme[thumbnail][titleShadow][y]" class="form-control" type="text" value="<?= $shadow_y ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryTheme[thumbnail][titleShadow][r]">Blur radius (px):</label>
+                        <input id="galleryTheme[thumbnail][titleShadow][r]" name="galleryTheme[thumbnail][titleShadow][r]" class="form-control" type="text" value="<?= $shadow_r ?>">
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Color (px):</label>
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][titleShadow][color]" value="<?= $shadow_color ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <?php
+                        if($gallery_setting['galleryTheme']['thumbnail']['descriptionShadow']){
+                            $shadow_description = explode(" ", $gallery_setting['galleryTheme']['thumbnail']['descriptionShadow']);
+                            $shadow_description_x = substr($shadow_description[0], 0, -2);
+                            $shadow_description_y = substr($shadow_description[1], 0, -2);
+                            $shadow_description_r = substr($shadow_description[2], 0, -2);
+                            $shadow_description_color = $shadow_description[3];
+                        }else{
+                            $shadow_description_x = '';
+                            $shadow_description_y = '';
+                            $shadow_description_r = '';
+                            $shadow_description_color = '';
+                        }
+                    ?>
+                    <div class="col-md-12">
+                        <label for="galleryTheme[thumbnail][descriptionShadow][enable]">Description shadow:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="galleryTheme[thumbnail][descriptionShadow][enable]" id="galleryTheme[thumbnail][descriptionShadow][enable]" <?= isset($gallery_setting['galleryTheme']['thumbnail']['descriptionShadow']) ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryTheme[thumbnail][descriptionShadow][x]">X axis shift (px):</label>
+                        <input id="galleryTheme[thumbnail][descriptionShadow][x]" name="galleryTheme[thumbnail][descriptionShadow][x]" class="form-control" type="text" value="<?= $shadow_description_x ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryTheme[thumbnail][descriptionShadow][y]">Y axis shift (px):</label>
+                        <input id="galleryTheme[thumbnail][descriptionShadow][y]" name="galleryTheme[thumbnail][descriptionShadow][y]" class="form-control" type="text" value="<?= $shadow_description_y ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryTheme[thumbnail][descriptionShadow][r]">Blur radius (px):</label>
+                        <input id="galleryTheme[thumbnail][descriptionShadow][r]" name="galleryTheme[thumbnail][descriptionShadow][r]" class="form-control" type="text" value="<?= $shadow_description_r ?>">
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label>Color (px):</label>
+                        <div class="input-group colorpicker-background">
+                            <input type="text" class="form-control" name="galleryTheme[thumbnail][descriptionShadow][color]" value="<?= $shadow_description_color ?>">
+                            <div class="input-group-addon">
+                                <i style="background-color: rgba(0, 0, 0, 1);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_navigation_filters">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                It has survived not only five centuries, but also the leap into electronic typesetting,
-                remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                like Aldus PageMaker including versions of Lorem Ipsum.
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>Display tag filter</label>
+                        <?php
+                        $data = [
+                            "false" => "Off",
+                            "true" => "On",
+                            "title" => "Title",
+                            "description" => "Description",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'galleryFilterTags',
+                            'value' => $gallery_setting['galleryFilterTags'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Thumbnail height</label>
+                        <input name="navigationFontSize" class="form-control" type="text" placeholder="1.2em" value="<?= $gallery_setting['navigationFontSize'] ? $gallery_setting['navigationFontSize'] : '' ?>">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="displayBreadcrumb">Display breadcrumb:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="displayBreadcrumb" id="displayBreadcrumb" <?= isset($gallery_setting['displayBreadcrumb']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="breadcrumbOnlyCurrentLevel">Breadcrumb only current level:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="breadcrumbOnlyCurrentLevel" id="breadcrumbOnlyCurrentLevel" <?= isset($gallery_setting['breadcrumbOnlyCurrentLevel']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="breadcrumbAutoHideTopLevel">Breadcrumb auto hide top level:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="breadcrumbAutoHideTopLevel" id="breadcrumbAutoHideTopLevel" <?= isset($gallery_setting['breadcrumbAutoHideTopLevel']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="breadcrumbHideIcons">Breadcrumb hide icons:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="breadcrumbHideIcons" id="breadcrumbHideIcons" <?= isset($gallery_setting['breadcrumbHideIcons']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="locationHash">Location hash:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="locationHash" id="locationHash" <?= isset($gallery_setting['locationHash']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="touchAnimation">Touch animation:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="touchAnimation" id="touchAnimation" <?= isset($gallery_setting['touchAnimation']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailLevelUp">Thumbnail level up:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailLevelUp" id="thumbnailLevelUp" <?= isset($gallery_setting['thumbnailLevelUp']) == 'true' ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_gallery">
-                tab_gallery
-            </div>
-            <!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_thumbnails_hover_effects">
-                tab_thumbnails_hover_effects
-            </div>
-            <!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_image_display">
-                tab_image_display
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>Display mode</label>
+                        <?php
+                        $data = [
+                            "fullContent" => "Full content",
+                            "moreButton" => "More button",
+                            "pagination" => "Pagination",
+                            "rows" => "Rows",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'galleryDisplayMode',
+                            'value' => $gallery_setting['galleryDisplayMode'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Pagination mode</label>
+                        <?php
+                        $data = [
+                            "rectangles" => "Rectangles",
+                            "dots" => "Dots",
+                            "numbers" => "Numbers",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'galleryPaginationMode',
+                            'value' => $gallery_setting['galleryPaginationMode'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Sorting</label>
+                        <?php
+                        $data = [
+                            "none" => "none",
+                            "titleAsc" => "Title asc",
+                            "titleDesc" => "Title desc",
+                            "reversed" => "Reversed",
+                            "random" => "Random",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'gallerySorting',
+                            'value' => $gallery_setting['gallerySorting'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Display transition</label>
+                        <?php
+                        $data = [
+                            "none" => "none",
+                            "rotateX" => "Rotate X",
+                            "slideUp" => "Slide up",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'galleryDisplayTransition',
+                            'value' => $gallery_setting['galleryDisplayTransition'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Display more step</label>
+                        <input name="galleryDisplayMoreStep" class="form-control" type="text" placeholder="2" value="<?= $gallery_setting['galleryDisplayMoreStep'] ? $gallery_setting['galleryDisplayMoreStep'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Max rows</label>
+                        <input name="galleryMaxRows" class="form-control" type="text" placeholder="2" value="<?= $gallery_setting['galleryMaxRows'] ? $gallery_setting['galleryMaxRows'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Visible pages</label>
+                        <input name="paginationVisiblePages" class="form-control" type="text" placeholder="10" value="<?= $gallery_setting['paginationVisiblePages'] ? $gallery_setting['paginationVisiblePages'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Max items</label>
+                        <input name="galleryMaxItems" class="form-control" type="text" placeholder="0" value="<?= $gallery_setting['galleryMaxItems'] ? $gallery_setting['galleryMaxItems'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Display transition duration</label>
+                        <input name="galleryDisplayTransitionDuration" class="form-control" type="text" placeholder="1000" value="<?= $gallery_setting['galleryDisplayTransitionDuration'] ? $gallery_setting['galleryDisplayTransitionDuration'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Render delay</label>
+                        <input name="galleryRenderDelay" class="form-control" type="text" placeholder="60" value="<?= $gallery_setting['galleryRenderDelay'] ? $gallery_setting['galleryRenderDelay'] : '' ?>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailOpenImage">Open image:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailOpenImage" id="thumbnailOpenImage" <?= isset($gallery_setting['thumbnailOpenImage']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="paginationSwipe">Pagination swipe:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="paginationSwipe" id="paginationSwipe" <?= isset($gallery_setting['paginationSwipe']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryLastRowFull">Last row full:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="galleryLastRowFull" id="galleryLastRowFull" <?= isset($gallery_setting['galleryLastRowFull']) ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="galleryResizeAnimation">Resize animation:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="galleryResizeAnimation" id="galleryResizeAnimation" <?= isset($gallery_setting['galleryResizeAnimation']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailSelectable">Selectable:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailSelectable" id="thumbnailSelectable" <?= isset($gallery_setting['thumbnailSelectable']) ? 'checked' : '' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="thumbnailDisplayOutsideScreen">Display outside screen:</label>
+                        <div class="checkbox-slider">
+                            <input type="checkbox" class="checkbox" name="thumbnailDisplayOutsideScreen" id="thumbnailDisplayOutsideScreen" <?= isset($gallery_setting['thumbnailDisplayOutsideScreen']) ? '' : 'checked' ?>>
+                            <div class="knobs"></div>
+                            <div class="layer"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_hover_effects">
-                tab_hover_effects
+                <?php
+                $i = 0;
+                foreach (explode('|', $gallery_setting['thumbnailHoverEffect2']) as $item){
+                    $effect = $custom_effect = $from = $to = $duration = '';
+                    $list_all_effects = ["translateX", "translateY", "scale", "rotateX", "rotateY", "rotateZ", "blur", "grayscale", "sepia"];
+                    $effects_item = explode('_', $item);
+                    $element = $effects_item[0];
+                    if(in_array($effects_item[1], $list_all_effects)) {
+                        $effect = $effects_item[1];
+                    }else{
+                        $custom_effect = $effects_item[1];
+                    }
+                    $from = $effects_item[2];
+                    $to = $effects_item[3];
+                    $duration = $effects_item[4];
+                ?>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Element:</label>
+                            <?php
+                            $data = [
+                                "remove" => "Remove",
+                                "label" => "Label",
+                                "image" => "Image",
+                                "thumbnail" => "Thumbnail",
+                                "title" => "Title",
+                                "description" => "Description",
+                                "tools" => "Tools",
+                            ];
+                            echo Select2::widget([
+                                'name' => 'hover_effects['.$i.'][element]',
+                                'value' => $element,
+                                'data' => $data,
+                            ]);
+                            ?>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Effect (list):</label>
+                            <?php
+                            $data = [
+                                "none" => " ",
+                                "translateX" => "Translate X",
+                                "translateY" => "Translate Y",
+                                "scale" => "Scale",
+                                "rotateX" => "Rotate X",
+                                "rotateY" => "Rotate Y",
+                                "rotateZ" => "Rotate Z",
+                                "blur" => "Blur (only for image)",
+                                "grayscale" => "Grayscale (only for image)",
+                                "sepia" => "Sepia (only for image)",
+                            ];
+                            echo Select2::widget([
+                                'name' => 'hover_effects['.$i.'][effect]',
+                                'value' => $effect,
+                                'data' => $data,
+                            ]);
+                            ?>
+                        </div>
+                        <div class="col-md-2">
+                            <label>or custom effect:</label>
+                            <input name="hover_effects[<?= $i ?>][custom_effect]" class="form-control" type="text" value="<?= $custom_effect ? $custom_effect : '' ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <label>From:</label>
+                            <input name="hover_effects[<?= $i ?>][from]" class="form-control" type="text" value="<?= $from ? $from : '' ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <label>To:</label>
+                            <input name="hover_effects[<?= $i ?>][to]" class="form-control" type="text" value="<?= $to ? $to : '' ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Duration (ms):</label>
+                            <input name="hover_effects[<?= $i ?>][duration]" class="form-control" type="text" value="<?= $duration ? $duration : '' ?>">
+                        </div>
+                    </div>
+                <?php
+                    $i++;
+                }
+
+                $i_to = $i + 3;
+                for( ; $i < $i_to; $i++ ) { ?>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Element:</label>
+                        <?php
+                        $data = [
+                            "remove" => "Remove",
+                            "label" => "Label",
+                            "image" => "Image",
+                            "thumbnail" => "Thumbnail",
+                            "title" => "Title",
+                            "description" => "Description",
+                            "tools" => "Tools",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'hover_effects['.$i.'][element]',
+                            'value' => $gallery_setting['hover_effects'][$i]['element'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-md-2">
+                        <label>Effect (list):</label>
+                        <?php
+                        $data = [
+                            "none" => " ",
+                            "translateX" => "Translate X",
+                            "translateY" => "Translate Y",
+                            "scale" => "Scale",
+                            "rotateX" => "Rotate X",
+                            "rotateY" => "Rotate Y",
+                            "rotateZ" => "Rotate Z",
+                            "blur" => "Blur (only for image)",
+                            "grayscale" => "Grayscale (only for image)",
+                            "sepia" => "Sepia (only for image)",
+                        ];
+                        echo Select2::widget([
+                            'name' => 'hover_effects['.$i.'][effect]',
+                            'value' => $gallery_setting['hover_effects'][$i]['effect'],
+                            'data' => $data,
+                        ]);
+                        ?>
+                    </div>
+                    <div class="col-md-2">
+                        <label>or custom effect:</label>
+                        <input name="hover_effects[<?= $i ?>][custom_effect]" class="form-control" type="text" value="<?= $gallery_setting['hover_effects'][$i]['custom_effect'] ? $gallery_setting['hover_effects'][$i]['custom_effect'] : '' ?>">
+                    </div>
+                    <div class="col-md-2">
+                        <label>From:</label>
+                        <input name="hover_effects[<?= $i ?>][from]" class="form-control" type="text" value="<?= $gallery_setting['hover_effects'][$i]['from'] ? $gallery_setting['hover_effects'][$i]['from'] : '' ?>">
+                    </div>
+                    <div class="col-md-2">
+                        <label>To:</label>
+                        <input name="hover_effects[<?= $i ?>][to]" class="form-control" type="text" value="<?= $gallery_setting['hover_effects'][$i]['to'] ? $gallery_setting['hover_effects'][$i]['to'] : '' ?>">
+                    </div>
+                    <div class="col-md-2">
+                        <label>Duration (ms):</label>
+                        <input name="hover_effects[<?= $i ?>][duration]" class="form-control" type="text" value="<?= $gallery_setting['hover_effects'][$i]['duration'] ? $gallery_setting['hover_effects'][$i]['duration'] : '' ?>">
+                    </div>
+                </div>
+                <?php } ?>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_result">
@@ -232,12 +900,6 @@ $this->registerJs($script);
 
 <?php
 $script =  <<< JS
-/*!
- * Bootstrap Colorpicker v2.5.2
- * https://itsjavi.com/bootstrap-colorpicker/
- */
-!function(a,b){"function"==typeof define&&define.amd?define(["jquery"],function(a){return b(a)}):"object"==typeof exports?module.exports=b(require("jquery")):jQuery&&!jQuery.fn.colorpicker&&b(jQuery)}(this,function(a){"use strict";var b=function(c,d,e,f,g){this.fallbackValue=e?"string"==typeof e?this.parse(e):e:null,this.fallbackFormat=f?f:"rgba",this.hexNumberSignPrefix=g===!0,this.value=this.fallbackValue,this.origFormat=null,this.predefinedColors=d?d:{},this.colors=a.extend({},b.webColors,this.predefinedColors),c&&("undefined"!=typeof c.h?this.value=c:this.setColor(String(c))),this.value||(this.value={h:0,s:0,b:0,a:1})};b.webColors={aliceblue:"f0f8ff",antiquewhite:"faebd7",aqua:"00ffff",aquamarine:"7fffd4",azure:"f0ffff",beige:"f5f5dc",bisque:"ffe4c4",black:"000000",blanchedalmond:"ffebcd",blue:"0000ff",blueviolet:"8a2be2",brown:"a52a2a",burlywood:"deb887",cadetblue:"5f9ea0",chartreuse:"7fff00",chocolate:"d2691e",coral:"ff7f50",cornflowerblue:"6495ed",cornsilk:"fff8dc",crimson:"dc143c",cyan:"00ffff",darkblue:"00008b",darkcyan:"008b8b",darkgoldenrod:"b8860b",darkgray:"a9a9a9",darkgreen:"006400",darkkhaki:"bdb76b",darkmagenta:"8b008b",darkolivegreen:"556b2f",darkorange:"ff8c00",darkorchid:"9932cc",darkred:"8b0000",darksalmon:"e9967a",darkseagreen:"8fbc8f",darkslateblue:"483d8b",darkslategray:"2f4f4f",darkturquoise:"00ced1",darkviolet:"9400d3",deeppink:"ff1493",deepskyblue:"00bfff",dimgray:"696969",dodgerblue:"1e90ff",firebrick:"b22222",floralwhite:"fffaf0",forestgreen:"228b22",fuchsia:"ff00ff",gainsboro:"dcdcdc",ghostwhite:"f8f8ff",gold:"ffd700",goldenrod:"daa520",gray:"808080",green:"008000",greenyellow:"adff2f",honeydew:"f0fff0",hotpink:"ff69b4",indianred:"cd5c5c",indigo:"4b0082",ivory:"fffff0",khaki:"f0e68c",lavender:"e6e6fa",lavenderblush:"fff0f5",lawngreen:"7cfc00",lemonchiffon:"fffacd",lightblue:"add8e6",lightcoral:"f08080",lightcyan:"e0ffff",lightgoldenrodyellow:"fafad2",lightgrey:"d3d3d3",lightgreen:"90ee90",lightpink:"ffb6c1",lightsalmon:"ffa07a",lightseagreen:"20b2aa",lightskyblue:"87cefa",lightslategray:"778899",lightsteelblue:"b0c4de",lightyellow:"ffffe0",lime:"00ff00",limegreen:"32cd32",linen:"faf0e6",magenta:"ff00ff",maroon:"800000",mediumaquamarine:"66cdaa",mediumblue:"0000cd",mediumorchid:"ba55d3",mediumpurple:"9370d8",mediumseagreen:"3cb371",mediumslateblue:"7b68ee",mediumspringgreen:"00fa9a",mediumturquoise:"48d1cc",mediumvioletred:"c71585",midnightblue:"191970",mintcream:"f5fffa",mistyrose:"ffe4e1",moccasin:"ffe4b5",navajowhite:"ffdead",navy:"000080",oldlace:"fdf5e6",olive:"808000",olivedrab:"6b8e23",orange:"ffa500",orangered:"ff4500",orchid:"da70d6",palegoldenrod:"eee8aa",palegreen:"98fb98",paleturquoise:"afeeee",palevioletred:"d87093",papayawhip:"ffefd5",peachpuff:"ffdab9",peru:"cd853f",pink:"ffc0cb",plum:"dda0dd",powderblue:"b0e0e6",purple:"800080",red:"ff0000",rosybrown:"bc8f8f",royalblue:"4169e1",saddlebrown:"8b4513",salmon:"fa8072",sandybrown:"f4a460",seagreen:"2e8b57",seashell:"fff5ee",sienna:"a0522d",silver:"c0c0c0",skyblue:"87ceeb",slateblue:"6a5acd",slategray:"708090",snow:"fffafa",springgreen:"00ff7f",steelblue:"4682b4",tan:"d2b48c",teal:"008080",thistle:"d8bfd8",tomato:"ff6347",turquoise:"40e0d0",violet:"ee82ee",wheat:"f5deb3",white:"ffffff",whitesmoke:"f5f5f5",yellow:"ffff00",yellowgreen:"9acd32",transparent:"transparent"},b.prototype={constructor:b,colors:{},predefinedColors:{},getValue:function(){return this.value},setValue:function(a){this.value=a},_sanitizeNumber:function(a){return"number"==typeof a?a:isNaN(a)||null===a||""===a||void 0===a?1:""===a?0:"undefined"!=typeof a.toLowerCase?(a.match(/^\./)&&(a="0"+a),Math.ceil(100*parseFloat(a))/100):1},isTransparent:function(a){return!(!a||!("string"==typeof a||a instanceof String))&&(a=a.toLowerCase().trim(),"transparent"===a||a.match(/#?00000000/)||a.match(/(rgba|hsla)\(0,0,0,0?\.?0\)/))},rgbaIsTransparent:function(a){return 0===a.r&&0===a.g&&0===a.b&&0===a.a},setColor:function(a){if(a=a.toLowerCase().trim()){if(this.isTransparent(a))return this.value={h:0,s:0,b:0,a:0},!0;var b=this.parse(a);b?(this.value=this.value={h:b.h,s:b.s,b:b.b,a:b.a},this.origFormat||(this.origFormat=b.format)):this.fallbackValue&&(this.value=this.fallbackValue)}return!1},setHue:function(a){this.value.h=1-a},setSaturation:function(a){this.value.s=a},setBrightness:function(a){this.value.b=1-a},setAlpha:function(a){this.value.a=Math.round(parseInt(100*(1-a),10)/100*100)/100},toRGB:function(a,b,c,d){0===arguments.length&&(a=this.value.h,b=this.value.s,c=this.value.b,d=this.value.a),a*=360;var e,f,g,h,i;return a=a%360/60,i=c*b,h=i*(1-Math.abs(a%2-1)),e=f=g=c-i,a=~~a,e+=[i,h,0,0,h,i][a],f+=[h,i,i,h,0,0][a],g+=[0,0,h,i,i,h][a],{r:Math.round(255*e),g:Math.round(255*f),b:Math.round(255*g),a:d}},toHex:function(a,b,c,d,e){arguments.length<=1&&(b=this.value.h,c=this.value.s,d=this.value.b,e=this.value.a);var f="#",g=this.toRGB(b,c,d,e);if(this.rgbaIsTransparent(g))return"transparent";a||(f=this.hexNumberSignPrefix?"#":"");var h=f+((1<<24)+(parseInt(g.r)<<16)+(parseInt(g.g)<<8)+parseInt(g.b)).toString(16).slice(1);return h},toHSL:function(a,b,c,d){0===arguments.length&&(a=this.value.h,b=this.value.s,c=this.value.b,d=this.value.a);var e=a,f=(2-b)*c,g=b*c;return g/=f>0&&f<=1?f:2-f,f/=2,g>1&&(g=1),{h:isNaN(e)?0:e,s:isNaN(g)?0:g,l:isNaN(f)?0:f,a:isNaN(d)?0:d}},toAlias:function(a,b,c,d){var e,f=0===arguments.length?this.toHex(!0):this.toHex(!0,a,b,c,d),g="alias"===this.origFormat?f:this.toString(!1,this.origFormat);for(var h in this.colors)if(e=this.colors[h].toLowerCase().trim(),e===f||e===g)return h;return!1},RGBtoHSB:function(a,b,c,d){a/=255,b/=255,c/=255;var e,f,g,h;return g=Math.max(a,b,c),h=g-Math.min(a,b,c),e=0===h?null:g===a?(b-c)/h:g===b?(c-a)/h+2:(a-b)/h+4,e=(e+360)%6*60/360,f=0===h?0:h/g,{h:this._sanitizeNumber(e),s:f,b:g,a:this._sanitizeNumber(d)}},HueToRGB:function(a,b,c){return c<0?c+=1:c>1&&(c-=1),6*c<1?a+(b-a)*c*6:2*c<1?b:3*c<2?a+(b-a)*(2/3-c)*6:a},HSLtoRGB:function(a,b,c,d){b<0&&(b=0);var e;e=c<=.5?c*(1+b):c+b-c*b;var f=2*c-e,g=a+1/3,h=a,i=a-1/3,j=Math.round(255*this.HueToRGB(f,e,g)),k=Math.round(255*this.HueToRGB(f,e,h)),l=Math.round(255*this.HueToRGB(f,e,i));return[j,k,l,this._sanitizeNumber(d)]},parse:function(b){if("string"!=typeof b)return this.fallbackValue;if(0===arguments.length)return!1;var c,d,e=this,f=!1,g="undefined"!=typeof this.colors[b];return g&&(b=this.colors[b].toLowerCase().trim()),a.each(this.stringParsers,function(a,h){var i=h.re.exec(b);return c=i&&h.parse.apply(e,[i]),!c||(f={},d=g?"alias":h.format?h.format:e.getValidFallbackFormat(),f=d.match(/hsla?/)?e.RGBtoHSB.apply(e,e.HSLtoRGB.apply(e,c)):e.RGBtoHSB.apply(e,c),f instanceof Object&&(f.format=d),!1)}),f},getValidFallbackFormat:function(){var a=["rgba","rgb","hex","hsla","hsl"];return this.origFormat&&a.indexOf(this.origFormat)!==-1?this.origFormat:this.fallbackFormat&&a.indexOf(this.fallbackFormat)!==-1?this.fallbackFormat:"rgba"},toString:function(a,c,d){c=c||this.origFormat||this.fallbackFormat,d=d||!1;var e=!1;switch(c){case"rgb":return e=this.toRGB(),this.rgbaIsTransparent(e)?"transparent":"rgb("+e.r+","+e.g+","+e.b+")";case"rgba":return e=this.toRGB(),"rgba("+e.r+","+e.g+","+e.b+","+e.a+")";case"hsl":return e=this.toHSL(),"hsl("+Math.round(360*e.h)+","+Math.round(100*e.s)+"%,"+Math.round(100*e.l)+"%)";case"hsla":return e=this.toHSL(),"hsla("+Math.round(360*e.h)+","+Math.round(100*e.s)+"%,"+Math.round(100*e.l)+"%,"+e.a+")";case"hex":return this.toHex(a);case"alias":return e=this.toAlias(),e===!1?this.toString(a,this.getValidFallbackFormat()):d&&!(e in b.webColors)&&e in this.predefinedColors?this.predefinedColors[e]:e;default:return e}},stringParsers:[{re:/rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*?\)/,format:"rgb",parse:function(a){return[a[1],a[2],a[3],1]}},{re:/rgb\(\s*(\d*(?:\.\d+)?)\%\s*,\s*(\d*(?:\.\d+)?)\%\s*,\s*(\d*(?:\.\d+)?)\%\s*?\)/,format:"rgb",parse:function(a){return[2.55*a[1],2.55*a[2],2.55*a[3],1]}},{re:/rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d*(?:\.\d+)?)\s*)?\)/,format:"rgba",parse:function(a){return[a[1],a[2],a[3],a[4]]}},{re:/rgba\(\s*(\d*(?:\.\d+)?)\%\s*,\s*(\d*(?:\.\d+)?)\%\s*,\s*(\d*(?:\.\d+)?)\%\s*(?:,\s*(\d*(?:\.\d+)?)\s*)?\)/,format:"rgba",parse:function(a){return[2.55*a[1],2.55*a[2],2.55*a[3],a[4]]}},{re:/hsl\(\s*(\d*(?:\.\d+)?)\s*,\s*(\d*(?:\.\d+)?)\%\s*,\s*(\d*(?:\.\d+)?)\%\s*?\)/,format:"hsl",parse:function(a){return[a[1]/360,a[2]/100,a[3]/100,a[4]]}},{re:/hsla\(\s*(\d*(?:\.\d+)?)\s*,\s*(\d*(?:\.\d+)?)\%\s*,\s*(\d*(?:\.\d+)?)\%\s*(?:,\s*(\d*(?:\.\d+)?)\s*)?\)/,format:"hsla",parse:function(a){return[a[1]/360,a[2]/100,a[3]/100,a[4]]}},{re:/#?([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/,format:"hex",parse:function(a){return[parseInt(a[1],16),parseInt(a[2],16),parseInt(a[3],16),1]}},{re:/#?([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/,format:"hex",parse:function(a){return[parseInt(a[1]+a[1],16),parseInt(a[2]+a[2],16),parseInt(a[3]+a[3],16),1]}}],colorNameToHex:function(a){return"undefined"!=typeof this.colors[a.toLowerCase()]&&this.colors[a.toLowerCase()]}};var c={horizontal:!1,inline:!1,color:!1,format:!1,input:"input",container:!1,component:".add-on, .input-group-addon",fallbackColor:!1,fallbackFormat:"hex",hexNumberSignPrefix:!0,sliders:{saturation:{maxLeft:100,maxTop:100,callLeft:"setSaturation",callTop:"setBrightness"},hue:{maxLeft:0,maxTop:100,callLeft:!1,callTop:"setHue"},alpha:{maxLeft:0,maxTop:100,callLeft:!1,callTop:"setAlpha"}},slidersHorz:{saturation:{maxLeft:100,maxTop:100,callLeft:"setSaturation",callTop:"setBrightness"},hue:{maxLeft:100,maxTop:0,callLeft:"setHue",callTop:!1},alpha:{maxLeft:100,maxTop:0,callLeft:"setAlpha",callTop:!1}},template:'<div class="colorpicker dropdown-menu"><div class="colorpicker-saturation"><i><b></b></i></div><div class="colorpicker-hue"><i></i></div><div class="colorpicker-alpha"><i></i></div><div class="colorpicker-color"><div /></div><div class="colorpicker-selectors"></div></div>',align:"right",customClass:null,colorSelectors:null},d=function(b,d){this.element=a(b).addClass("colorpicker-element"),this.options=a.extend(!0,{},c,this.element.data(),d),this.component=this.options.component,this.component=this.component!==!1&&this.element.find(this.component),this.component&&0===this.component.length&&(this.component=!1),this.container=this.options.container===!0?this.element:this.options.container,this.container=this.container!==!1&&a(this.container),this.input=this.element.is("input")?this.element:!!this.options.input&&this.element.find(this.options.input),this.input&&0===this.input.length&&(this.input=!1),this.color=this.createColor(this.options.color!==!1?this.options.color:this.getValue()),this.format=this.options.format!==!1?this.options.format:this.color.origFormat,this.options.color!==!1&&(this.updateInput(this.color),this.updateData(this.color)),this.disabled=!1;var e=this.picker=a(this.options.template);if(this.options.customClass&&e.addClass(this.options.customClass),this.options.inline?e.addClass("colorpicker-inline colorpicker-visible"):e.addClass("colorpicker-hidden"),this.options.horizontal&&e.addClass("colorpicker-horizontal"),["rgba","hsla","alias"].indexOf(this.format)===-1&&this.options.format!==!1&&"transparent"!==this.getValue()||e.addClass("colorpicker-with-alpha"),"right"===this.options.align&&e.addClass("colorpicker-right"),this.options.inline===!0&&e.addClass("colorpicker-no-arrow"),this.options.colorSelectors){var f=this,g=f.picker.find(".colorpicker-selectors");g.length>0&&(a.each(this.options.colorSelectors,function(b,c){var d=a("<i />").addClass("colorpicker-selectors-color").css("background-color",c).data("class",b).data("alias",b);d.on("mousedown.colorpicker touchstart.colorpicker",function(b){b.preventDefault(),f.setValue("alias"===f.format?a(this).data("alias"):a(this).css("background-color"))}),g.append(d)}),g.show().addClass("colorpicker-visible"))}e.on("mousedown.colorpicker touchstart.colorpicker",a.proxy(function(a){a.target===a.currentTarget&&a.preventDefault()},this)),e.find(".colorpicker-saturation, .colorpicker-hue, .colorpicker-alpha").on("mousedown.colorpicker touchstart.colorpicker",a.proxy(this.mousedown,this)),e.appendTo(this.container?this.container:a("body")),this.input!==!1&&(this.input.on({"keyup.colorpicker":a.proxy(this.keyup,this)}),this.input.on({"input.colorpicker":a.proxy(this.change,this)}),this.component===!1&&this.element.on({"focus.colorpicker":a.proxy(this.show,this)}),this.options.inline===!1&&this.element.on({"focusout.colorpicker":a.proxy(this.hide,this)})),this.component!==!1&&this.component.on({"click.colorpicker":a.proxy(this.show,this)}),this.input===!1&&this.component===!1&&this.element.on({"click.colorpicker":a.proxy(this.show,this)}),this.input!==!1&&this.component!==!1&&"color"===this.input.attr("type")&&this.input.on({"click.colorpicker":a.proxy(this.show,this),"focus.colorpicker":a.proxy(this.show,this)}),this.update(),a(a.proxy(function(){this.element.trigger("create")},this))};d.Color=b,d.prototype={constructor:d,destroy:function(){this.picker.remove(),this.element.removeData("colorpicker","color").off(".colorpicker"),this.input!==!1&&this.input.off(".colorpicker"),this.component!==!1&&this.component.off(".colorpicker"),this.element.removeClass("colorpicker-element"),this.element.trigger({type:"destroy"})},reposition:function(){if(this.options.inline!==!1||this.options.container)return!1;var a=this.container&&this.container[0]!==window.document.body?"position":"offset",b=this.component||this.element,c=b[a]();"right"===this.options.align&&(c.left-=this.picker.outerWidth()-b.outerWidth()),this.picker.css({top:c.top+b.outerHeight(),left:c.left})},show:function(b){this.isDisabled()||(this.picker.addClass("colorpicker-visible").removeClass("colorpicker-hidden"),this.reposition(),a(window).on("resize.colorpicker",a.proxy(this.reposition,this)),!b||this.hasInput()&&"color"!==this.input.attr("type")||b.stopPropagation&&b.preventDefault&&(b.stopPropagation(),b.preventDefault()),!this.component&&this.input||this.options.inline!==!1||a(window.document).on({"mousedown.colorpicker":a.proxy(this.hide,this)}),this.element.trigger({type:"showPicker",color:this.color}))},hide:function(b){return("undefined"==typeof b||!b.target||!(a(b.currentTarget).parents(".colorpicker").length>0||a(b.target).parents(".colorpicker").length>0))&&(this.picker.addClass("colorpicker-hidden").removeClass("colorpicker-visible"),a(window).off("resize.colorpicker",this.reposition),a(window.document).off({"mousedown.colorpicker":this.hide}),this.update(),void this.element.trigger({type:"hidePicker",color:this.color}))},updateData:function(a){return a=a||this.color.toString(!1,this.format),this.element.data("color",a),a},updateInput:function(a){return a=a||this.color.toString(!1,this.format),this.input!==!1&&(this.input.prop("value",a),this.input.trigger("change")),a},updatePicker:function(a){"undefined"!=typeof a&&(this.color=this.createColor(a));var b=this.options.horizontal===!1?this.options.sliders:this.options.slidersHorz,c=this.picker.find("i");if(0!==c.length)return this.options.horizontal===!1?(b=this.options.sliders,c.eq(1).css("top",b.hue.maxTop*(1-this.color.value.h)).end().eq(2).css("top",b.alpha.maxTop*(1-this.color.value.a))):(b=this.options.slidersHorz,c.eq(1).css("left",b.hue.maxLeft*(1-this.color.value.h)).end().eq(2).css("left",b.alpha.maxLeft*(1-this.color.value.a))),c.eq(0).css({top:b.saturation.maxTop-this.color.value.b*b.saturation.maxTop,left:this.color.value.s*b.saturation.maxLeft}),this.picker.find(".colorpicker-saturation").css("backgroundColor",this.color.toHex(!0,this.color.value.h,1,1,1)),this.picker.find(".colorpicker-alpha").css("backgroundColor",this.color.toHex(!0)),this.picker.find(".colorpicker-color, .colorpicker-color div").css("backgroundColor",this.color.toString(!0,this.format)),a},updateComponent:function(a){var b;if(b="undefined"!=typeof a?this.createColor(a):this.color,this.component!==!1){var c=this.component.find("i").eq(0);c.length>0?c.css({backgroundColor:b.toString(!0,this.format)}):this.component.css({backgroundColor:b.toString(!0,this.format)})}return b.toString(!1,this.format)},update:function(a){var b;return this.getValue(!1)===!1&&a!==!0||(b=this.updateComponent(),this.updateInput(b),this.updateData(b),this.updatePicker()),b},setValue:function(a){this.color=this.createColor(a),this.update(!0),this.element.trigger({type:"changeColor",color:this.color,value:a})},createColor:function(a){return new b(a?a:null,this.options.colorSelectors,this.options.fallbackColor?this.options.fallbackColor:this.color,this.options.fallbackFormat,this.options.hexNumberSignPrefix)},getValue:function(a){a="undefined"==typeof a?this.options.fallbackColor:a;var b;return b=this.hasInput()?this.input.val():this.element.data("color"),void 0!==b&&""!==b&&null!==b||(b=a),b},hasInput:function(){return this.input!==!1},isDisabled:function(){return this.disabled},disable:function(){return this.hasInput()&&this.input.prop("disabled",!0),this.disabled=!0,this.element.trigger({type:"disable",color:this.color,value:this.getValue()}),!0},enable:function(){return this.hasInput()&&this.input.prop("disabled",!1),this.disabled=!1,this.element.trigger({type:"enable",color:this.color,value:this.getValue()}),!0},currentSlider:null,mousePointer:{left:0,top:0},mousedown:function(b){!b.pageX&&!b.pageY&&b.originalEvent&&b.originalEvent.touches&&(b.pageX=b.originalEvent.touches[0].pageX,b.pageY=b.originalEvent.touches[0].pageY),b.stopPropagation(),b.preventDefault();var c=a(b.target),d=c.closest("div"),e=this.options.horizontal?this.options.slidersHorz:this.options.sliders;if(!d.is(".colorpicker")){if(d.is(".colorpicker-saturation"))this.currentSlider=a.extend({},e.saturation);else if(d.is(".colorpicker-hue"))this.currentSlider=a.extend({},e.hue);else{if(!d.is(".colorpicker-alpha"))return!1;this.currentSlider=a.extend({},e.alpha)}var f=d.offset();this.currentSlider.guide=d.find("i")[0].style,this.currentSlider.left=b.pageX-f.left,this.currentSlider.top=b.pageY-f.top,this.mousePointer={left:b.pageX,top:b.pageY},a(window.document).on({"mousemove.colorpicker":a.proxy(this.mousemove,this),"touchmove.colorpicker":a.proxy(this.mousemove,this),"mouseup.colorpicker":a.proxy(this.mouseup,this),"touchend.colorpicker":a.proxy(this.mouseup,this)}).trigger("mousemove")}return!1},mousemove:function(a){!a.pageX&&!a.pageY&&a.originalEvent&&a.originalEvent.touches&&(a.pageX=a.originalEvent.touches[0].pageX,a.pageY=a.originalEvent.touches[0].pageY),a.stopPropagation(),a.preventDefault();var b=Math.max(0,Math.min(this.currentSlider.maxLeft,this.currentSlider.left+((a.pageX||this.mousePointer.left)-this.mousePointer.left))),c=Math.max(0,Math.min(this.currentSlider.maxTop,this.currentSlider.top+((a.pageY||this.mousePointer.top)-this.mousePointer.top)));return this.currentSlider.guide.left=b+"px",this.currentSlider.guide.top=c+"px",this.currentSlider.callLeft&&this.color[this.currentSlider.callLeft].call(this.color,b/this.currentSlider.maxLeft),this.currentSlider.callTop&&this.color[this.currentSlider.callTop].call(this.color,c/this.currentSlider.maxTop),this.options.format!==!1||"setAlpha"!==this.currentSlider.callTop&&"setAlpha"!==this.currentSlider.callLeft||(1!==this.color.value.a?(this.format="rgba",this.color.origFormat="rgba"):(this.format="hex",this.color.origFormat="hex")),this.update(!0),this.element.trigger({type:"changeColor",color:this.color}),!1},mouseup:function(b){return b.stopPropagation(),b.preventDefault(),a(window.document).off({"mousemove.colorpicker":this.mousemove,"touchmove.colorpicker":this.mousemove,"mouseup.colorpicker":this.mouseup,"touchend.colorpicker":this.mouseup}),!1},change:function(a){this.color=this.createColor(this.input.val()),this.color.origFormat&&this.options.format===!1&&(this.format=this.color.origFormat),this.getValue(!1)!==!1&&(this.updateData(),this.updateComponent(),this.updatePicker()),this.element.trigger({type:"changeColor",color:this.color,value:this.input.val()})},keyup:function(a){38===a.keyCode?(this.color.value.a<1&&(this.color.value.a=Math.round(100*(this.color.value.a+.01))/100),this.update(!0)):40===a.keyCode&&(this.color.value.a>0&&(this.color.value.a=Math.round(100*(this.color.value.a-.01))/100),this.update(!0)),this.element.trigger({type:"changeColor",color:this.color,value:this.input.val()})}},a.colorpicker=d,a.fn.colorpicker=function(b){var c=Array.prototype.slice.call(arguments,1),e=1===this.length,f=null,g=this.each(function(){var e=a(this),g=e.data("colorpicker"),h="object"==typeof b?b:{};g||(g=new d(this,h),e.data("colorpicker",g)),"string"==typeof b?a.isFunction(g[b])?f=g[b].apply(g,c):(c.length&&(g[b]=c[0]),f=g[b]):f=e});return e?f:g},a.fn.colorpicker.constructor=d});
-
 $(function () {
     $('.colorpicker-border').colorpicker();
     $('.colorpicker-background').colorpicker();

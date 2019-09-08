@@ -138,6 +138,10 @@ $config = [
                     'galleries/gallery/<alias:(\w|-)+>' => 'galleries/gallery/index',
                 // Gallery END
 
+                // Admin BEGIN
+                    'admin/galleries/update/<alias:(\w|-)+>' => 'admin/galleries/update',
+                // Admin END
+
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<module:\w+>/<controller:\w+>/<action:(\w|-)+>' => '<module>/<controller>/<action>',
