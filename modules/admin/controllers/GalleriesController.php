@@ -2,12 +2,14 @@
 
 namespace app\modules\admin\controllers;
 
+use app\modules\admin\models\UploadForm;
 use Yii;
 use app\modules\galleries\models\GalleryGalleries;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * GalleriesController implements the CRUD actions for GalleryGalleries model.
@@ -66,10 +68,14 @@ class GalleriesController extends Controller
     {
         $model = new GalleryGalleries();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->setting = $this->generateGallerySettings(Yii::$app->request->post());
             $model->id_owner = Yii::$app->user->getId();
+
             if($model->save()){
-                return $this->redirect(['view', 'id' => $model->id]);
+                //return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['galleries/update/'.$model->alias]);
             }
         }
 
@@ -87,7 +93,6 @@ class GalleriesController extends Controller
      */
     public function actionUpdate($alias)
     {
-        //$model = $this->findModel($id);
         $model = GalleryGalleries::findGallery($alias);
 
         if ($model->load(Yii::$app->request->post())) {
@@ -134,6 +139,20 @@ class GalleriesController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function activeAjaxUploadFiles(){
+        $model = new UploadForm();
+
+        if (Yii::$app->request->isPost) {
+            $model->imageFiles = UploadedFile::getInstances($model, 'imageFiles');
+            if ($model->upload()) {
+                // file is uploaded successfully
+                return;
+            }
+        }
+
+        return $this->render('upload', ['model' => $model]);
     }
 
     public function actionGenerateAlias(){
@@ -386,8 +405,6 @@ class GalleriesController extends Controller
                 }
             }
         }
-
-        //$setting['thumbnailHoverEffect2'] = 'image_rotateY_0deg_360deg_1000|image_rotateX_0deg_360deg_1000|image_grayscale_0%_100%_1000|label_opacity_0_1_1000';
 
         return json_encode($setting);
     }

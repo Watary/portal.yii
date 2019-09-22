@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yii\helpers\Json;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -9,18 +9,17 @@ use yii\grid\GridView;
 $this->registerCssFile('/css/nanogallery2/nanogallery2.min.css');
 $this->registerJsFile('/js/nanogallery2/jquery.nanogallery2.min.js', ['depends' => [yii\web\JqueryAsset::className()]]);
 
-$gallery_settings = json_decode($model->setting, true);
+$gallery_settings = Json::decode($model->setting, true);
 
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Galleries', 'url' => ['/galleries']];
 $this->params['breadcrumbs'][] = $this->title;
 
 function generateSetting($gallery_settings){
-    $settings_settings = 1;
-    $count_settings = count($gallery_settings);
     $result = '';
 
     foreach ($gallery_settings as $key => $item){
+        $result .= ",\n";
         if(is_array($item)){
             generateSetting($item);
             $result .= "\"$key\": {\n".generateSetting($item)."\n}";
@@ -31,8 +30,6 @@ function generateSetting($gallery_settings){
                 $result .= "\"$key\": \"$item\"";
             }
         }
-
-        if(++$settings_settings <= $count_settings) $result .= ",\n";
     }
 
     return $result;
@@ -44,7 +41,7 @@ function generateSetting($gallery_settings){
     <h1 style="text-align: center"><?= Html::encode($this->title) ?></h1>
 
     <div data-nanogallery2='{
-        "itemsBaseURL": "/files/galleries/gallery_<?= $model->id ?>/",
+        "itemsBaseURL": "/files/galleries/gallery_<?= $model->id ?>/"
         <?= generateSetting($gallery_settings) ?>
     }'>
         <?php foreach ($model->images as $item){ ?>

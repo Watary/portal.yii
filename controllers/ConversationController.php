@@ -68,7 +68,6 @@ class ConversationController extends Controller
             $listConversation[$item[0]['id_conversation']]['conversation'] = Conversation::findConversation($item[0]['id_conversation']);
             $lastMessage[] = ConversationMessages::findLastMessage($item[0]['id_conversation'], ConversationMessages::getWhereDate($item));
             $listConversation[$item[0]['id_conversation']]['message'] = ConversationMessages::findLastMessage($item[0]['id_conversation'], ConversationMessages::getWhereDate($item));
-            $whereParticipant = [];
 
             if($listConversation[$item[0]['id_conversation']]['conversation']->title == NULL){
                 $participant = ConversationParticipant::findSeveralParticipant($item[0]['id_conversation']);
@@ -114,43 +113,6 @@ class ConversationController extends Controller
             'friends' => $friends,
         ]);
     }
-
-    /*public function actionIndex()
-    {
-        $model = ConversationParticipant::findAllConversationsForUser(Yii::$app->user->getId());
-        $listConversation = [];
-        $lastMessage = [];
-        $array_id = [];
-
-        foreach ($model as $key => $item){
-            $listConversation[$item->id_conversation][] = [
-                'id_conversation' => $item->id_conversation,
-                'id_last_see' => $item->id_last_see,
-                'date_entry' => $item->date_entry,
-                'date_exit' => $item->date_exit
-            ];
-        }
-
-        $whereConversation = ['or'];
-
-        foreach ($listConversation as $key => $item){
-            $array_id[] = $item[0]['id_conversation'];
-            $whereConversation[] = ['conversation.id' => $item[0]['id_conversation']];
-        }
-
-        echo '<pre>';
-        print_r(Conversation::findListConversation(''));
-        echo '</pre>';
-        exit;
-
-        $user = User::getUserBuId(Yii::$app->user->getId());
-        $friends = $user->friends;
-
-        return $this->render('index', [
-            'listConversation' => $listConversation,
-            'friends' => $friends,
-        ]);
-    }*/
 
     /**
      * Displays a single Conversation model.

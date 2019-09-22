@@ -135,6 +135,8 @@ $config = [
                 // Forum END
 
                 // Gallery BEGIN
+                    'galleries/gallery/ajax-update-title-description' => 'galleries/gallery/ajax-update-title-description',
+                    'galleries/gallery/ajax-delete-image' => 'galleries/gallery/ajax-delete-image',
                     'galleries/gallery/<alias:(\w|-)+>' => 'galleries/gallery/index',
                 // Gallery END
 

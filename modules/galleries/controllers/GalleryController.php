@@ -2,6 +2,7 @@
 
 namespace app\modules\galleries\controllers;
 
+use app\modules\galleries\models\GalleryImages;
 use Yii;
 use app\modules\galleries\models\GalleryGalleries;
 use yii\data\ActiveDataProvider;
@@ -106,6 +107,37 @@ class GalleryController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionAjaxUpdateTitleDescription(){
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            $model = GalleryImages::findOne($data['GalleryImages']['id']);
+
+            $model->title = $data['GalleryImages']['title'];
+            $model->description = $data['GalleryImages']['description'];
+
+            $model->save();
+
+            return $model->id;
+        }
+    }
+
+    public function actionAjaxDeleteImage(){
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            $model = GalleryImages::findOne($data['image']);
+
+            if(unlink(Yii::$app->basePath . '/web/files/galleries/gallery_' . $model->gallery . '/' . $model->path)){
+                $model->delete();
+                return $model->id;
+            }
+            return 'File not found';
+        }
     }
 
     /**
